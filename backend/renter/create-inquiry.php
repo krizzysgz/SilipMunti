@@ -90,55 +90,66 @@ if (!$listing) {
     exit;
 }
 
-$existingStmt = $pdo->prepare("
-    SELECT id
-    FROM inquiries
-    WHERE listing_id = :listing_id
-        AND renter_id = :renter_id
-        AND inquiry_status = 'pending'
-        AND deleted_at IS NULL
-    LIMIT 1
-");
-
-$existingStmt->execute([
-    'listing_id' => (int) $listingId,
-    'renter_id' => $renter['id']
-]);
-
-if ($existingStmt->fetch()) {
-    http_response_code(409);
-
-    echo json_encode([
-        'success' => false,
-        'message' => 'You already have an active inquiry for this listing.'
-    ]);
-    exit;
-}
-
 try {
     $pdo->beginTransaction();
 
-    $inquiryStmt = $pdo->prepare("
-        INSERT INTO inquiries (
-            listing_id,
-            renter_id,
-            inquiry_status,
-            created_at
-        )
-        VALUES (
-            :listing_id,
-            :renter_id,
-            'pending',
-            NOW()
-        )
+    $existingStmt = $pdo->prepare("
+        SELECT
+            id,
+            inquiry_status
+        FROM inquiries
+        WHERE listing_id = :listing_id
+            AND renter_id = :renter_id
+            AND deleted_at IS NULL
+        LIMIT 1
+        FOR UPDATE
     ");
 
-    $inquiryStmt->execute([
+    $existingStmt->execute([
         'listing_id' => (int) $listingId,
         'renter_id' => $renter['id']
     ]);
 
-    $inquiryId = (int) $pdo->lastInsertId();
+    $existingInquiry = $existingStmt->fetch();
+    $isNewInquiry = !$existingInquiry;
+
+    if ($existingInquiry) {
+        $inquiryId = (int) $existingInquiry['id'];
+
+        if ($existingInquiry['inquiry_status'] === 'closed') {
+            $reopenStmt = $pdo->prepare("
+                UPDATE inquiries
+                SET inquiry_status = 'pending'
+                WHERE id = :inquiry_id
+            ");
+
+            $reopenStmt->execute([
+                'inquiry_id' => $inquiryId
+            ]);
+        }
+    } else {
+        $inquiryStmt = $pdo->prepare("
+            INSERT INTO inquiries (
+                listing_id,
+                renter_id,
+                inquiry_status,
+                created_at
+            )
+            VALUES (
+                :listing_id,
+                :renter_id,
+                'pending',
+                NOW()
+            )
+        ");
+
+        $inquiryStmt->execute([
+            'listing_id' => (int) $listingId,
+            'renter_id' => $renter['id']
+        ]);
+
+        $inquiryId = (int) $pdo->lastInsertId();
+    }
 
     $messageStmt = $pdo->prepare("
         INSERT INTO messages (
@@ -163,6 +174,12 @@ try {
         'message_text' => $messageText
     ]);
 
+    $messageId = (int) $pdo->lastInsertId();
+
+    $notificationMessage = $isNewInquiry
+        ? 'You received a new inquiry for ' . $listing['title'] . '.'
+        : 'You received a new message about ' . $listing['title'] . '.';
+
     $notificationStmt = $pdo->prepare("
         INSERT INTO notifications (
             user_id,
@@ -185,18 +202,23 @@ try {
     $notificationStmt->execute([
         'user_id' => $listing['landlord_id'],
         'inquiry_id' => $inquiryId,
-        'message' => 'You received a new inquiry for ' . $listing['title'] . '.'
+        'message' => $notificationMessage
     ]);
 
     $pdo->commit();
 
-    http_response_code(201);
+    http_response_code($isNewInquiry ? 201 : 200);
 
     echo json_encode([
         'success' => true,
-        'message' => 'Inquiry created successfully.',
+        'message' => $isNewInquiry
+            ? 'Inquiry created successfully.'
+            : 'Message added to the existing conversation.',
         'data' => [
-            'inquiry_id' => $inquiryId
+            'inquiry_id' => $inquiryId,
+            'message_id' => $messageId,
+            'is_new_inquiry' => $isNewInquiry,
+            'inquiry_status' => 'pending'
         ]
     ]);
 } catch (PDOException $e) {
