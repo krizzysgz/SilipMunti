@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Messages | SilipMunti</title>
+
+    <link rel="icon" href="../../assets/images/SilipMunti.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="../../assets/css/global.css" />
+
+    <link rel="stylesheet" href="../../assets/css/messages.css" />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <nav class="navbar">
+        <a
+          class="navbar-brand"
+          href="../../index.html"
+          aria-label="SilipMunti homepage"
+        >
+          <img
+            class="navbar-logo"
+            src="../../assets/images/SilipMunti.png"
+            alt="SilipMunti"
+          />
+        </a>
+
+        <div class="navbar-links">
+          <a href="../../index.html">Home</a>
+          <a href="../properties/index.html">Properties</a>
+          <a href="../about/index.html">About</a>
+          <a href="../landlords/index.html">Landlords</a>
+          <a href="index.html" class="active"> Messages </a>
+        </div>
+
+        <div class="navbar-actions">
+          <a
+            class="notification-button"
+            href="../notifications/index.html"
+            aria-label="Notifications"
+          >
+            <i class="fa-solid fa-bell"></i>
+            <span id="notification-count" class="notification-count hidden">
+              0
+            </span>
+          </a>
+
+          <button
+            id="profile-button"
+            class="profile-button"
+            type="button"
+            aria-label="Open profile menu"
+          >
+            <img
+              id="navbar-profile-picture"
+              src="../../assets/images/default-profile.png"
+              alt=""
+            />
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="messages-page">
+      <section id="messages-app" class="messages-layout">
+        <aside id="conversation-panel" class="conversation-panel">
+          <div class="conversation-header">
+            <div>
+              <p class="section-eyebrow">SilipMunti</p>
+              <h1>Messages</h1>
+            </div>
+
+            <button
+              id="refresh-conversations"
+              class="icon-button"
+              type="button"
+              aria-label="Refresh conversations"
+              title="Refresh conversations"
+            >
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
+
+          <div class="conversation-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+              id="conversation-search"
+              type="search"
+              placeholder="Search conversations"
+              autocomplete="off"
+              aria-label="Search conversations"
+            />
+          </div>
+
+          <div id="conversation-filter" class="conversation-filter">
+            <button
+              class="filter-button active"
+              type="button"
+              data-filter="all"
+            >
+              All
+            </button>
+
+            <button class="filter-button" type="button" data-filter="unread">
+              Unread
+            </button>
+
+            <button class="filter-button" type="button" data-filter="closed">
+              Closed
+            </button>
+          </div>
+
+          <div id="conversation-loading" class="conversation-state">
+            <div class="loading-spinner"></div>
+            <p>Loading conversations...</p>
+          </div>
+
+          <div
+            id="conversation-error"
+            class="conversation-state error-state hidden"
+          >
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <p id="conversation-error-message">Unable to load conversations.</p>
+
+            <button
+              id="retry-conversations"
+              class="secondary-button"
+              type="button"
+            >
+              Try again
+            </button>
+          </div>
+
+          <div id="conversation-empty" class="conversation-state hidden">
+            <div class="state-icon">
+              <i class="fa-regular fa-comments"></i>
+            </div>
+
+            <h2>No conversations yet</h2>
+            <p>Your property inquiries and messages will appear here.</p>
+
+            <a href="../properties/index.html" class="primary-link-button">
+              Browse properties
+            </a>
+          </div>
+
+          <div
+            id="conversation-list"
+            class="conversation-list hidden"
+            aria-live="polite"
+          ></div>
+        </aside>
+
+        <section id="chat-panel" class="chat-panel">
+          <div id="chat-placeholder" class="chat-placeholder">
+            <div class="placeholder-icon">
+              <i class="fa-regular fa-message"></i>
+            </div>
+
+            <h2>Your conversations</h2>
+
+            <p>
+              Select a conversation to read messages and continue your
+              discussion.
+            </p>
+          </div>
+
+          <div id="active-chat" class="active-chat hidden">
+            <header class="chat-header">
+              <button
+                id="back-to-conversations"
+                class="back-button"
+                type="button"
+                aria-label="Back to conversations"
+              >
+                <i class="fa-solid fa-arrow-left"></i>
+              </button>
+
+              <div class="chat-user-avatar">
+                <img
+                  id="chat-user-picture"
+                  src="../../assets/images/default-profile.png"
+                  alt=""
+                />
+
+                <span id="chat-user-status" class="online-indicator"></span>
+              </div>
+
+              <div class="chat-user-information">
+                <h2 id="chat-user-name">User name</h2>
+
+                <p>
+                  <span id="chat-user-role">User</span>
+                  <span aria-hidden="true">•</span>
+                  <span id="chat-inquiry-status">Pending inquiry</span>
+                </p>
+              </div>
+
+              <div class="chat-header-actions">
+                <a
+                  id="view-property-button"
+                  class="chat-action-button"
+                  href="#"
+                  title="View property"
+                  aria-label="View property"
+                >
+                  <i class="fa-solid fa-house"></i>
+                </a>
+
+                <button
+                  id="inquiry-status-button"
+                  class="chat-action-button"
+                  type="button"
+                  title="Close inquiry"
+                  aria-label="Change inquiry status"
+                >
+                  <i class="fa-solid fa-circle-check"></i>
+                </button>
+              </div>
+            </header>
+
+            <a id="property-summary" class="property-summary" href="#">
+              <img
+                id="property-image"
+                src="../../assets/images/property-placeholder.png"
+                alt=""
+              />
+
+              <div class="property-summary-content">
+                <span>Property inquiry</span>
+                <strong id="property-title">Property title</strong>
+
+                <p>
+                  <span id="property-price">₱0</span>
+                  <span>/ month</span>
+                </p>
+              </div>
+
+              <span id="property-availability" class="property-status">
+                Available
+              </span>
+
+              <i class="fa-solid fa-chevron-right"></i>
+            </a>
+
+            <div id="chat-loading" class="chat-state">
+              <div class="loading-spinner"></div>
+              <p>Loading messages...</p>
+            </div>
+
+            <div id="chat-error" class="chat-state error-state hidden">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <p id="chat-error-message">Unable to load messages.</p>
+
+              <button
+                id="retry-messages"
+                class="secondary-button"
+                type="button"
+              >
+                Try again
+              </button>
+            </div>
+
+            <div
+              id="message-list"
+              class="message-list hidden"
+              aria-live="polite"
+              aria-label="Conversation messages"
+            ></div>
+
+            <div
+              id="closed-inquiry-notice"
+              class="closed-inquiry-notice hidden"
+            >
+              <i class="fa-solid fa-lock"></i>
+
+              <div>
+                <strong>This inquiry is closed</strong>
+                <p>
+                  The conversation remains available, but new messages cannot be
+                  sent.
+                </p>
+              </div>
+
+              <button id="reopen-inquiry-button" type="button">Reopen</button>
+            </div>
+
+            <form id="message-form" class="message-composer">
+              <div id="reply-preview" class="reply-preview hidden">
+                <div class="reply-preview-content">
+                  <span
+                    >Replying to <strong id="reply-preview-name"></strong
+                  ></span>
+                  <p id="reply-preview-text"></p>
+                </div>
+
+                <button
+                  id="cancel-reply-button"
+                  class="cancel-reply-button"
+                  type="button"
+                  aria-label="Cancel reply"
+                  title="Cancel reply"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <div class="composer-input">
+                <textarea
+                  id="message-input"
+                  name="message_text"
+                  rows="1"
+                  maxlength="2000"
+                  placeholder="Write a message..."
+                  aria-label="Message"
+                  required
+                ></textarea>
+
+                <span id="message-character-count">0/2000</span>
+              </div>
+
+              <button
+                id="send-message-button"
+                class="send-message-button"
+                type="submit"
+                aria-label="Send message"
+              >
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </form>
+
+            <p
+              id="message-form-error"
+              class="message-form-error hidden"
+              role="alert"
+            ></p>
+          </div>
+        </section>
+
+        <aside id="information-panel" class="information-panel hidden">
+          <button
+            id="close-information-panel"
+            class="close-information-button"
+            type="button"
+            aria-label="Close information panel"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+
+          <div class="information-user">
+            <img
+              id="information-user-picture"
+              src="../../assets/images/default-profile.png"
+              alt=""
+            />
+
+            <h2 id="information-user-name">User name</h2>
+            <p id="information-user-role">User</p>
+          </div>
+
+          <div class="information-section">
+            <h3>Conversation</h3>
+
+            <div class="information-row">
+              <i class="fa-solid fa-house"></i>
+
+              <div>
+                <span>Property</span>
+                <strong id="information-property-title">
+                  Property title
+                </strong>
+              </div>
+            </div>
+
+            <div class="information-row">
+              <i class="fa-solid fa-circle-info"></i>
+
+              <div>
+                <span>Inquiry status</span>
+                <strong id="information-inquiry-status"> Pending </strong>
+              </div>
+            </div>
+
+            <div class="information-row">
+              <i class="fa-regular fa-calendar"></i>
+
+              <div>
+                <span>Started</span>
+                <strong id="information-created-at">—</strong>
+              </div>
+            </div>
+          </div>
+
+          <a
+            id="information-property-button"
+            class="information-property-button"
+            href="#"
+          >
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            View property
+          </a>
+        </aside>
+      </section>
+    </main>
+
+    <template id="conversation-template">
+      <button class="conversation-item" type="button">
+        <div class="conversation-image-wrapper">
+          <img
+            class="conversation-image"
+            src="../../assets/images/property-placeholder.png"
+            alt=""
+          />
+
+          <span class="conversation-unread-indicator"></span>
+        </div>
+
+        <div class="conversation-content">
+          <div class="conversation-topline">
+            <strong class="conversation-user-name"></strong>
+            <time class="conversation-time"></time>
+          </div>
+
+          <p class="conversation-property-title"></p>
+
+          <div class="conversation-preview-row">
+            <p class="conversation-preview"></p>
+            <span class="conversation-unread-count"></span>
+          </div>
+        </div>
+      </button>
+    </template>
+
+    <template id="message-template">
+      <article class="message-row">
+        <img
+          class="message-avatar"
+          src="../../assets/images/default-profile.png"
+          alt=""
+        />
+
+        <div class="message-content">
+          <p class="message-sender"></p>
+          <div class="message-bubble"></div>
+
+          <div class="message-meta">
+            <time class="message-time"></time>
+            <span class="message-read-status"></span>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/messages.js"></script>
+  </body>
+</html>

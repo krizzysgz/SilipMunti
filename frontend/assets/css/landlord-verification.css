@@ -1,0 +1,585 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+/*
+  Use landlord.css for the shared shell:
+  sidebar, topbar, profile dropdown, dashboard-content, and dashboard-main.
+  This file only styles the verification page content.
+*/
+
+.verification-main,
+.main-content {
+  width: min(1440px, calc(100% - 60px));
+  margin-inline: auto;
+  padding: 35px 0 60px;
+}
+
+.verification-page,
+.verification-main {
+  padding-bottom: 70px;
+}
+
+.page-heading,
+.verification-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 26px;
+}
+
+.page-heading > div,
+.verification-header > div {
+  min-width: 0;
+}
+
+.eyebrow,
+.verification-eyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--primary-blue);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.page-heading h1,
+.verification-title {
+  margin: 0;
+  color: var(--text-dark);
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 800;
+  letter-spacing: -1.3px;
+  line-height: 1.1;
+}
+
+.page-heading p,
+.verification-subtitle {
+  margin: 9px 0 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.overall-status,
+.verification-status-pill {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.overall-status.pending,
+.verification-status-pill.pending {
+  color: #8f6c00;
+  background: #fff3bd;
+}
+
+.overall-status.approved,
+.verification-status-pill.approved {
+  color: #087747;
+  background: #dff7eb;
+}
+
+.overall-status.incomplete,
+.overall-status.rejected,
+.verification-status-pill.incomplete,
+.verification-status-pill.rejected {
+  color: #b72c3d;
+  background: #ffe3e7;
+}
+
+.page-message,
+.verification-message {
+  margin-bottom: 18px;
+  padding: 13px 17px;
+  border-radius: 10px;
+  box-shadow: 0 7px 20px rgba(25, 34, 65, 0.035);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.page-message.success,
+.verification-message.success {
+  color: #087747;
+  background: #dcf6e8;
+}
+
+.page-message.error,
+.verification-message.error {
+  color: #9f2030;
+  background: #ffe5e8;
+}
+
+.verification-overview,
+.verification-panel,
+.documents-section,
+.documents-panel,
+.verification-note,
+.upload-guidelines {
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.verification-overview,
+.verification-panel {
+  display: flex;
+  align-items: flex-start;
+  gap: 17px;
+  margin-bottom: 22px;
+  padding: 20px;
+}
+
+.overview-icon,
+.verification-panel-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--primary-blue);
+  background: #e9edff;
+  font-size: 20px;
+}
+
+.overview-content,
+.verification-panel-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.overview-label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--primary-blue);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.overview-content h2,
+.verification-panel h2,
+.documents-section h2,
+.documents-panel h2,
+.verification-note h3,
+.upload-guidelines h2 {
+  margin: 0;
+  color: #20232a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.overview-content p,
+.verification-panel p,
+.documents-section p,
+.documents-panel p,
+.verification-note li,
+.upload-guidelines li {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #edf0f6;
+}
+
+.progress-bar,
+.progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary-blue);
+  transition: width 0.35s ease;
+}
+
+.progress-text,
+.progress-label {
+  display: block;
+  margin-top: 7px;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.documents-section,
+.documents-panel {
+  padding: 20px;
+}
+
+.section-heading,
+.documents-panel-header {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+  padding-bottom: 17px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.section-heading h2,
+.documents-panel-header h2 {
+  margin: 0;
+  color: #20232a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.section-heading p,
+.documents-panel-header p {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.refresh-button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  color: var(--primary-blue);
+  background: var(--white);
+  font-size: 10px;
+  font-weight: 700;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.refresh-button:hover {
+  border-color: #b7c1f9;
+  background: #f7f8ff;
+}
+
+.documents-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.document-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 20px;
+  border: 1px solid rgba(230, 233, 240, 0.9);
+  border-radius: 14px;
+  background: #fbfcff;
+  box-shadow: 0 7px 20px rgba(25, 34, 65, 0.025);
+}
+
+.document-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.document-icon {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--primary-blue);
+  background: #e9edff;
+  font-size: 18px;
+}
+
+.document-icon.blue {
+  color: var(--primary-blue);
+  background: #e9edff;
+}
+
+.document-icon.yellow {
+  color: #8f6c00;
+  background: #fff3bd;
+}
+
+.document-icon.green {
+  color: var(--green);
+  background: #e1f6eb;
+}
+
+.document-status {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 4px 9px;
+  border-radius: 20px;
+  color: #687083;
+  background: #edf0f5;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.document-status.not-submitted {
+  color: #687083;
+  background: #edf0f5;
+}
+
+.document-status.pending {
+  color: #8f6c00;
+  background: #fff3bd;
+}
+
+.document-status.approved {
+  color: #087747;
+  background: #dff7eb;
+}
+
+.document-status.rejected {
+  color: #b72c3d;
+  background: #ffe3e7;
+}
+
+.document-card-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.document-card h3,
+.document-title {
+  margin: 0 0 7px;
+  color: #252932;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.document-card-content > p,
+.document-description {
+  min-height: 52px;
+  margin: 0 0 15px;
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.document-details {
+  margin-bottom: 12px;
+  color: var(--text-muted);
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.rejection-message {
+  margin-bottom: 12px;
+  padding: 9px;
+  border-radius: 8px;
+  color: #9f2030;
+  background: #ffe5e8;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.upload-form {
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.file-picker,
+.file-control {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  overflow: hidden;
+  border: 1px dashed #b8c2e7;
+  border-radius: 9px;
+  color: var(--text-muted);
+  background: var(--white);
+  font-size: 10px;
+}
+
+.file-picker i,
+.file-control i {
+  color: var(--primary-blue);
+}
+
+.file-picker span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-picker input {
+  display: none;
+}
+
+.file-control input {
+  width: 100%;
+  border: 0;
+  color: var(--text-muted);
+  background: transparent;
+  font-size: 10px;
+}
+
+.upload-button {
+  display: inline-flex;
+  min-height: 43px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 9px;
+  color: var(--white);
+  background: var(--primary-blue);
+  box-shadow: 0 8px 18px rgba(23, 52, 199, 0.18);
+  font-size: 11px;
+  font-weight: 700;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.upload-button:hover {
+  background: var(--primary-blue-dark);
+  box-shadow: 0 12px 25px rgba(23, 52, 199, 0.24);
+  transform: translateY(-1px);
+}
+
+.upload-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.verification-note,
+.upload-guidelines {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 22px;
+  padding: 20px;
+}
+
+.note-icon,
+.guidelines-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  color: #8f6c00;
+  background: #fff3bd;
+  font-size: 16px;
+}
+
+.verification-note h3,
+.upload-guidelines h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.verification-note ul,
+.upload-guidelines ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.verification-note li,
+.upload-guidelines li {
+  margin-top: 4px;
+}
+
+@media (max-width: 1200px) {
+  .documents-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .document-card-content > p,
+  .document-description {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 960px) {
+  .verification-main,
+  .main-content {
+    width: calc(100% - 42px);
+  }
+}
+
+@media (max-width: 720px) {
+  .verification-main,
+  .main-content {
+    width: calc(100% - 28px);
+    padding-top: 23px;
+  }
+
+  .page-heading,
+  .verification-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .overall-status,
+  .verification-status-pill,
+  .refresh-button {
+    width: 100%;
+  }
+
+  .verification-overview,
+  .verification-panel,
+  .verification-note,
+  .upload-guidelines {
+    flex-direction: column;
+  }
+
+  .section-heading,
+  .documents-panel-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-heading h1,
+  .verification-title {
+    font-size: 25px;
+  }
+
+  .verification-overview,
+  .verification-panel,
+  .documents-section,
+  .documents-panel,
+  .verification-note,
+  .upload-guidelines,
+  .document-card {
+    padding: 18px;
+  }
+}

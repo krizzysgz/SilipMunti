@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verification Requests | SilipMunti Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css" />
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <admin-sidebar active-page="verifications"></admin-sidebar>
+      <div class="admin-content">
+        <header class="admin-topbar">
+          <div class="admin-topbar-left">
+            <button
+              type="button"
+              class="admin-sidebar-toggle"
+              id="admin-sidebar-toggle"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="admin-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="search"
+                id="topbar-search"
+                placeholder="Search landlord name or email"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div class="admin-topbar-profile">
+            <img
+              id="admin-profile-picture"
+              src="/SilipMunti/frontend/assets/images/default-profile.png"
+              alt="Admin profile"
+            />
+            <div>
+              <strong id="admin-name">Admin</strong>
+              <span>Administrator</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="admin-main">
+          <div class="admin-page-header">
+            <div>
+              <span class="admin-eyebrow">Document review</span>
+              <h1>Landlord verifications</h1>
+              <p>
+                Select a landlord to review their required verification
+                documents.
+              </p>
+            </div>
+          </div>
+
+          <div class="admin-message hidden" id="admin-message">Message</div>
+
+          <section class="admin-summary-grid">
+            <div class="admin-summary-card blue">
+              <i class="fa-solid fa-folder-open"></i>
+              <span>Total Landlords</span>
+              <strong id="total-landlords">0</strong>
+            </div>
+            <div class="admin-summary-card yellow">
+              <i class="fa-solid fa-clock"></i>
+              <span>Pending</span>
+              <strong id="pending-documents">0</strong>
+            </div>
+            <div class="admin-summary-card green">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Verified Landlords</span>
+              <strong id="approved-documents">0</strong>
+            </div>
+            <div class="admin-summary-card red">
+              <i class="fa-solid fa-circle-xmark"></i>
+              <span>Needs Action</span>
+              <strong id="rejected-documents">0</strong>
+            </div>
+          </section>
+
+          <section class="admin-panel verification-queue-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h2>Verification queue</h2>
+                <p id="result-text">Showing landlord verification records.</p>
+              </div>
+              <button
+                type="button"
+                class="admin-refresh-button"
+                id="refresh-button"
+              >
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            <div class="admin-filters">
+              <label>
+                <span>Status</span>
+                <select id="status-filter">
+                  <option value="">All statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Verified</option>
+                  <option value="pending">For review</option>
+                  <option value="rejected">Needs resubmission</option>
+                  <option value="incomplete">Incomplete</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="admin-landlord-list" id="landlord-verification-list">
+              <div class="admin-card-message">
+                Loading landlord verification queue...
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-verifications.js"></script>
+  </body>
+</html>

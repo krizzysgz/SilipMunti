@@ -1,6 +1,7 @@
 <?php
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
 require_once __DIR__ . '/../middleware/auth.php';
 
@@ -57,6 +58,20 @@ if ($image['error'] !== UPLOAD_ERR_OK) {
     exit;
 }
 
+if (
+    !is_uploaded_file($image['tmp_name'])
+    || $image['size'] < 1
+) {
+    http_response_code(422);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid uploaded image.'
+    ]);
+
+    exit;
+}
+
 $maximumFileSize = 5 * 1024 * 1024;
 
 if ($image['size'] > $maximumFileSize) {
@@ -79,37 +94,69 @@ $allowedMimeTypes = [
     'image/webp' => 'webp'
 ];
 
-if (!array_key_exists($mimeType, $allowedMimeTypes)) {
+if (
+    !$mimeType
+    || !array_key_exists(
+        $mimeType,
+        $allowedMimeTypes
+    )
+) {
     http_response_code(422);
 
     echo json_encode([
         'success' => false,
-        'message' => 'Only JPG, PNG, and WEBP images are allowed.'
+        'message' => 'Only JPG, PNG, and WebP images are allowed.'
+    ]);
+
+    exit;
+}
+
+$imageInfo = @getimagesize(
+    $image['tmp_name']
+);
+
+if ($imageInfo === false) {
+    http_response_code(422);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Uploaded file is not a valid image.'
+    ]);
+
+    exit;
+}
+
+[$width, $height] = $imageInfo;
+
+if ($width > 8000 || $height > 8000) {
+    http_response_code(422);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Image dimensions must not exceed 8000 by 8000 pixels.'
     ]);
 
     exit;
 }
 
 try {
-    $getListing = $pdo->prepare(
-        'SELECT
+    $getListing = $pdo->prepare("
+        SELECT
             id,
             title
-         FROM listings
-         WHERE id = ?
-           AND landlord_id = ?
-           AND deleted_at IS NULL
-         LIMIT 1'
-    );
+        FROM listings
+        WHERE id = :listing_id
+            AND landlord_id = :landlord_id
+            AND deleted_at IS NULL
+        LIMIT 1
+    ");
 
     $getListing->execute([
-        $listingId,
-        $landlord['id']
+        'listing_id' => $listingId,
+        'landlord_id' => $landlord['id']
     ]);
 
-    $listing = $getListing->fetch();
-
-    if (!$listing) {
+    if (!$getListing->fetch()) {
         http_response_code(404);
 
         echo json_encode([
@@ -120,16 +167,19 @@ try {
         exit;
     }
 
-    $countImages = $pdo->prepare(
-        'SELECT COUNT(*)
-         FROM listing_images
-         WHERE listing_id = ?
-           AND deleted_at IS NULL'
-    );
+    $countImages = $pdo->prepare("
+        SELECT COUNT(*)
+        FROM listing_images
+        WHERE listing_id = :listing_id
+            AND deleted_at IS NULL
+    ");
 
-    $countImages->execute([$listingId]);
+    $countImages->execute([
+        'listing_id' => $listingId
+    ]);
 
-    $imageCount = (int) $countImages->fetchColumn();
+    $imageCount =
+        (int) $countImages->fetchColumn();
 
     if ($imageCount >= 10) {
         http_response_code(409);
@@ -143,42 +193,65 @@ try {
     }
 
     $uploadDirectory =
-        __DIR__ . '/../storage/listing-images';
+        dirname(__DIR__)
+        . '/storage/listing-images';
 
     if (
-        !is_dir($uploadDirectory) &&
-        !mkdir($uploadDirectory, 0755, true)
+        !is_dir($uploadDirectory)
+        && !mkdir(
+            $uploadDirectory,
+            0755,
+            true
+        )
     ) {
         throw new RuntimeException(
             'Unable to create image directory.'
         );
     }
 
-    $extension = $allowedMimeTypes[$mimeType];
-    $fileName = bin2hex(random_bytes(20)) . '.' . $extension;
+    $extension =
+        $allowedMimeTypes[$mimeType];
+
+    $fileName =
+        bin2hex(random_bytes(20))
+        . '.'
+        . $extension;
+
     $absolutePath =
-        $uploadDirectory . DIRECTORY_SEPARATOR . $fileName;
+        $uploadDirectory
+        . DIRECTORY_SEPARATOR
+        . $fileName;
 
     $databasePath =
-        'storage/listing-images/' . $fileName;
+        'storage/listing-images/'
+        . $fileName;
 
-    if (!move_uploaded_file($image['tmp_name'], $absolutePath)) {
+    if (
+        !move_uploaded_file(
+            $image['tmp_name'],
+            $absolutePath
+        )
+    ) {
         throw new RuntimeException(
             'Unable to save listing image.'
         );
     }
 
     try {
-        $createImage = $pdo->prepare(
-            'INSERT INTO listing_images (
+        $createImage = $pdo->prepare("
+            INSERT INTO listing_images (
                 listing_id,
                 image_path
-             ) VALUES (?, ?)'
-        );
+            )
+            VALUES (
+                :listing_id,
+                :image_path
+            )
+        ");
 
         $createImage->execute([
-            $listingId,
-            $databasePath
+            'listing_id' => $listingId,
+            'image_path' => $databasePath
         ]);
     } catch (Throwable $exception) {
         if (is_file($absolutePath)) {
@@ -194,9 +267,15 @@ try {
         'success' => true,
         'message' => 'Listing image uploaded successfully.',
         'data' => [
-            'image_id' => (int) $pdo->lastInsertId(),
-            'listing_id' => (int) $listingId,
-            'image_number' => $imageCount + 1
+            'image_id' =>
+                (int) $pdo->lastInsertId(),
+            'listing_id' =>
+                (int) $listingId,
+            'image_number' =>
+                $imageCount + 1,
+            'image_url' =>
+                '/SilipMunti/backend/'
+                . $databasePath
         ]
     ]);
 } catch (Throwable $exception) {

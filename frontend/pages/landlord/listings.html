@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>My Listings | SilipMunti</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/landlord.css"
+    />
+  </head>
+
+  <body>
+    <div class="dashboard-layout">
+      <aside class="dashboard-sidebar" id="dashboard-sidebar">
+        <div class="sidebar-header">
+          <a href="/SilipMunti/frontend/index.html" class="dashboard-logo">
+            <img
+              src="/SilipMunti/frontend/assets/images/SilipMunti.png"
+              alt="SilipMunti logo"
+            />
+          </a>
+
+          <button
+            type="button"
+            class="sidebar-close"
+            id="sidebar-close"
+            aria-label="Close sidebar"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-navigation">
+          <span class="sidebar-label">GENERAL</span>
+
+          <a
+            href="/SilipMunti/frontend/pages/landlord/dashboard.html"
+            class="sidebar-link"
+          >
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a
+            href="/SilipMunti/frontend/pages/landlord/listings.html"
+            class="sidebar-link active"
+          >
+            <i class="fa-solid fa-building"></i>
+            <span>My Properties</span>
+
+            <span class="sidebar-count" id="sidebar-listing-count"> 0 </span>
+          </a>
+
+          <a
+            href="/SilipMunti/frontend/pages/landlord/create-listing.html"
+            class="sidebar-link"
+          >
+            <i class="fa-solid fa-square-plus"></i>
+            <span>Add Property</span>
+          </a>
+
+          <a
+            href="/SilipMunti/frontend/pages/landlord/verification.html"
+            class="sidebar-link"
+          >
+            <i class="fa-solid fa-file-shield"></i>
+            <span>Verification</span>
+          </a>
+
+          <a
+            href="/SilipMunti/frontend/pages/messages/index.html"
+            class="sidebar-link"
+          >
+            <i class="fa-solid fa-message"></i>
+            <span>Messages</span>
+            <span class="sidebar-count hidden" id="sidebar-message-count"
+              >0</span
+            >
+          </a>
+
+          <a
+            href="/SilipMunti/frontend/pages/landlord/inquiries.html"
+            class="sidebar-link"
+          >
+            <i class="fa-solid fa-clipboard-question"></i>
+            <span>Inquiries</span>
+          </a>
+
+          <span class="sidebar-label account-label">ACCOUNT</span>
+
+          <a
+            href="/SilipMunti/frontend/pages/profile/index.html"
+            class="sidebar-link"
+          >
+            <i class="fa-solid fa-user"></i>
+            <span>Profile</span>
+          </a>
+
+          <button
+            type="button"
+            class="sidebar-link logout-link"
+            id="logout-button"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-footer">
+          <a href="/SilipMunti/frontend/index.html">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Website</span>
+          </a>
+        </div>
+      </aside>
+
+      <div class="dashboard-content">
+        <header class="dashboard-topbar">
+          <div class="topbar-left">
+            <button
+              type="button"
+              class="sidebar-toggle"
+              id="sidebar-toggle"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="topbar-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+
+              <input
+                type="search"
+                id="topbar-search"
+                placeholder="Search properties"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div class="topbar-actions">
+            <a href="/SilipMunti/frontend/index.html" class="website-link">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <span>View Website</span>
+            </a>
+
+            <!-- <button
+              type="button"
+              class="topbar-icon-button"
+              id="notification-button"
+              aria-label="Open notifications"
+            >
+              <i class="fa-regular fa-bell"></i>
+
+              <span class="notification-count hidden" id="notification-count">
+                0
+              </span>
+            </button> -->
+
+            <div class="topbar-profile-menu">
+              <button
+                type="button"
+                class="topbar-profile"
+                id="topbar-profile-button"
+                aria-label="Open profile menu"
+                aria-expanded="false"
+              >
+                <img
+                  id="landlord-profile-picture"
+                  src="/SilipMunti/frontend/assets/images/default-profile.png"
+                  alt="Landlord profile picture"
+                />
+
+                <div class="topbar-profile-info">
+                  <strong id="landlord-topbar-name"> Landlord </strong>
+
+                  <span>Property Owner</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-down profile-chevron"></i>
+              </button>
+
+              <div
+                class="topbar-profile-dropdown hidden"
+                id="topbar-profile-dropdown"
+              >
+                <div class="dropdown-user">
+                  <img
+                    id="dropdown-landlord-picture"
+                    src="/SilipMunti/frontend/assets/images/default-profile.png"
+                    alt="Landlord"
+                  />
+
+                  <div>
+                    <strong id="dropdown-landlord-name"> Landlord </strong>
+
+                    <span>Landlord</span>
+                  </div>
+                </div>
+
+                <nav class="dropdown-navigation">
+                  <a
+                    href="/SilipMunti/frontend/pages/profile/index.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                  </a>
+
+                  <a
+                    href="/SilipMunti/frontend/pages/landlord/dashboard.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Landlord Dashboard</span>
+                  </a>
+
+                  <a
+                    href="/SilipMunti/frontend/pages/landlord/listings.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-building"></i>
+                    <span>My Listings</span>
+                  </a>
+
+                  <a
+                    href="/SilipMunti/frontend/pages/landlord/create-listing.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-circle-plus"></i>
+                    <span>Add Property</span>
+                  </a>
+
+                  <a
+                    href="/SilipMunti/frontend/pages/landlord/verification.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-file-shield"></i>
+                    <span>Verification</span>
+                  </a>
+
+                  <a
+                    href="/SilipMunti/frontend/pages/messages/index.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-comments"></i>
+                    <span>Inquiries &amp; Messages</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    class="topbar-dropdown-link dropdown-logout"
+                    id="topbar-logout-button"
+                  >
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="dashboard-main listings-page">
+          <section class="listings-page-header">
+            <div>
+              <span class="dashboard-eyebrow"> PROPERTY MANAGEMENT </span>
+
+              <h1>My Listings</h1>
+
+              <p>
+                View and manage all rental properties added to your account.
+              </p>
+            </div>
+
+            <a
+              href="/SilipMunti/frontend/pages/landlord/create-listing.html"
+              class="add-property-button"
+            >
+              <i class="fa-solid fa-plus"></i>
+              <span>Add Property</span>
+            </a>
+          </section>
+
+          <section class="listing-summary-grid">
+            <article class="listing-summary-card">
+              <div class="summary-card-icon total">
+                <i class="fa-solid fa-building"></i>
+              </div>
+
+              <div>
+                <span>Total Listings</span>
+                <strong id="total-listings">0</strong>
+              </div>
+            </article>
+
+            <article class="listing-summary-card">
+              <div class="summary-card-icon verified">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+
+              <div>
+                <span>Verified</span>
+                <strong id="verified-listings">0</strong>
+              </div>
+            </article>
+
+            <article class="listing-summary-card">
+              <div class="summary-card-icon pending">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+
+              <div>
+                <span>Pending</span>
+                <strong id="pending-listings">0</strong>
+              </div>
+            </article>
+
+            <article class="listing-summary-card">
+              <div class="summary-card-icon rejected">
+                <i class="fa-solid fa-circle-xmark"></i>
+              </div>
+
+              <div>
+                <span>Rejected</span>
+                <strong id="rejected-listings">0</strong>
+              </div>
+            </article>
+          </section>
+
+          <section class="listings-management-card">
+            <div class="listings-toolbar">
+              <div class="listings-toolbar-heading">
+                <h2>Rental Properties</h2>
+
+                <p id="listings-result-text">Loading your properties...</p>
+              </div>
+
+              <div class="listing-filter-controls">
+                <label class="listing-search-box">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+
+                  <input
+                    type="search"
+                    id="listing-search"
+                    placeholder="Search title or location"
+                    autocomplete="off"
+                  />
+                </label>
+
+                <label class="listing-filter">
+                  <i class="fa-solid fa-shield-halved"></i>
+
+                  <select id="verification-filter">
+                    <option value="all">All verification statuses</option>
+
+                    <option value="verified">Verified</option>
+                    <option value="pending">Pending</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </label>
+
+                <label class="listing-filter">
+                  <i class="fa-solid fa-house-circle-check"></i>
+
+                  <select id="availability-filter">
+                    <option value="all">All availability statuses</option>
+
+                    <option value="available">Available</option>
+                    <option value="unavailable">Unavailable</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="listings-loading-state" id="listings-loading-state">
+              <div class="loading-spinner"></div>
+
+              <strong>Loading properties</strong>
+
+              <span> Please wait while we retrieve your listings. </span>
+            </div>
+
+            <div
+              class="landlord-listings-grid hidden"
+              id="landlord-listings-grid"
+            ></div>
+
+            <div class="listings-empty-state hidden" id="listings-empty-state">
+              <div class="empty-state-icon">
+                <i class="fa-regular fa-building"></i>
+              </div>
+
+              <h3>No properties found</h3>
+
+              <p id="listings-empty-message">
+                You have not added any rental property yet.
+              </p>
+
+              <a
+                href="/SilipMunti/frontend/pages/landlord/create-listing.html"
+                class="add-property-button"
+              >
+                <i class="fa-solid fa-plus"></i>
+                <span>Add Your First Property</span>
+              </a>
+            </div>
+
+            <div class="listings-error-state hidden" id="listings-error-state">
+              <div class="error-state-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+
+              <h3>Unable to load properties</h3>
+
+              <p id="listings-error-message">
+                Something went wrong while retrieving your listings.
+              </p>
+
+              <button
+                type="button"
+                class="retry-listings-button"
+                id="retry-listings-button"
+              >
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>Try Again</span>
+              </button>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div
+      class="dashboard-message hidden"
+      id="dashboard-message"
+      role="status"
+    ></div>
+
+    <div
+      class="listing-delete-modal hidden"
+      id="listing-delete-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-modal-title"
+    >
+      <div class="listing-delete-dialog">
+        <div class="delete-dialog-icon">
+          <i class="fa-solid fa-trash-can"></i>
+        </div>
+
+        <h2 id="delete-modal-title">Delete property?</h2>
+
+        <p>This property will no longer appear in your active listings.</p>
+
+        <strong id="delete-listing-title"></strong>
+
+        <div class="delete-dialog-actions">
+          <button
+            type="button"
+            class="cancel-delete-button"
+            id="cancel-delete-button"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="confirm-delete-button"
+            id="confirm-delete-button"
+          >
+            <i class="fa-solid fa-trash-can"></i>
+            <span>Delete Property</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord/listings.js"></script>
+  </body>
+</html>

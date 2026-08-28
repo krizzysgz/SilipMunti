@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Landlord Verification Detail | SilipMunti Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css" />
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <admin-sidebar active-page="verifications"></admin-sidebar>
+      <div class="admin-content">
+        <header class="admin-topbar">
+          <div class="admin-topbar-left">
+            <button
+              type="button"
+              class="admin-sidebar-toggle"
+              id="admin-sidebar-toggle"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <a
+              href="/SilipMunti/frontend/pages/admin/verifications.html"
+              class="admin-back-link"
+            >
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Back to verifications</span>
+            </a>
+          </div>
+
+          <div class="admin-topbar-profile">
+            <img
+              id="admin-profile-picture"
+              src="/SilipMunti/frontend/assets/images/default-profile.png"
+              alt="Admin profile"
+            />
+            <div>
+              <strong id="admin-name">Admin</strong>
+              <span>Administrator</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="admin-main">
+          <div class="admin-page-header">
+            <div>
+              <span class="admin-eyebrow">Landlord profile</span>
+              <h1 id="landlord-name">Verification details</h1>
+              <p id="landlord-email">
+                Review documents submitted by this landlord.
+              </p>
+            </div>
+            <span class="admin-status not-submitted" id="landlord-status"
+              >Loading</span
+            >
+          </div>
+
+          <div class="admin-message hidden" id="admin-message">Message</div>
+
+          <section class="admin-detail-hero">
+            <div class="admin-landlord-profile">
+              <div class="admin-landlord-avatar large" id="landlord-avatar">
+                L
+              </div>
+              <div>
+                <strong id="hero-landlord-name">Landlord</strong>
+                <span id="hero-landlord-email">Email</span>
+              </div>
+            </div>
+
+            <div class="admin-detail-stat">
+              <span>Approved Documents</span>
+              <strong id="approved-progress">0/3</strong>
+            </div>
+            <div class="admin-detail-stat">
+              <span>Pending Review</span>
+              <strong id="pending-progress">0</strong>
+            </div>
+            <div class="admin-detail-stat">
+              <span>Missing / Rejected</span>
+              <strong id="issue-progress">0</strong>
+            </div>
+          </section>
+
+          <section class="admin-panel verification-queue-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h2>Required documents</h2>
+                <p>
+                  Valid ID, barangay clearance, and land title are required.
+                </p>
+              </div>
+              <button
+                type="button"
+                class="admin-refresh-button"
+                id="refresh-button"
+              >
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            <div class="admin-document-detail-grid" id="document-detail-grid">
+              <div class="admin-card-message">Loading documents...</div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="admin-modal hidden" id="reject-modal">
+      <div class="admin-modal-dialog">
+        <button type="button" class="modal-close" id="reject-modal-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <span class="admin-eyebrow">Reject document</span>
+        <h2 id="reject-modal-title">Reject verification document?</h2>
+        <p>
+          Add a clear reason so the landlord knows what document to resubmit.
+        </p>
+        <textarea
+          id="rejection-reason"
+          rows="5"
+          placeholder="Example: The uploaded document is blurry. Please upload a clearer copy."
+        ></textarea>
+        <div class="admin-modal-actions">
+          <button type="button" class="modal-cancel-button" id="reject-cancel">
+            Cancel
+          </button>
+          <button type="button" class="modal-danger-button" id="reject-confirm">
+            Reject document
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-verification-detail.js"></script>
+  </body>
+</html>

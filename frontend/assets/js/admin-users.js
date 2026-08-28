@@ -1,0 +1,378 @@
+(function () {
+  const API_ROOT = "/SilipMunti/backend";
+  const FRONTEND_ROOT = "/SilipMunti/frontend";
+
+  const endpoints = {
+    getUsers: `${API_ROOT}/admin/get-users.php`,
+    deleteUser: `${API_ROOT}/admin/delete-user.php`,
+    restoreUser: `${API_ROOT}/admin/restore-user.php`,
+  };
+
+  const tableBody = document.querySelector("#users-table-body");
+  const adminMessage = document.querySelector("#admin-message");
+  const refreshButton = document.querySelector("#refresh-button");
+  const topbarSearch = document.querySelector("#topbar-search");
+  const roleFilter = document.querySelector("#role-filter");
+  const recordStatusFilter = document.querySelector("#record-status-filter");
+  const deleteModal = document.querySelector("#delete-modal");
+  const deleteModalTitle = document.querySelector("#delete-modal-title");
+  const deleteConfirm = document.querySelector("#delete-confirm");
+
+  let users = [];
+  let deleteTarget = null;
+  let searchTimer = null;
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function setText(selector, value) {
+    const element = document.querySelector(selector);
+    if (element) element.textContent = value;
+  }
+
+  function hideMessage() {
+    adminMessage.textContent = "";
+    adminMessage.className = "admin-message hidden";
+  }
+
+  function showMessage(message, type = "error") {
+    adminMessage.textContent = message;
+    adminMessage.className = `admin-message ${type}`;
+  }
+
+  function formatDate(value) {
+    if (!value) return "Not available";
+
+    const date = new Date(String(value).replace(" ", "T"));
+    if (Number.isNaN(date.getTime())) return value;
+
+    return date.toLocaleDateString("en-PH", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  }
+
+  function normalizeUser(user) {
+    const fullName =
+      user.full_name ||
+      user.name ||
+      [user.first_name, user.last_name].filter(Boolean).join(" ") ||
+      "Unknown user";
+
+    return {
+      id: user.id ?? user.user_id,
+      fullName,
+      email: user.email || "",
+      phone: user.phone_number || user.phone || "Not provided",
+      role: user.role || "user",
+      profilePicture: user.profile_picture || "",
+      createdAt: user.created_at || "",
+      deletedAt: user.deleted_at || null,
+    };
+  }
+
+  function getProfileUrl(user) {
+    if (!user.profilePicture) {
+      return `${FRONTEND_ROOT}/assets/images/default-profile.png`;
+    }
+
+    return user.profilePicture.startsWith("/")
+      ? user.profilePicture
+      : `${API_ROOT}/${user.profilePicture}`;
+  }
+
+  function updateSummary() {
+    setText("#total-users", users.length);
+    setText(
+      "#renter-users",
+      users.filter((user) => user.role === "renter").length,
+    );
+    setText(
+      "#landlord-users",
+      users.filter((user) => user.role === "landlord").length,
+    );
+    setText(
+      "#admin-users",
+      users.filter((user) => user.role === "admin").length,
+    );
+    setText(
+      "#result-text",
+      `Showing ${users.length} user${users.length === 1 ? "" : "s"}.`,
+    );
+  }
+
+  function renderUsers() {
+    updateSummary();
+
+    if (users.length < 1) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="admin-table-message">No users found.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = users
+      .map((user) => {
+        const isDeleted = Boolean(user.deletedAt);
+
+        return `
+          <tr class="${isDeleted ? "admin-row-muted" : ""}">
+            <td>
+              <div class="admin-user-row">
+                <img src="${escapeHtml(getProfileUrl(user))}" alt="${escapeHtml(user.fullName)}" />
+                <div class="admin-user-cell">
+                  <strong>${escapeHtml(user.fullName)}</strong>
+                  <span>${escapeHtml(user.email)}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="admin-status ${escapeHtml(user.role)}">${escapeHtml(user.role)}</span>
+            </td>
+            <td>${escapeHtml(user.phone)}</td>
+            <td>
+              <strong class="admin-date-cell">${escapeHtml(formatDate(user.createdAt))}</strong>
+            </td>
+            <td>
+              <span class="admin-status ${isDeleted ? "rejected" : "approved"}">
+                ${isDeleted ? "Deleted" : "Active"}
+              </span>
+            </td>
+            <td>
+              <div class="admin-row-actions">
+                ${
+                  isDeleted
+                    ? `<button
+                        type="button"
+                        class="admin-icon-button restore-user-button approve-button"
+                        data-user-id="${escapeHtml(user.id)}"
+                        title="Restore user"
+                      >
+                        <i class="fa-solid fa-rotate-left"></i>
+                      </button>`
+                    : `<button
+                        type="button"
+                        class="admin-icon-button delete-user-button reject-button"
+                        data-user-id="${escapeHtml(user.id)}"
+                        title="Delete user"
+                      >
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>`
+                }
+              </div>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+  }
+
+  function getQueryString() {
+    const params = new URLSearchParams();
+
+    if (roleFilter.value) {
+      params.set("role", roleFilter.value);
+    }
+
+    if (recordStatusFilter.value) {
+      params.set("record_status", recordStatusFilter.value);
+    }
+
+    if (topbarSearch.value.trim()) {
+      params.set("search", topbarSearch.value.trim());
+    }
+
+    const queryString = params.toString();
+    return queryString ? `?${queryString}` : "";
+  }
+
+  async function loadUsers() {
+    hideMessage();
+    refreshButton.disabled = true;
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="6" class="admin-table-message">Loading users...</td>
+      </tr>
+    `;
+
+    try {
+      const response = await fetch(`${endpoints.getUsers}${getQueryString()}`, {
+        credentials: "include",
+        cache: "no-store",
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Unable to load users.");
+      }
+
+      const rawUsers =
+        result.data?.users ??
+        result.data?.records ??
+        result.users ??
+        result.data ??
+        [];
+
+      users = Array.isArray(rawUsers) ? rawUsers.map(normalizeUser) : [];
+      renderUsers();
+    } catch (error) {
+      users = [];
+      updateSummary();
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" class="admin-table-message">Unable to load users.</td>
+        </tr>
+      `;
+      showMessage(error.message || "Unable to connect to the server.", "error");
+    } finally {
+      refreshButton.disabled = false;
+    }
+  }
+
+  async function sendUserAction(endpoint, userId) {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        user_id: Number(userId),
+        id: Number(userId),
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Unable to update user.");
+    }
+
+    return result;
+  }
+
+  function openDeleteModal(userId) {
+    deleteTarget = users.find((user) => Number(user.id) === Number(userId));
+    if (!deleteTarget) return;
+
+    deleteModalTitle.textContent = `Delete ${deleteTarget.fullName}?`;
+    deleteModal.classList.remove("hidden");
+  }
+
+  function closeDeleteModal() {
+    deleteTarget = null;
+    deleteModal.classList.add("hidden");
+  }
+
+  async function loadCurrentAdmin() {
+    const user = await window.SilipMuntiSession?.getCurrentUser();
+
+    if (!user) {
+      window.location.href = `${FRONTEND_ROOT}/pages/auth/login.html`;
+      return null;
+    }
+
+    if (user.role !== "admin") {
+      window.location.href = `${FRONTEND_ROOT}/index.html`;
+      return null;
+    }
+
+    const fullName = `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim();
+    const displayName = fullName || "Admin";
+    const profileUrl = user.profile_picture
+      ? user.profile_picture.startsWith("/")
+        ? user.profile_picture
+        : `${API_ROOT}/${user.profile_picture}`
+      : `${FRONTEND_ROOT}/assets/images/default-profile.png`;
+
+    document.querySelector("#admin-name").textContent = displayName;
+    document.querySelector("#admin-profile-picture").src = profileUrl;
+
+    return user;
+  }
+
+  function setupEvents() {
+    refreshButton.addEventListener("click", loadUsers);
+    roleFilter.addEventListener("change", loadUsers);
+    recordStatusFilter.addEventListener("change", loadUsers);
+
+    topbarSearch.addEventListener("input", () => {
+      window.clearTimeout(searchTimer);
+      searchTimer = window.setTimeout(loadUsers, 350);
+    });
+
+    document.addEventListener("click", async (event) => {
+      const deleteButton = event.target.closest(".delete-user-button");
+      const restoreButton = event.target.closest(".restore-user-button");
+      const modalClose = event.target.closest(
+        "#delete-modal-close, #delete-cancel",
+      );
+
+      if (deleteButton) {
+        openDeleteModal(deleteButton.dataset.userId);
+        return;
+      }
+
+      if (restoreButton) {
+        restoreButton.disabled = true;
+
+        try {
+          await sendUserAction(
+            endpoints.restoreUser,
+            restoreButton.dataset.userId,
+          );
+          showMessage("User restored successfully.", "success");
+          await loadUsers();
+        } catch (error) {
+          showMessage(error.message, "error");
+          restoreButton.disabled = false;
+        }
+        return;
+      }
+
+      if (modalClose || event.target === deleteModal) {
+        closeDeleteModal();
+      }
+    });
+
+    deleteConfirm.addEventListener("click", async () => {
+      if (!deleteTarget) return;
+
+      deleteConfirm.disabled = true;
+
+      try {
+        await sendUserAction(endpoints.deleteUser, deleteTarget.id);
+        closeDeleteModal();
+        showMessage("User deleted successfully.", "success");
+        await loadUsers();
+      } catch (error) {
+        showMessage(error.message, "error");
+      } finally {
+        deleteConfirm.disabled = false;
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeDeleteModal();
+    });
+  }
+
+  async function initialize() {
+    const admin = await loadCurrentAdmin();
+    if (!admin) return;
+
+    setupEvents();
+    await loadUsers();
+  }
+
+  initialize();
+})();

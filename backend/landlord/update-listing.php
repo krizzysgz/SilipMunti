@@ -1,6 +1,7 @@
 <?php
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
 require_once __DIR__ . '/../middleware/auth.php';
 
@@ -11,11 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'success' => false,
         'message' => 'Method not allowed.'
     ]);
-
     exit;
 }
 
-$landlord = require_role($pdo, ['landlord']);
+$landlord = require_verified_landlord($pdo);
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -35,30 +35,46 @@ $rentalTypeId = filter_var(
 
 $title = trim($data['title'] ?? '');
 $description = trim($data['description'] ?? '');
-$price = filter_var($data['price'] ?? null, FILTER_VALIDATE_FLOAT);
+
+$price = filter_var(
+    $data['price'] ?? null,
+    FILTER_VALIDATE_FLOAT
+);
+
 $address = trim($data['address'] ?? '');
 $barangay = trim($data['barangay'] ?? '');
-$latitude = filter_var($data['latitude'] ?? null, FILTER_VALIDATE_FLOAT);
-$longitude = filter_var($data['longitude'] ?? null, FILTER_VALIDATE_FLOAT);
+
+$latitude = filter_var(
+    $data['latitude'] ?? null,
+    FILTER_VALIDATE_FLOAT
+);
+
+$longitude = filter_var(
+    $data['longitude'] ?? null,
+    FILTER_VALIDATE_FLOAT
+);
 
 $bedroomValue = $data['bedroom_no'] ?? null;
 $listingSizeValue = $data['listing_size'] ?? null;
 $occupancyValue = $data['occupancy_limit'] ?? null;
 
-$bedroomNumber =
+$bedroomNumber = (
     $bedroomValue === null || $bedroomValue === ''
-        ? null
-        : filter_var($bedroomValue, FILTER_VALIDATE_INT);
+)
+    ? null
+    : filter_var($bedroomValue, FILTER_VALIDATE_INT);
 
-$listingSize =
+$listingSize = (
     $listingSizeValue === null || $listingSizeValue === ''
-        ? null
-        : filter_var($listingSizeValue, FILTER_VALIDATE_FLOAT);
+)
+    ? null
+    : filter_var($listingSizeValue, FILTER_VALIDATE_FLOAT);
 
-$occupancyLimit =
+$occupancyLimit = (
     $occupancyValue === null || $occupancyValue === ''
-        ? null
-        : filter_var($occupancyValue, FILTER_VALIDATE_INT);
+)
+    ? null
+    : filter_var($occupancyValue, FILTER_VALIDATE_INT);
 
 $nearbyEstablishments = $data['nearby_establishments'] ?? [];
 $transportRoutes = $data['transport_routes'] ?? [];
@@ -101,48 +117,53 @@ if ($barangay === '') {
 }
 
 if (
-    $latitude === false ||
-    $latitude < -90 ||
-    $latitude > 90
+    $latitude === false
+    || $latitude < -90
+    || $latitude > 90
 ) {
     $errors['latitude'] = 'A valid latitude is required.';
 }
 
 if (
-    $longitude === false ||
-    $longitude < -180 ||
-    $longitude > 180
+    $longitude === false
+    || $longitude < -180
+    || $longitude > 180
 ) {
     $errors['longitude'] = 'A valid longitude is required.';
 }
 
 if (
-    $bedroomNumber === false ||
-    ($bedroomNumber !== null && $bedroomNumber < 0)
+    $bedroomNumber === false
+    || ($bedroomNumber !== null && $bedroomNumber < 0)
 ) {
-    $errors['bedroom_no'] = 'Bedroom number must be zero or greater.';
+    $errors['bedroom_no'] =
+        'Bedroom number must be zero or greater.';
 }
 
 if (
-    $listingSize === false ||
-    ($listingSize !== null && $listingSize <= 0)
+    $listingSize === false
+    || ($listingSize !== null && $listingSize <= 0)
 ) {
-    $errors['listing_size'] = 'Listing size must be greater than zero.';
+    $errors['listing_size'] =
+        'Listing size must be greater than zero.';
 }
 
 if (
-    $occupancyLimit === false ||
-    ($occupancyLimit !== null && $occupancyLimit < 1)
+    $occupancyLimit === false
+    || ($occupancyLimit !== null && $occupancyLimit < 1)
 ) {
-    $errors['occupancy_limit'] = 'Occupancy limit must be at least one.';
+    $errors['occupancy_limit'] =
+        'Occupancy limit must be at least one.';
 }
 
 if (!is_array($nearbyEstablishments)) {
-    $errors['nearby_establishments'] = 'Nearby establishments must be a list.';
+    $errors['nearby_establishments'] =
+        'Nearby establishments must be a list.';
 }
 
 if (!is_array($transportRoutes)) {
-    $errors['transport_routes'] = 'Transport routes must be a list.';
+    $errors['transport_routes'] =
+        'Transport routes must be a list.';
 }
 
 if (!is_array($amenities)) {
@@ -157,23 +178,22 @@ if ($errors !== []) {
         'message' => 'Validation failed.',
         'errors' => $errors
     ]);
-
     exit;
 }
 
 try {
-    $getListing = $pdo->prepare(
-        'SELECT id
-         FROM listings
-         WHERE id = ?
-           AND landlord_id = ?
-           AND deleted_at IS NULL
-         LIMIT 1'
-    );
+    $getListing = $pdo->prepare("
+        SELECT id
+        FROM listings
+        WHERE id = :listing_id
+            AND landlord_id = :landlord_id
+            AND deleted_at IS NULL
+        LIMIT 1
+    ");
 
     $getListing->execute([
-        $listingId,
-        $landlord['id']
+        'listing_id' => $listingId,
+        'landlord_id' => $landlord['id']
     ]);
 
     if (!$getListing->fetch()) {
@@ -183,19 +203,20 @@ try {
             'success' => false,
             'message' => 'Listing not found or does not belong to you.'
         ]);
-
         exit;
     }
 
-    $checkRentalType = $pdo->prepare(
-        'SELECT id
-         FROM rental_types
-         WHERE id = ?
-           AND deleted_at IS NULL
-         LIMIT 1'
-    );
+    $checkRentalType = $pdo->prepare("
+        SELECT id
+        FROM rental_types
+        WHERE id = :rental_type_id
+            AND deleted_at IS NULL
+        LIMIT 1
+    ");
 
-    $checkRentalType->execute([$rentalTypeId]);
+    $checkRentalType->execute([
+        'rental_type_id' => $rentalTypeId
+    ]);
 
     if (!$checkRentalType->fetch()) {
         http_response_code(422);
@@ -204,7 +225,6 @@ try {
             'success' => false,
             'message' => 'Selected rental type is unavailable.'
         ]);
-
         exit;
     }
 
@@ -223,57 +243,68 @@ try {
         JSON_UNESCAPED_UNICODE
     );
 
-    $updateListing = $pdo->prepare(
-        'UPDATE listings
-         SET
-            rental_type_id = ?,
-            title = ?,
-            description = ?,
-            price = ?,
-            address = ?,
-            city = "Muntinlupa",
-            barangay = ?,
-            latitude = ?,
-            longitude = ?,
-            bedroom_no = ?,
-            listing_size = ?,
-            occupancy_limit = ?,
-            verification_status = "pending",
-            nearby_establishments = ?,
-            transport_routes = ?,
-            amenities = ?,
+    if (
+        $nearbyEstablishmentsJson === false
+        || $transportRoutesJson === false
+        || $amenitiesJson === false
+    ) {
+        throw new RuntimeException(
+            'Unable to encode listing information.'
+        );
+    }
+
+    $updateListing = $pdo->prepare("
+        UPDATE listings
+        SET
+            rental_type_id = :rental_type_id,
+            title = :title,
+            description = :description,
+            price = :price,
+            address = :address,
+            city = 'Muntinlupa',
+            barangay = :barangay,
+            latitude = :latitude,
+            longitude = :longitude,
+            bedroom_no = :bedroom_no,
+            listing_size = :listing_size,
+            occupancy_limit = :occupancy_limit,
+            verification_status = 'verified',
+            nearby_establishments = :nearby_establishments,
+            transport_routes = :transport_routes,
+            amenities = :amenities,
             updated_at = CURRENT_TIMESTAMP
-         WHERE id = ?
-           AND landlord_id = ?'
-    );
+        WHERE id = :listing_id
+            AND landlord_id = :landlord_id
+            AND deleted_at IS NULL
+    ");
 
     $updateListing->execute([
-        $rentalTypeId,
-        $title,
-        $description !== '' ? $description : null,
-        $price,
-        $address,
-        $barangay,
-        $latitude,
-        $longitude,
-        $bedroomNumber,
-        $listingSize,
-        $occupancyLimit,
-        $nearbyEstablishmentsJson,
-        $transportRoutesJson,
-        $amenitiesJson,
-        $listingId,
-        $landlord['id']
+        'rental_type_id' => $rentalTypeId,
+        'title' => $title,
+        'description' => $description !== '' ? $description : null,
+        'price' => $price,
+        'address' => $address,
+        'barangay' => $barangay,
+        'latitude' => $latitude,
+        'longitude' => $longitude,
+        'bedroom_no' => $bedroomNumber,
+        'listing_size' => $listingSize,
+        'occupancy_limit' => $occupancyLimit,
+        'nearby_establishments' => $nearbyEstablishmentsJson,
+        'transport_routes' => $transportRoutesJson,
+        'amenities' => $amenitiesJson,
+        'listing_id' => $listingId,
+        'landlord_id' => $landlord['id']
     ]);
 
     echo json_encode([
         'success' => true,
-        'message' => 'Property listing updated successfully and is awaiting admin verification.',
+        'message' => 'Property listing updated successfully.',
         'data' => [
             'listing_id' => (int) $listingId,
             'title' => $title,
             'price' => (float) $price,
-            'verification_status' => 'pending'
+            'verification_status' => 'verified'
         ]
     ]);
 } catch (Throwable $exception) {

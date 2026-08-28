@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rental Types | SilipMunti Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css" />
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <admin-sidebar active-page="rental-types"></admin-sidebar>
+
+      <div class="admin-content">
+        <header class="admin-topbar">
+          <div class="admin-topbar-left">
+            <button
+              type="button"
+              class="admin-sidebar-toggle"
+              id="admin-sidebar-toggle"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="admin-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="search"
+                id="topbar-search"
+                placeholder="Search rental type"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div class="admin-topbar-profile">
+            <img
+              id="admin-profile-picture"
+              src="/SilipMunti/frontend/assets/images/default-profile.png"
+              alt="Admin profile"
+            />
+            <div>
+              <strong id="admin-name">Admin</strong>
+              <span>Administrator</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="admin-main">
+          <div class="admin-page-header">
+            <div>
+              <span class="admin-eyebrow">Categories</span>
+              <h1>Rental types</h1>
+              <p>Manage property categories used by landlord listings.</p>
+            </div>
+            <button
+              type="button"
+              class="admin-primary-button"
+              id="open-create-modal"
+            >
+              <i class="fa-solid fa-plus"></i>
+              <span>Add rental type</span>
+            </button>
+          </div>
+
+          <div class="admin-message hidden" id="admin-message">Message</div>
+
+          <section class="admin-summary-grid rental-type-summary">
+            <div class="admin-summary-card blue">
+              <i class="fa-solid fa-tags"></i>
+              <span>Total Types</span>
+              <strong id="total-types">0</strong>
+            </div>
+            <div class="admin-summary-card green">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Active</span>
+              <strong id="active-types">0</strong>
+            </div>
+            <div class="admin-summary-card red">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>Deleted</span>
+              <strong id="deleted-types">0</strong>
+            </div>
+          </section>
+
+          <section class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h2>Rental type records</h2>
+                <p id="result-text">Showing rental type records.</p>
+              </div>
+              <button
+                type="button"
+                class="admin-refresh-button"
+                id="refresh-button"
+              >
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            <div class="admin-filters rental-type-filters">
+              <label>
+                <span>Record status</span>
+                <select id="record-status-filter">
+                  <option value="active">Active only</option>
+                  <option value="deleted">Deleted only</option>
+                  <option value="all">All records</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table admin-rental-types-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="rental-types-table-body">
+                  <tr>
+                    <td colspan="5" class="admin-table-message">
+                      Loading rental types...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="admin-modal hidden" id="rental-type-modal">
+      <div class="admin-modal-dialog">
+        <button type="button" class="modal-close" id="rental-type-modal-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <span class="admin-eyebrow" id="modal-eyebrow">Create category</span>
+        <h2 id="rental-type-modal-title">Add rental type</h2>
+        <form id="rental-type-form" class="admin-form">
+          <label>
+            <span>Name</span>
+            <input
+              type="text"
+              name="name"
+              maxlength="100"
+              placeholder="Example: Studio"
+              required
+            />
+          </label>
+          <label>
+            <span>Description</span>
+            <textarea
+              name="description"
+              rows="4"
+              placeholder="Short description for this rental category."
+            ></textarea>
+          </label>
+          <div class="admin-modal-actions">
+            <button
+              type="button"
+              class="modal-cancel-button"
+              id="rental-type-cancel"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="admin-primary-button"
+              id="rental-type-submit"
+            >
+              Save rental type
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="admin-modal hidden" id="delete-modal">
+      <div class="admin-modal-dialog">
+        <button type="button" class="modal-close" id="delete-modal-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <span class="admin-eyebrow">Delete rental type</span>
+        <h2 id="delete-modal-title">Delete this rental type?</h2>
+        <p>This will hide the category from new landlord listing forms.</p>
+        <div class="admin-modal-actions">
+          <button type="button" class="modal-cancel-button" id="delete-cancel">
+            Cancel
+          </button>
+          <button type="button" class="modal-danger-button" id="delete-confirm">
+            Delete rental type
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-rental-types.js"></script>
+  </body>
+</html>

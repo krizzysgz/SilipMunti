@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Add Property | SilipMunti</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/landlord.css"
+    />
+  </head>
+
+  <body>
+    <div class="dashboard-layout">
+      <landlord-sidebar active-page="create-listing"></landlord-sidebar>
+
+      <div class="dashboard-content">
+        <header class="dashboard-topbar">
+          <div class="topbar-left">
+            <button
+              type="button"
+              class="sidebar-toggle"
+              id="sidebar-toggle"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="topbar-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="search"
+                id="topbar-search"
+                placeholder="Search properties"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div class="topbar-actions">
+            <a href="/SilipMunti/frontend/index.html" class="website-link">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <span>View Website</span>
+            </a>
+
+            <!-- <button
+              type="button"
+              class="topbar-icon-button"
+              id="notification-button"
+              aria-label="Open notifications"
+            >
+              <i class="fa-regular fa-bell"></i>
+              <span class="notification-count hidden" id="notification-count"
+                >0</span
+              >
+            </button> -->
+
+            <div class="topbar-profile-menu">
+              <button
+                type="button"
+                class="topbar-profile"
+                id="topbar-profile-button"
+                aria-label="Open profile menu"
+                aria-expanded="false"
+              >
+                <img
+                  id="landlord-profile-picture"
+                  src="/SilipMunti/frontend/assets/images/default-profile.png"
+                  alt="Landlord profile picture"
+                />
+
+                <div class="topbar-profile-info">
+                  <strong id="landlord-topbar-name">Landlord</strong>
+                  <span>Property Owner</span>
+                </div>
+
+                <i class="fa-solid fa-chevron-down profile-chevron"></i>
+              </button>
+
+              <div
+                class="topbar-profile-dropdown hidden"
+                id="topbar-profile-dropdown"
+              >
+                <div class="dropdown-user">
+                  <img
+                    id="dropdown-landlord-picture"
+                    src="/SilipMunti/frontend/assets/images/default-profile.png"
+                    alt="Landlord"
+                  />
+                  <div>
+                    <strong id="dropdown-landlord-name">Landlord</strong>
+                    <span>Landlord</span>
+                  </div>
+                </div>
+
+                <nav class="dropdown-navigation">
+                  <a
+                    href="/SilipMunti/frontend/pages/profile/index.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-user"></i>
+                    <span>Profile</span>
+                  </a>
+                  <a
+                    href="/SilipMunti/frontend/pages/landlord/dashboard.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Landlord Dashboard</span>
+                  </a>
+                  <a
+                    href="/SilipMunti/frontend/pages/landlord/listings.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-building"></i>
+                    <span>My Listings</span>
+                  </a>
+                  <a
+                    href="/SilipMunti/frontend/pages/landlord/create-listing.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-circle-plus"></i>
+                    <span>Add Property</span>
+                  </a>
+                  <a
+                    href="/SilipMunti/frontend/pages/landlord/verification.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-file-shield"></i>
+                    <span>Verification</span>
+                  </a>
+                  <a
+                    href="/SilipMunti/frontend/pages/messages/index.html"
+                    class="topbar-dropdown-link"
+                  >
+                    <i class="fa-solid fa-comments"></i>
+                    <span>Inquiries &amp; Messages</span>
+                  </a>
+                  <button
+                    type="button"
+                    class="topbar-dropdown-link dropdown-logout"
+                    id="topbar-logout-button"
+                  >
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Logout</span>
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="dashboard-main create-listing-page">
+          <div class="create-listing-header">
+            <div>
+              <span class="dashboard-eyebrow">Add property</span>
+              <h1>Create a rental listing</h1>
+              <p>
+                Add the property details, location, amenities, and photos for
+                renter browsing.
+              </p>
+            </div>
+
+            <a
+              href="/SilipMunti/frontend/pages/landlord/listings.html"
+              class="create-secondary-link"
+            >
+              <i class="fa-solid fa-arrow-left"></i>
+              <span>Back to listings</span>
+            </a>
+          </div>
+
+          <div
+            class="create-listing-message hidden"
+            id="create-listing-message"
+          >
+            Message
+          </div>
+
+          <section class="create-guard-card hidden" id="verification-guard">
+            <div class="create-guard-icon">
+              <i class="fa-solid fa-file-shield"></i>
+            </div>
+            <div>
+              <span>Verification required</span>
+              <h2>Complete your landlord verification first</h2>
+              <p>
+                You need three approved documents before you can create a rental
+                listing.
+              </p>
+            </div>
+            <a
+              href="/SilipMunti/frontend/pages/landlord/verification.html"
+              class="add-property-button"
+            >
+              <i class="fa-solid fa-arrow-right"></i>
+              <span>Go to verification</span>
+            </a>
+          </section>
+
+          <form class="create-listing-form" id="create-listing-form">
+            <section class="create-form-card">
+              <div class="create-form-section-header">
+                <div>
+                  <span>Basic information</span>
+                  <h2>Property details</h2>
+                  <p>Use a clear title and short description for renters.</p>
+                </div>
+              </div>
+
+              <div class="create-form-grid">
+                <label class="create-field full">
+                  <span>Listing title</span>
+                  <input
+                    type="text"
+                    name="title"
+                    placeholder="Example: Studio unit near PLMun"
+                    maxlength="255"
+                    required
+                  />
+                </label>
+
+                <label class="create-field">
+                  <span>Rental type</span>
+                  <select
+                    name="rental_type_id"
+                    id="rental-type-select"
+                    required
+                  >
+                    <option value="">Loading rental types...</option>
+                  </select>
+                </label>
+
+                <label class="create-field">
+                  <span>Monthly price</span>
+                  <input
+                    type="number"
+                    name="price"
+                    min="1"
+                    step="0.01"
+                    placeholder="8500"
+                    required
+                  />
+                </label>
+
+                <label class="create-field full">
+                  <span>Description</span>
+                  <textarea
+                    name="description"
+                    rows="5"
+                    placeholder="Describe the space, rules, nearby landmarks, and ideal tenant."
+                  ></textarea>
+                </label>
+              </div>
+            </section>
+
+            <section class="create-form-card">
+              <div class="create-form-section-header">
+                <div>
+                  <span>Location</span>
+                  <h2>Address and map coordinates</h2>
+                  <p>
+                    Coordinates are required for map and street view display.
+                  </p>
+                </div>
+              </div>
+
+              <div class="create-form-grid">
+                <label class="create-field full">
+                  <span>Complete address</span>
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="House no., street, subdivision, landmark"
+                    maxlength="255"
+                    required
+                  />
+                </label>
+
+                <label class="create-field">
+                  <span>City</span>
+                  <input type="text" name="city" value="Muntinlupa" required />
+                </label>
+
+                <label class="create-field">
+                  <span>Barangay</span>
+                  <select name="barangay" required>
+                    <option value="">Select barangay</option>
+                    <option>Alabang</option>
+                    <option>Ayala Alabang</option>
+                    <option>Bayanan</option>
+                    <option>Buli</option>
+                    <option>Cupang</option>
+                    <option>New Alabang Village</option>
+                    <option>Poblacion</option>
+                    <option>Putatan</option>
+                    <option>Sucat</option>
+                    <option>Tunasan</option>
+                  </select>
+                </label>
+
+                <label class="create-field">
+                  <span>Latitude</span>
+                  <input
+                    type="number"
+                    name="latitude"
+                    step="0.00000001"
+                    placeholder="14.40810000"
+                    required
+                  />
+                </label>
+
+                <label class="create-field">
+                  <span>Longitude</span>
+                  <input
+                    type="number"
+                    name="longitude"
+                    step="0.00000001"
+                    placeholder="121.04150000"
+                    required
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section class="create-form-card">
+              <div class="create-form-section-header">
+                <div>
+                  <span>Unit information</span>
+                  <h2>Capacity and availability</h2>
+                  <p>These details help renters filter available units.</p>
+                </div>
+              </div>
+
+              <div class="create-form-grid">
+                <label class="create-field">
+                  <span>Bedrooms</span>
+                  <input
+                    type="number"
+                    name="bedroom_no"
+                    min="0"
+                    placeholder="1"
+                  />
+                </label>
+
+                <label class="create-field">
+                  <span>Size in sqm</span>
+                  <input
+                    type="number"
+                    name="listing_size"
+                    min="0"
+                    step="0.01"
+                    placeholder="24"
+                  />
+                </label>
+
+                <label class="create-field">
+                  <span>Occupancy limit</span>
+                  <input
+                    type="number"
+                    name="occupancy_limit"
+                    min="1"
+                    placeholder="2"
+                  />
+                </label>
+
+                <label class="create-field">
+                  <span>Availability</span>
+                  <select name="availability_status">
+                    <option value="available">Available</option>
+                    <option value="occupied">Occupied</option>
+                  </select>
+                </label>
+
+                <label class="create-field full">
+                  <span>Amenities</span>
+                  <textarea
+                    name="amenities"
+                    rows="3"
+                    placeholder="Wi-Fi, own CR, kitchen access, aircon, laundry area"
+                  ></textarea>
+                </label>
+
+                <label class="create-field full">
+                  <span>Nearby establishments</span>
+                  <textarea
+                    name="nearby_establishments"
+                    rows="3"
+                    placeholder="PLMun, South Park, Festival Mall, convenience stores"
+                  ></textarea>
+                </label>
+
+                <label class="create-field full">
+                  <span>Transport routes</span>
+                  <textarea
+                    name="transport_routes"
+                    rows="3"
+                    placeholder="Jeepney routes, tricycle terminal, bus stops"
+                  ></textarea>
+                </label>
+              </div>
+            </section>
+
+            <section class="create-form-card">
+              <div class="create-form-section-header">
+                <div>
+                  <span>Photos</span>
+                  <h2>Property images</h2>
+                  <p>
+                    Upload up to 10 JPG, PNG, or WebP images after listing
+                    creation.
+                  </p>
+                </div>
+              </div>
+
+              <label class="create-image-picker">
+                <input
+                  type="file"
+                  id="listing-images"
+                  name="images[]"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                />
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <strong id="image-picker-title">Choose property images</strong>
+                <span id="image-picker-help"
+                  >JPG, PNG, or WebP only, maximum 10 images.</span
+                >
+              </label>
+
+              <div
+                class="image-preview-grid hidden"
+                id="image-preview-grid"
+              ></div>
+            </section>
+
+            <div class="create-form-actions">
+              <a
+                href="/SilipMunti/frontend/pages/landlord/listings.html"
+                class="create-cancel-button"
+              >
+                Cancel
+              </a>
+              <button
+                type="submit"
+                class="create-submit-button"
+                id="submit-button"
+              >
+                <i class="fa-solid fa-circle-plus"></i>
+                <span>Create listing</span>
+              </button>
+            </div>
+          </form>
+        </main>
+      </div>
+    </div>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord-sidebar.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord-create-listing.js"></script>
+  </body>
+</html>

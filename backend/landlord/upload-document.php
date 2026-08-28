@@ -1,6 +1,7 @@
 <?php
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
 require_once __DIR__ . '/../middleware/auth.php';
 
@@ -17,7 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $user = require_role($pdo, ['landlord']);
 
-$documentType = trim($_POST['document_type'] ?? '');
+$documentType = trim(
+    $_POST['document_type'] ?? ''
+);
 
 $allowedDocumentTypes = [
     'barangay_clearance',
@@ -25,7 +28,13 @@ $allowedDocumentTypes = [
     'land_title'
 ];
 
-if (!in_array($documentType, $allowedDocumentTypes, true)) {
+if (
+    !in_array(
+        $documentType,
+        $allowedDocumentTypes,
+        true
+    )
+) {
     http_response_code(422);
 
     echo json_encode([
@@ -60,6 +69,20 @@ if ($file['error'] !== UPLOAD_ERR_OK) {
     exit;
 }
 
+if (
+    !is_uploaded_file($file['tmp_name'])
+    || $file['size'] < 1
+) {
+    http_response_code(422);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid uploaded document.'
+    ]);
+
+    exit;
+}
+
 $maximumFileSize = 5 * 1024 * 1024;
 
 if ($file['size'] > $maximumFileSize) {
@@ -82,7 +105,13 @@ $allowedMimeTypes = [
     'image/png' => 'png'
 ];
 
-if (!array_key_exists($mimeType, $allowedMimeTypes)) {
+if (
+    !$mimeType
+    || !array_key_exists(
+        $mimeType,
+        $allowedMimeTypes
+    )
+) {
     http_response_code(422);
 
     echo json_encode([
@@ -93,25 +122,78 @@ if (!array_key_exists($mimeType, $allowedMimeTypes)) {
     exit;
 }
 
-try {
-    $checkDocument = $pdo->prepare(
-        'SELECT id, verification_status
-         FROM verification_documents
-         WHERE landlord_id = ?
-           AND document_type = ?
-           AND verification_status IN ("pending", "approved")
-           AND deleted_at IS NULL
-         LIMIT 1'
+if ($mimeType === 'application/pdf') {
+    $handle = fopen($file['tmp_name'], 'rb');
+    $signature = $handle
+        ? fread($handle, 5)
+        : false;
+
+    if ($handle) {
+        fclose($handle);
+    }
+
+    if ($signature !== '%PDF-') {
+        http_response_code(422);
+
+        echo json_encode([
+            'success' => false,
+            'message' => 'Uploaded file is not a valid PDF.'
+        ]);
+
+        exit;
+    }
+} else {
+    $imageInfo = @getimagesize(
+        $file['tmp_name']
     );
 
+    if ($imageInfo === false) {
+        http_response_code(422);
+
+        echo json_encode([
+            'success' => false,
+            'message' => 'Uploaded file is not a valid image.'
+        ]);
+
+        exit;
+    }
+
+    [$width, $height] = $imageInfo;
+
+    if ($width > 8000 || $height > 8000) {
+        http_response_code(422);
+
+        echo json_encode([
+            'success' => false,
+            'message' => 'Image dimensions must not exceed 8000 by 8000 pixels.'
+        ]);
+
+        exit;
+    }
+}
+
+try {
+    $checkDocument = $pdo->prepare("
+        SELECT
+            id,
+            verification_status
+        FROM verification_documents
+        WHERE landlord_id = :landlord_id
+            AND document_type = :document_type
+            AND verification_status IN (
+                'pending',
+                'approved'
+            )
+            AND deleted_at IS NULL
+        LIMIT 1
+    ");
+
     $checkDocument->execute([
-        $user['id'],
-        $documentType
+        'landlord_id' => $user['id'],
+        'document_type' => $documentType
     ]);
 
-    $existingDocument = $checkDocument->fetch();
-
-    if ($existingDocument) {
+    if ($checkDocument->fetch()) {
         http_response_code(409);
 
         echo json_encode([
@@ -122,38 +204,71 @@ try {
         exit;
     }
 
-    $uploadDirectory = __DIR__ . '/../storage/verification-documents';
+    $uploadDirectory =
+        dirname(__DIR__)
+        . '/storage/verification-documents';
 
     if (
-        !is_dir($uploadDirectory) &&
-        !mkdir($uploadDirectory, 0755, true)
+        !is_dir($uploadDirectory)
+        && !mkdir(
+            $uploadDirectory,
+            0755,
+            true
+        )
     ) {
-        throw new RuntimeException('Unable to create upload directory.');
+        throw new RuntimeException(
+            'Unable to create upload directory.'
+        );
     }
 
-    $extension = $allowedMimeTypes[$mimeType];
-    $fileName = bin2hex(random_bytes(20)) . '.' . $extension;
-    $absolutePath = $uploadDirectory . '/' . $fileName;
-    $databasePath = 'storage/verification-documents/' . $fileName;
+    $extension =
+        $allowedMimeTypes[$mimeType];
 
-    if (!move_uploaded_file($file['tmp_name'], $absolutePath)) {
-        throw new RuntimeException('Unable to save uploaded document.');
+    $fileName =
+        bin2hex(random_bytes(20))
+        . '.'
+        . $extension;
+
+    $absolutePath =
+        $uploadDirectory
+        . DIRECTORY_SEPARATOR
+        . $fileName;
+
+    $databasePath =
+        'storage/verification-documents/'
+        . $fileName;
+
+    if (
+        !move_uploaded_file(
+            $file['tmp_name'],
+            $absolutePath
+        )
+    ) {
+        throw new RuntimeException(
+            'Unable to save uploaded document.'
+        );
     }
 
     try {
-        $insertDocument = $pdo->prepare(
-            'INSERT INTO verification_documents (
+        $insertDocument = $pdo->prepare("
+            INSERT INTO verification_documents (
                 landlord_id,
                 document_type,
                 document_path,
                 verification_status
-            ) VALUES (?, ?, ?, "pending")'
-        );
+            )
+            VALUES (
+                :landlord_id,
+                :document_type,
+                :document_path,
+                'pending'
+            )
+        ");
 
         $insertDocument->execute([
-            $user['id'],
-            $documentType,
-            $databasePath
+            'landlord_id' => $user['id'],
+            'document_type' => $documentType,
+            'document_path' => $databasePath
         ]);
     } catch (Throwable $exception) {
         if (is_file($absolutePath)) {
@@ -169,9 +284,12 @@ try {
         'success' => true,
         'message' => 'Verification document uploaded successfully.',
         'data' => [
-            'document_id' => (int) $pdo->lastInsertId(),
-            'document_type' => $documentType,
-            'verification_status' => 'pending'
+            'document_id' =>
+                (int) $pdo->lastInsertId(),
+            'document_type' =>
+                $documentType,
+            'verification_status' =>
+                'pending'
         ]
     ]);
 } catch (Throwable $exception) {

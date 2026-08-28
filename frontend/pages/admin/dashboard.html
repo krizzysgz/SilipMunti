@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | SilipMunti</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css" />
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <aside class="admin-sidebar" id="admin-sidebar">
+        <div class="admin-sidebar-header">
+          <a href="/SilipMunti/frontend/index.html" class="admin-logo">
+            <img
+              src="/SilipMunti/frontend/assets/images/SilipMunti.png"
+              alt="SilipMunti logo"
+            />
+          </a>
+          <button
+            type="button"
+            class="admin-sidebar-close"
+            id="admin-sidebar-close"
+            aria-label="Close sidebar"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <nav class="admin-navigation">
+          <span class="admin-nav-label">GENERAL</span>
+          <a
+            href="/SilipMunti/frontend/pages/admin/dashboard.html"
+            class="admin-nav-link active"
+          >
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Dashboard</span>
+          </a>
+          <a
+            href="/SilipMunti/frontend/pages/admin/verifications.html"
+            class="admin-nav-link"
+          >
+            <i class="fa-solid fa-file-shield"></i>
+            <span>Verifications</span>
+            <span class="admin-count hidden" id="pending-count">0</span>
+          </a>
+          <a
+            href="/SilipMunti/frontend/pages/admin/listings.html"
+            class="admin-nav-link"
+          >
+            <i class="fa-solid fa-building"></i>
+            <span>Listings</span>
+          </a>
+          <a
+            href="/SilipMunti/frontend/pages/admin/users.html"
+            class="admin-nav-link"
+          >
+            <i class="fa-solid fa-users"></i>
+            <span>Users</span>
+          </a>
+          <a
+            href="/SilipMunti/frontend/pages/admin/rental-types.html"
+            class="admin-nav-link"
+          >
+            <i class="fa-solid fa-tags"></i>
+            <span>Rental Types</span>
+          </a>
+
+          <span class="admin-nav-label account-label">ACCOUNT</span>
+          <a
+            href="/SilipMunti/frontend/pages/profile/index.html"
+            class="admin-nav-link"
+          >
+            <i class="fa-solid fa-user"></i>
+            <span>Profile</span>
+          </a>
+          <button
+            type="button"
+            class="admin-nav-link logout-link"
+            id="logout-button"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+          </button>
+        </nav>
+
+        <div class="admin-sidebar-footer">
+          <a href="/SilipMunti/frontend/index.html">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Back to Website</span>
+          </a>
+        </div>
+      </aside>
+
+      <div class="admin-content">
+        <header class="admin-topbar">
+          <div class="admin-topbar-left">
+            <button
+              type="button"
+              class="admin-sidebar-toggle"
+              id="admin-sidebar-toggle"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="admin-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="search"
+                id="topbar-search"
+                placeholder="Search admin modules"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div class="admin-topbar-profile">
+            <img
+              id="admin-profile-picture"
+              src="/SilipMunti/frontend/assets/images/default-profile.png"
+              alt="Admin profile"
+            />
+            <div>
+              <strong id="admin-name">Admin</strong>
+              <span>Administrator</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="admin-main">
+          <div class="admin-page-header">
+            <div>
+              <span class="admin-eyebrow">Admin overview</span>
+              <h1>Welcome back, <span id="admin-heading-name">Admin</span></h1>
+              <p>
+                Monitor verification requests, property listings, users, and
+                rental categories from one workspace.
+              </p>
+            </div>
+          </div>
+
+          <div class="admin-message hidden" id="admin-message">Message</div>
+
+          <section class="admin-summary-grid">
+            <div class="admin-summary-card blue">
+              <i class="fa-solid fa-folder-open"></i>
+              <span>Total Documents</span>
+              <strong id="total-documents">0</strong>
+            </div>
+            <div class="admin-summary-card yellow">
+              <i class="fa-solid fa-clock"></i>
+              <span>Pending Verifications</span>
+              <strong id="pending-documents">0</strong>
+            </div>
+            <div class="admin-summary-card green">
+              <i class="fa-solid fa-building-circle-check"></i>
+              <span>Total Listings</span>
+              <strong id="total-listings">0</strong>
+            </div>
+            <div class="admin-summary-card red">
+              <i class="fa-solid fa-users"></i>
+              <span>Total Users</span>
+              <strong id="total-users">0</strong>
+            </div>
+          </section>
+
+          <section class="admin-dashboard-grid">
+            <article class="admin-panel admin-dashboard-panel">
+              <div class="admin-panel-header">
+                <div>
+                  <h2>Quick actions</h2>
+                  <p>Open the most-used admin modules.</p>
+                </div>
+              </div>
+
+              <div class="admin-action-grid" id="admin-action-grid">
+                <a
+                  href="/SilipMunti/frontend/pages/admin/verifications.html"
+                  class="admin-action-card"
+                  data-search-text="verification documents landlord approval reject"
+                >
+                  <span class="admin-action-icon blue">
+                    <i class="fa-solid fa-file-shield"></i>
+                  </span>
+                  <strong>Review Verifications</strong>
+                  <p>Approve or reject landlord documents.</p>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+                <a
+                  href="/SilipMunti/frontend/pages/admin/listings.html"
+                  class="admin-action-card"
+                  data-search-text="listings properties rental approval"
+                >
+                  <span class="admin-action-icon green">
+                    <i class="fa-solid fa-building"></i>
+                  </span>
+                  <strong>Manage Listings</strong>
+                  <p>Review property listings and visibility.</p>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+                <a
+                  href="/SilipMunti/frontend/pages/admin/users.html"
+                  class="admin-action-card"
+                  data-search-text="users renters landlords accounts"
+                >
+                  <span class="admin-action-icon yellow">
+                    <i class="fa-solid fa-users"></i>
+                  </span>
+                  <strong>Manage Users</strong>
+                  <p>Check renter, landlord, and admin accounts.</p>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+                <a
+                  href="/SilipMunti/frontend/pages/admin/rental-types.html"
+                  class="admin-action-card"
+                  data-search-text="rental types category apartment condo bedspace"
+                >
+                  <span class="admin-action-icon purple">
+                    <i class="fa-solid fa-tags"></i>
+                  </span>
+                  <strong>Rental Types</strong>
+                  <p>Create and update rental categories.</p>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
+            </article>
+
+            <article class="admin-panel">
+              <div class="admin-panel-header">
+                <div>
+                  <h2>Recent verification requests</h2>
+                  <p>Latest landlord document submissions.</p>
+                </div>
+                <a
+                  href="/SilipMunti/frontend/pages/admin/verifications.html"
+                  class="admin-panel-link"
+                >
+                  View all
+                  <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </div>
+
+              <div class="admin-table-wrapper">
+                <table class="admin-table compact">
+                  <thead>
+                    <tr>
+                      <th>Landlord</th>
+                      <th>Document</th>
+                      <th>Status</th>
+                      <th>Submitted</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recent-documents-body">
+                    <tr>
+                      <td colspan="4" class="admin-table-message">
+                        Loading...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-dashboard.js"></script>
+  </body>
+</html>

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Favorites | SilipMunti</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/global.css" />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/notifications.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/favorites.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/chat-bubble.css"
+    />
+  </head>
+
+  <body>
+    <site-navbar active-page="favorites"></site-navbar>
+
+    <main>
+      <section class="favorites-hero">
+        <div class="favorites-container">
+          <span class="hero-label">
+            <i class="fa-solid fa-heart"></i>
+            Saved properties
+          </span>
+          <h1>My Favorite Rentals</h1>
+          <p>View and manage the rental properties you saved.</p>
+        </div>
+      </section>
+
+      <section class="favorites-section">
+        <div class="favorites-container">
+          <div class="favorites-heading">
+            <div>
+              <h2>Saved Properties</h2>
+              <p id="favorites-count">Loading your favorites...</p>
+            </div>
+
+            <a
+              href="/SilipMunti/frontend/pages/properties/index.html"
+              class="browse-button"
+            >
+              <i class="fa-solid fa-magnifying-glass"></i>
+              Browse properties
+            </a>
+          </div>
+
+          <div class="favorites-loading" id="favorites-loading">
+            <div class="loading-spinner"></div>
+            <p>Loading your saved properties...</p>
+          </div>
+
+          <div class="favorites-message hidden" id="favorites-message"></div>
+          <div class="favorites-grid hidden" id="favorites-grid"></div>
+
+          <div class="empty-favorites hidden" id="empty-favorites">
+            <div class="empty-icon">
+              <i class="fa-regular fa-heart"></i>
+            </div>
+            <h2>No saved properties yet</h2>
+            <p>Properties you add to your favorites will appear here.</p>
+            <a
+              href="/SilipMunti/frontend/pages/properties/index.html"
+              class="empty-button"
+            >
+              <i class="fa-solid fa-building"></i>
+              Explore Properties
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div
+      class="confirmation-modal hidden"
+      id="confirmation-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirmation-title"
+    >
+      <div class="confirmation-overlay" id="confirmation-overlay"></div>
+      <div class="confirmation-card">
+        <div class="confirmation-icon">
+          <i class="fa-solid fa-heart-crack"></i>
+        </div>
+        <h2 id="confirmation-title">Remove from favorites?</h2>
+        <p>This property will be removed from your saved properties.</p>
+        <div class="confirmation-actions">
+          <button type="button" class="cancel-button" id="cancel-remove-button">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="confirm-remove-button"
+            id="confirm-remove-button"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="../../assets/js/site-navbar.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/notifications.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/favorites.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/chat-bubble.js"></script>
+  </body>
+</html>

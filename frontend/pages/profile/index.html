@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>My Profile | SilipMunti</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="../../assets/css/global.css" />
+
+    <link rel="stylesheet" href="../../assets/css/profile.css" />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/chat-bubble.css"
+    />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-container">
+        <a
+          class="brand-link"
+          href="../../index.html"
+          aria-label="SilipMunti homepage"
+        >
+          <img
+            class="brand-logo"
+            src="../../assets/images/SilipMunti.png"
+            alt="SilipMunti"
+          />
+        </a>
+
+        <nav class="desktop-navigation" aria-label="Main navigation">
+          <a href="../../index.html">Home</a>
+
+          <a href="../properties/index.html"> Properties </a>
+
+          <a href="../../index.html#about"> About </a>
+
+          <a href="../../index.html#landlords"> Landlords </a>
+        </nav>
+
+        <div class="header-actions">
+          <a
+            class="notification-button"
+            href="../notifications/index.html"
+            aria-label="Notifications"
+          >
+            <i class="fa-solid fa-bell"></i>
+
+            <span class="notification-count hidden" id="notification-count">
+              0
+            </span>
+          </a>
+
+          <div class="user-menu-wrapper" id="user-menu-wrapper">
+            <button
+              class="profile-menu-button"
+              id="profile-menu-button"
+              type="button"
+              aria-label="Open profile menu"
+              aria-expanded="false"
+            >
+              <img
+                id="navbar-profile-picture"
+                src="../../assets/images/default-profile.png"
+                alt="Profile"
+              />
+            </button>
+
+            <div class="profile-dropdown hidden" id="profile-dropdown">
+              <div class="profile-dropdown-header">
+                <img
+                  id="dropdown-profile-picture"
+                  src="../../assets/images/default-profile.png"
+                  alt="Profile"
+                />
+
+                <div>
+                  <strong id="dropdown-user-name"> SilipMunti User </strong>
+
+                  <span id="dropdown-user-role"> Account </span>
+                </div>
+              </div>
+
+              <a class="active" href="index.html">
+                <i class="fa-solid fa-user"></i>
+                Profile
+              </a>
+
+              <a href="../renter/favorites.html" id="favorites-menu-link">
+                <i class="fa-solid fa-heart"></i>
+                Favorites
+              </a>
+
+              <a href="../inquiries/index.html">
+                <i class="fa-solid fa-message"></i>
+                Messages
+              </a>
+
+              <button id="logout-button" type="button">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+
+          <button
+            class="mobile-menu-button"
+            id="mobile-menu-button"
+            type="button"
+            aria-label="Open navigation"
+            aria-expanded="false"
+          >
+            <i class="fa-solid fa-bars"></i>
+          </button>
+        </div>
+      </div>
+
+      <nav class="mobile-navigation hidden" id="mobile-navigation">
+        <a href="../../index.html">Home</a>
+
+        <a href="../properties/index.html"> Properties </a>
+
+        <a href="../../index.html#about"> About </a>
+
+        <a href="../../index.html#landlords"> Landlords </a>
+      </nav>
+    </header>
+
+    <main class="profile-main">
+      <section class="profile-status" id="profile-loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+
+        <p>Loading your profile...</p>
+      </section>
+
+      <section class="profile-status profile-error hidden" id="profile-error">
+        <i class="fa-solid fa-circle-exclamation"></i>
+
+        <h1>Unable to load profile</h1>
+
+        <p id="profile-error-message">Please refresh the page and try again.</p>
+
+        <button
+          class="button button-blue"
+          id="retry-profile-button"
+          type="button"
+        >
+          Try Again
+        </button>
+      </section>
+
+      <section class="profile-page hidden" id="profile-page">
+        <div class="profile-container">
+          <div class="profile-heading">
+            <div>
+              <span class="profile-label">
+                <i class="fa-solid fa-user-gear"></i>
+                Account Settings
+              </span>
+
+              <h1>My Profile</h1>
+
+              <p>Manage your personal information and account security.</p>
+            </div>
+
+            <span class="role-badge" id="profile-role"> User </span>
+          </div>
+
+          <div class="profile-layout">
+            <aside class="profile-picture-card">
+              <div class="profile-picture-wrapper">
+                <img
+                  id="profile-picture"
+                  src="../../assets/images/default-profile.png"
+                  alt="Profile picture"
+                />
+
+                <span class="verified-account-badge">
+                  <i class="fa-solid fa-circle-check"></i>
+                </span>
+              </div>
+
+              <h2 id="profile-full-name">SilipMunti User</h2>
+
+              <p id="profile-email-display">user@example.com</p>
+
+              <input
+                class="hidden"
+                id="profile-picture-input"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+              />
+
+              <button
+                class="button button-yellow picture-button"
+                id="select-picture-button"
+                type="button"
+              >
+                <i class="fa-solid fa-camera"></i>
+                Upload Picture
+              </button>
+
+              <button
+                class="button button-outline picture-button"
+                id="remove-picture-button"
+                type="button"
+              >
+                <i class="fa-regular fa-trash-can"></i>
+                Remove Picture
+              </button>
+
+              <p class="upload-guide">JPG, PNG or WebP. Maximum of 2 MB.</p>
+            </aside>
+
+            <section class="profile-information-card">
+              <div class="card-heading">
+                <div>
+                  <h2>Personal Information</h2>
+
+                  <p>Update the information associated with your account.</p>
+                </div>
+
+                <i class="fa-solid fa-address-card"></i>
+              </div>
+
+              <form id="profile-form">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="first-name"> First name </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-user"></i>
+
+                      <input
+                        id="first-name"
+                        name="first_name"
+                        type="text"
+                        maxlength="100"
+                        autocomplete="given-name"
+                        required
+                      />
+                    </div>
+
+                    <span
+                      class="field-error"
+                      data-error-for="first_name"
+                    ></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="last-name"> Last name </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-user"></i>
+
+                      <input
+                        id="last-name"
+                        name="last_name"
+                        type="text"
+                        maxlength="100"
+                        autocomplete="family-name"
+                        required
+                      />
+                    </div>
+
+                    <span class="field-error" data-error-for="last_name"></span>
+                  </div>
+
+                  <div class="form-group form-group-full">
+                    <label for="email"> Email address </label>
+
+                    <div class="input-wrapper disabled-input">
+                      <i class="fa-solid fa-envelope"></i>
+
+                      <input id="email" name="email" type="email" disabled />
+                    </div>
+
+                    <small> Your email address cannot be changed. </small>
+                  </div>
+
+                  <div class="form-group form-group-full">
+                    <label for="phone-number"> Phone number </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-phone"></i>
+
+                      <input
+                        id="phone-number"
+                        name="phone_number"
+                        type="tel"
+                        maxlength="20"
+                        autocomplete="tel"
+                        placeholder="09XXXXXXXXX"
+                      />
+                    </div>
+
+                    <span
+                      class="field-error"
+                      data-error-for="phone_number"
+                    ></span>
+                  </div>
+                </div>
+
+                <div
+                  class="form-message hidden"
+                  id="profile-form-message"
+                  role="alert"
+                ></div>
+
+                <div class="form-actions">
+                  <button
+                    class="button button-blue"
+                    id="save-profile-button"
+                    type="submit"
+                  >
+                    <span>Save Changes</span>
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                </div>
+              </form>
+            </section>
+
+            <section class="security-card">
+              <div class="security-information">
+                <span class="security-icon">
+                  <i class="fa-solid fa-lock"></i>
+                </span>
+
+                <div>
+                  <h2>Password and Security</h2>
+
+                  <p>
+                    Update your password regularly to keep your account secure.
+                  </p>
+                </div>
+              </div>
+
+              <button
+                class="button button-outline"
+                id="open-password-modal"
+                type="button"
+              >
+                <i class="fa-solid fa-key"></i>
+                Change Password
+              </button>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="modal-overlay hidden" id="password-modal">
+      <section
+        class="password-modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="password-modal-title"
+      >
+        <button
+          class="modal-close-button"
+          id="close-password-modal"
+          type="button"
+          aria-label="Close password form"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="password-modal-icon">
+          <i class="fa-solid fa-key"></i>
+        </div>
+
+        <h2 id="password-modal-title">Change Password</h2>
+
+        <p>Enter your current password and create a new secure password.</p>
+
+        <form id="password-form">
+          <div class="form-group">
+            <label for="current-password"> Current password </label>
+
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock"></i>
+
+              <input
+                id="current-password"
+                name="current_password"
+                type="password"
+                autocomplete="current-password"
+                required
+              />
+
+              <button
+                class="password-toggle"
+                type="button"
+                data-toggle-password="current-password"
+                aria-label="Show password"
+              >
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+
+            <span class="field-error" data-error-for="current_password"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="new-password"> New password </label>
+
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock"></i>
+
+              <input
+                id="new-password"
+                name="new_password"
+                type="password"
+                minlength="8"
+                maxlength="255"
+                autocomplete="new-password"
+                required
+              />
+
+              <button
+                class="password-toggle"
+                type="button"
+                data-toggle-password="new-password"
+                aria-label="Show password"
+              >
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+
+            <span class="field-error" data-error-for="new_password"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="confirm-password"> Confirm new password </label>
+
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock"></i>
+
+              <input
+                id="confirm-password"
+                name="confirm_password"
+                type="password"
+                minlength="8"
+                maxlength="255"
+                autocomplete="new-password"
+                required
+              />
+
+              <button
+                class="password-toggle"
+                type="button"
+                data-toggle-password="confirm-password"
+                aria-label="Show password"
+              >
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+
+            <span class="field-error" data-error-for="confirm_password"></span>
+          </div>
+
+          <div
+            class="form-message hidden"
+            id="password-form-message"
+            role="alert"
+          ></div>
+
+          <button
+            class="button button-blue password-submit-button"
+            id="save-password-button"
+            type="submit"
+          >
+            <span>Update Password</span>
+            <i class="fa-solid fa-shield-halved"></i>
+          </button>
+        </form>
+      </section>
+    </div>
+
+    <script src="../../assets/js/session.js"></script>
+
+    <script src="../../assets/js/profile.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/chat-bubble.js"></script>
+  </body>
+</html>

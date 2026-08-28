@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Listings Monitoring | SilipMunti Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css" />
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <admin-sidebar active-page="listings"></admin-sidebar>
+
+      <div class="admin-content">
+        <header class="admin-topbar">
+          <div class="admin-topbar-left">
+            <button
+              type="button"
+              class="admin-sidebar-toggle"
+              id="admin-sidebar-toggle"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="admin-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="search"
+                id="topbar-search"
+                placeholder="Search title, landlord, barangay"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div class="admin-topbar-profile">
+            <img
+              id="admin-profile-picture"
+              src="/SilipMunti/frontend/assets/images/default-profile.png"
+              alt="Admin profile"
+            />
+            <div>
+              <strong id="admin-name">Admin</strong>
+              <span>Administrator</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="admin-main">
+          <div class="admin-page-header">
+            <div>
+              <span class="admin-eyebrow">Monitoring</span>
+              <h1>Listings monitoring</h1>
+              <p>
+                Review landlord listings for spam, scams, duplicates, or unsafe
+                content. Listings do not need admin approval to go live.
+              </p>
+            </div>
+          </div>
+
+          <div class="admin-message hidden" id="admin-message">Message</div>
+
+          <section class="admin-summary-grid">
+            <div class="admin-summary-card blue">
+              <i class="fa-solid fa-building"></i>
+              <span>Total Listings</span>
+              <strong id="total-listings">0</strong>
+            </div>
+            <div class="admin-summary-card green">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Active</span>
+              <strong id="active-listings">0</strong>
+            </div>
+            <div class="admin-summary-card yellow">
+              <i class="fa-solid fa-key"></i>
+              <span>Available</span>
+              <strong id="available-listings">0</strong>
+            </div>
+            <div class="admin-summary-card red">
+              <i class="fa-solid fa-trash-can"></i>
+              <span>Removed</span>
+              <strong id="deleted-listings">0</strong>
+            </div>
+          </section>
+
+          <section class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h2>Property listings</h2>
+                <p id="result-text">Showing monitored property listings.</p>
+              </div>
+              <button
+                type="button"
+                class="admin-refresh-button"
+                id="refresh-button"
+              >
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            <div class="admin-filters listings-filters">
+              <label>
+                <span>Record status</span>
+                <select id="record-status-filter">
+                  <option value="active">Active only</option>
+                  <option value="deleted">Removed only</option>
+                  <option value="all">All records</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Availability</span>
+                <select id="availability-filter">
+                  <option value="">All availability</option>
+                  <option value="available">Available</option>
+                  <option value="occupied">Occupied</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Barangay</span>
+                <select id="barangay-filter">
+                  <option value="">All barangays</option>
+                  <option>Alabang</option>
+                  <option>Ayala Alabang</option>
+                  <option>Bayanan</option>
+                  <option>Buli</option>
+                  <option>Cupang</option>
+                  <option>New Alabang Village</option>
+                  <option>Poblacion</option>
+                  <option>Putatan</option>
+                  <option>Sucat</option>
+                  <option>Tunasan</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table admin-listings-table">
+                <thead>
+                  <tr>
+                    <th>Listing</th>
+                    <th>Landlord</th>
+                    <th>Location</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Posted</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="listings-table-body">
+                  <tr>
+                    <td colspan="7" class="admin-table-message">
+                      Loading listings...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="admin-modal hidden" id="delete-modal">
+      <div class="admin-modal-dialog">
+        <button type="button" class="modal-close" id="delete-modal-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <span class="admin-eyebrow">Remove listing</span>
+        <h2 id="delete-modal-title">Remove this listing?</h2>
+        <p>
+          Use this only for suspicious, malicious, duplicate, or unsafe
+          listings. The listing can be restored later.
+        </p>
+        <div class="admin-modal-actions">
+          <button type="button" class="modal-cancel-button" id="delete-cancel">
+            Cancel
+          </button>
+          <button type="button" class="modal-danger-button" id="delete-confirm">
+            Remove listing
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-listings.js"></script>
+  </body>
+</html>

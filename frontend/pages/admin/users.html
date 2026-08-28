@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Management | SilipMunti Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css" />
+  </head>
+
+  <body>
+    <div class="admin-layout">
+      <admin-sidebar active-page="users"></admin-sidebar>
+
+      <div class="admin-content">
+        <header class="admin-topbar">
+          <div class="admin-topbar-left">
+            <button
+              type="button"
+              class="admin-sidebar-toggle"
+              id="admin-sidebar-toggle"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="admin-search">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="search"
+                id="topbar-search"
+                placeholder="Search name or email"
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div class="admin-topbar-profile">
+            <img
+              id="admin-profile-picture"
+              src="/SilipMunti/frontend/assets/images/default-profile.png"
+              alt="Admin profile"
+            />
+            <div>
+              <strong id="admin-name">Admin</strong>
+              <span>Administrator</span>
+            </div>
+          </div>
+        </header>
+
+        <main class="admin-main">
+          <div class="admin-page-header">
+            <div>
+              <span class="admin-eyebrow">Accounts</span>
+              <h1>User management</h1>
+              <p>
+                Monitor renters, landlords, and admin accounts in one place.
+              </p>
+            </div>
+          </div>
+
+          <div class="admin-message hidden" id="admin-message">Message</div>
+
+          <section class="admin-summary-grid">
+            <div class="admin-summary-card blue">
+              <i class="fa-solid fa-users"></i>
+              <span>Total Users</span>
+              <strong id="total-users">0</strong>
+            </div>
+            <div class="admin-summary-card green">
+              <i class="fa-solid fa-house-user"></i>
+              <span>Renters</span>
+              <strong id="renter-users">0</strong>
+            </div>
+            <div class="admin-summary-card yellow">
+              <i class="fa-solid fa-building-user"></i>
+              <span>Landlords</span>
+              <strong id="landlord-users">0</strong>
+            </div>
+            <div class="admin-summary-card red">
+              <i class="fa-solid fa-user-shield"></i>
+              <span>Admins</span>
+              <strong id="admin-users">0</strong>
+            </div>
+          </section>
+
+          <section class="admin-panel">
+            <div class="admin-panel-header">
+              <div>
+                <h2>System users</h2>
+                <p id="result-text">Showing user accounts.</p>
+              </div>
+              <button
+                type="button"
+                class="admin-refresh-button"
+                id="refresh-button"
+              >
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            <div class="admin-filters users-filters">
+              <label>
+                <span>Role</span>
+                <select id="role-filter">
+                  <option value="">All roles</option>
+                  <option value="renter">Renter</option>
+                  <option value="landlord">Landlord</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Record status</span>
+                <select id="record-status-filter">
+                  <option value="active">Active only</option>
+                  <option value="deleted">Deleted only</option>
+                  <option value="all">All records</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="admin-table-wrapper">
+              <table class="admin-table admin-users-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Phone</th>
+                    <th>Joined</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table-body">
+                  <tr>
+                    <td colspan="6" class="admin-table-message">
+                      Loading users...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="admin-modal hidden" id="delete-modal">
+      <div class="admin-modal-dialog">
+        <button type="button" class="modal-close" id="delete-modal-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <span class="admin-eyebrow">Delete account</span>
+        <h2 id="delete-modal-title">Delete this user?</h2>
+        <p>
+          This will hide the account from normal use. You can restore it later.
+        </p>
+        <div class="admin-modal-actions">
+          <button type="button" class="modal-cancel-button" id="delete-cancel">
+            Cancel
+          </button>
+          <button type="button" class="modal-danger-button" id="delete-confirm">
+            Delete user
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-users.js"></script>
+  </body>
+</html>

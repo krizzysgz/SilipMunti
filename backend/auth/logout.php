@@ -1,6 +1,7 @@
 <?php
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
 require_once __DIR__ . '/../config/session.php';
 
@@ -34,15 +35,20 @@ if (ini_get('session.use_cookies')) {
     setcookie(
         session_name(),
         '',
-        time() - 42000,
-        $cookie['path'],
-        $cookie['domain'],
-        $cookie['secure'],
-        $cookie['httponly']
+        [
+            'expires' => time() - 42000,
+            'path' => $cookie['path'],
+            'domain' => $cookie['domain'],
+            'secure' => $cookie['secure'],
+            'httponly' => $cookie['httponly'],
+            'samesite' => $cookie['samesite']
+        ]
     );
 }
 
-session_destroy();
+if (session_status() === PHP_SESSION_ACTIVE) {
+    session_destroy();
+}
 
 echo json_encode([
     'success' => true,

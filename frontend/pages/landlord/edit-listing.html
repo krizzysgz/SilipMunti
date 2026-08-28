@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Edit Property | SilipMunti</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/landlord.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/landlord-form.css"
+    />
+  </head>
+  <body>
+    <div class="dashboard-layout">
+      <aside class="dashboard-sidebar" id="dashboard-sidebar">
+        <div class="sidebar-header">
+          <a
+            class="dashboard-logo"
+            href="/SilipMunti/frontend/pages/landlord/dashboard.html"
+          >
+            <img
+              src="/SilipMunti/frontend/assets/images/SilipMunti.png"
+              alt="SilipMunti"
+            />
+          </a>
+          <button
+            class="sidebar-close"
+            id="sidebar-close"
+            type="button"
+            aria-label="Close sidebar"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <nav class="sidebar-navigation">
+          <p class="sidebar-label">GENERAL</p>
+          <a
+            class="sidebar-link"
+            href="/SilipMunti/frontend/pages/landlord/dashboard.html"
+            ><i class="fa-solid fa-table-cells-large"></i
+            ><span>Dashboard</span></a
+          >
+          <a
+            class="sidebar-link active"
+            href="/SilipMunti/frontend/pages/landlord/listings.html"
+            ><i class="fa-solid fa-building"></i><span>My Properties</span></a
+          >
+          <a
+            class="sidebar-link"
+            href="/SilipMunti/frontend/pages/landlord/add-listing.html"
+            ><i class="fa-solid fa-square-plus"></i><span>Add Property</span></a
+          >
+          <a
+            class="sidebar-link"
+            href="/SilipMunti/frontend/pages/landlord/verification.html"
+            ><i class="fa-solid fa-file-shield"></i><span>Verification</span></a
+          >
+          <a class="sidebar-link" href="/SilipMunti/frontend/messages.html"
+            ><i class="fa-solid fa-message"></i><span>Messages</span></a
+          >
+          <a
+            class="sidebar-link"
+            href="/SilipMunti/frontend/pages/landlord/inquiries.html"
+            ><i class="fa-solid fa-clipboard-question"></i
+            ><span>Inquiries</span></a
+          >
+          <p class="sidebar-label account-label">ACCOUNT</p>
+          <a
+            class="sidebar-link"
+            href="/SilipMunti/frontend/pages/profile/index.html"
+            ><i class="fa-solid fa-user"></i><span>Profile</span></a
+          >
+          <button
+            class="sidebar-link logout-link"
+            id="sidebar-logout"
+            type="button"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+          </button>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="/SilipMunti/frontend/index.html"
+            ><i class="fa-solid fa-arrow-left"></i>Back to Website</a
+          >
+        </div>
+      </aside>
+
+      <div class="dashboard-content">
+        <header class="dashboard-topbar">
+          <div class="topbar-left">
+            <button
+              class="sidebar-toggle"
+              id="sidebar-toggle"
+              type="button"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars"></i>
+            </button>
+            <a
+              class="back-link"
+              href="/SilipMunti/frontend/pages/landlord/listings.html"
+              ><i class="fa-solid fa-arrow-left"></i>My Properties</a
+            >
+          </div>
+          <div class="topbar-actions">
+            <a
+              class="view-website-button"
+              href="/SilipMunti/frontend/index.html"
+              ><i class="fa-solid fa-arrow-up-right-from-square"></i>View
+              Website</a
+            >
+            <button
+              class="topbar-icon-button"
+              type="button"
+              aria-label="Notifications"
+            >
+              <i class="fa-regular fa-bell"></i>
+            </button>
+            <div class="topbar-profile-menu">
+              <button
+                class="topbar-profile"
+                id="topbar-profile-button"
+                type="button"
+                aria-expanded="false"
+              >
+                <img
+                  id="topbar-profile-picture"
+                  src="/SilipMunti/frontend/assets/images/default-profile.png"
+                  alt="Profile"
+                />
+                <span
+                  ><strong id="topbar-user-name">Landlord</strong
+                  ><small>Property Owner</small></span
+                >
+                <i class="fa-solid fa-chevron-down"></i>
+              </button>
+              <div
+                class="topbar-profile-dropdown hidden"
+                id="topbar-profile-dropdown"
+              >
+                <a href="/SilipMunti/frontend/pages/profile/index.html"
+                  ><i class="fa-solid fa-user"></i>Profile</a
+                >
+                <a href="/SilipMunti/frontend/pages/landlord/dashboard.html"
+                  ><i class="fa-solid fa-chart-line"></i>Landlord Dashboard</a
+                >
+                <a href="/SilipMunti/frontend/pages/landlord/listings.html"
+                  ><i class="fa-solid fa-building"></i>My Listings</a
+                >
+                <button id="dropdown-logout" type="button">
+                  <i class="fa-solid fa-right-from-bracket"></i>Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="landlord-form-page">
+          <div class="form-page-heading">
+            <div>
+              <p class="page-eyebrow">PROPERTY MANAGEMENT</p>
+              <h1>Edit Property</h1>
+              <p>Update the rental information and property images.</p>
+            </div>
+            <span class="status-badge" id="verification-status">Loading</span>
+          </div>
+
+          <div class="page-state" id="page-loading">
+            <i class="fa-solid fa-spinner fa-spin"></i
+            ><span>Loading property details...</span>
+          </div>
+          <div class="page-state error hidden" id="page-error"></div>
+
+          <form class="property-form hidden" id="edit-listing-form" novalidate>
+            <section class="form-card">
+              <div class="form-card-heading">
+                <span><i class="fa-solid fa-house"></i></span>
+                <div>
+                  <h2>Basic information</h2>
+                  <p>Main details renters will see.</p>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group form-group-wide">
+                  <label for="title">Property title</label
+                  ><input
+                    id="title"
+                    name="title"
+                    maxlength="255"
+                    required
+                  /><small class="field-error" data-error-for="title"></small>
+                </div>
+                <div class="form-group">
+                  <label for="rental-type">Rental type</label
+                  ><select id="rental-type" name="rental_type_id" required>
+                    <option value="">Loading rental types...</option></select
+                  ><small
+                    class="field-error"
+                    data-error-for="rental_type_id"
+                  ></small>
+                </div>
+                <div class="form-group">
+                  <label for="price">Monthly rent</label>
+                  <div class="input-with-icon">
+                    <i class="fa-solid fa-peso-sign"></i
+                    ><input
+                      id="price"
+                      name="price"
+                      type="number"
+                      min="1"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                  <small class="field-error" data-error-for="price"></small>
+                </div>
+                <div class="form-group form-group-wide">
+                  <label for="description">Description</label
+                  ><textarea
+                    id="description"
+                    name="description"
+                    rows="5"
+                    maxlength="5000"
+                  ></textarea>
+                  <div class="field-meta">
+                    <small
+                      class="field-error"
+                      data-error-for="description"
+                    ></small
+                    ><small id="description-count">0/5000</small>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-card">
+              <div class="form-card-heading">
+                <span><i class="fa-solid fa-location-dot"></i></span>
+                <div>
+                  <h2>Location</h2>
+                  <p>Property address and saved coordinates.</p>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group form-group-wide">
+                  <label for="address">Complete address</label
+                  ><input
+                    id="address"
+                    name="address"
+                    maxlength="255"
+                    required
+                  /><small class="field-error" data-error-for="address"></small>
+                </div>
+                <div class="form-group">
+                  <label for="barangay">Barangay</label
+                  ><select id="barangay" name="barangay" required>
+                    <option value="">Select barangay</option>
+                    <option>Alabang</option>
+                    <option>Ayala Alabang</option>
+                    <option>Bayanan</option>
+                    <option>Buli</option>
+                    <option>Cupang</option>
+                    <option>Poblacion</option>
+                    <option>Putatan</option>
+                    <option>Sucat</option>
+                    <option>Tunasan</option></select
+                  ><small class="field-error" data-error-for="barangay"></small>
+                </div>
+                <div class="form-group">
+                  <label>City</label><input value="Muntinlupa" disabled />
+                </div>
+                <div class="form-group">
+                  <label for="latitude">Latitude</label
+                  ><input
+                    id="latitude"
+                    name="latitude"
+                    type="number"
+                    min="-90"
+                    max="90"
+                    step="any"
+                    required
+                  /><small
+                    class="field-error"
+                    data-error-for="latitude"
+                  ></small>
+                </div>
+                <div class="form-group">
+                  <label for="longitude">Longitude</label
+                  ><input
+                    id="longitude"
+                    name="longitude"
+                    type="number"
+                    min="-180"
+                    max="180"
+                    step="any"
+                    required
+                  /><small
+                    class="field-error"
+                    data-error-for="longitude"
+                  ></small>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-card">
+              <div class="form-card-heading">
+                <span><i class="fa-solid fa-ruler-combined"></i></span>
+                <div>
+                  <h2>Property specifications</h2>
+                  <p>Capacity and size information.</p>
+                </div>
+              </div>
+              <div class="form-grid form-grid-three">
+                <div class="form-group">
+                  <label for="bedroom-no">Bedrooms</label
+                  ><input
+                    id="bedroom-no"
+                    name="bedroom_no"
+                    type="number"
+                    min="0"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="listing-size">Floor area (m²)</label
+                  ><input
+                    id="listing-size"
+                    name="listing_size"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="occupancy-limit">Occupancy limit</label
+                  ><input
+                    id="occupancy-limit"
+                    name="occupancy_limit"
+                    type="number"
+                    min="1"
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section class="form-card">
+              <div class="form-card-heading">
+                <span><i class="fa-solid fa-list-check"></i></span>
+                <div>
+                  <h2>Features and accessibility</h2>
+                  <p>Separate multiple items using commas.</p>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group form-group-wide">
+                  <label for="amenities">Amenities</label
+                  ><input id="amenities" placeholder="Wi-Fi, Parking, CCTV" />
+                </div>
+                <div class="form-group">
+                  <label for="nearby-establishments"
+                    >Nearby establishments</label
+                  ><textarea
+                    id="nearby-establishments"
+                    rows="3"
+                    placeholder="Festival Mall, Hospital"
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="transport-routes">Transport routes</label
+                  ><textarea
+                    id="transport-routes"
+                    rows="3"
+                    placeholder="Jeepney, Bus"
+                  ></textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-card">
+              <div class="form-card-heading image-heading">
+                <span><i class="fa-solid fa-images"></i></span>
+                <div>
+                  <h2>Property images</h2>
+                  <p>
+                    JPG, PNG, or WebP. Maximum 5 MB each and 10 images total.
+                  </p>
+                </div>
+                <strong id="image-count">0/10</strong>
+              </div>
+              <div class="image-grid" id="image-grid"></div>
+              <div class="empty-images hidden" id="empty-images">
+                <i class="fa-regular fa-image"></i>
+                <p>No property images uploaded.</p>
+              </div>
+              <label
+                class="image-upload"
+                id="image-upload-label"
+                for="image-upload"
+                ><i class="fa-solid fa-cloud-arrow-up"></i
+                ><span
+                  ><strong>Add property image</strong
+                  ><small>Select one image to upload</small></span
+                ><input
+                  id="image-upload"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+              /></label>
+              <p class="upload-message hidden" id="upload-message"></p>
+            </section>
+
+            <div class="form-message hidden" id="form-message"></div>
+            <div class="form-actions">
+              <a
+                class="cancel-button"
+                href="/SilipMunti/frontend/pages/landlord/listings.html"
+                >Cancel</a
+              ><button class="save-button" id="save-button" type="submit">
+                <i class="fa-solid fa-floppy-disk"></i><span>Save Changes</span>
+              </button>
+            </div>
+          </form>
+        </main>
+      </div>
+    </div>
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord/edit-listing.js"></script>
+  </body>
+</html>

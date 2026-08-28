@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Properties | SilipMunti</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="../../assets/css/global.css" />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/notifications.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/properties.css" />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/chat-bubble.css"
+    />
+  </head>
+
+  <body>
+    <site-navbar active-page="properties"></site-navbar>
+
+    <main>
+      <section class="properties-banner">
+        <div class="properties-container">
+          <div class="banner-content">
+            <span class="banner-label"> Verified rental properties </span>
+
+            <h1>Find Your Next Home</h1>
+
+            <p>
+              Browse available rental properties from verified landlords
+              throughout Muntinlupa City.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="properties-section">
+        <div class="properties-container">
+          <form class="properties-filters" id="properties-filter-form">
+            <div class="filter-search">
+              <label for="filter-search"> Search properties </label>
+
+              <div class="filter-input">
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+                <input
+                  type="search"
+                  id="filter-search"
+                  name="search"
+                  placeholder="Search title, address, or location"
+                  maxlength="100"
+                />
+              </div>
+            </div>
+
+            <div class="filter-field">
+              <label for="filter-barangay"> Location </label>
+
+              <div class="filter-input">
+                <i class="fa-solid fa-location-dot"></i>
+
+                <select id="filter-barangay" name="barangay">
+                  <option value="">All locations</option>
+                  <option value="Alabang">Alabang</option>
+                  <option value="Ayala Alabang">Ayala Alabang</option>
+                  <option value="Bayanan">Bayanan</option>
+                  <option value="Buli">Buli</option>
+                  <option value="Cupang">Cupang</option>
+                  <option value="Poblacion">Poblacion</option>
+                  <option value="Putatan">Putatan</option>
+                  <option value="Sucat">Sucat</option>
+                  <option value="Tunasan">Tunasan</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="filter-field">
+              <label for="filter-rental-type"> Property type </label>
+
+              <div class="filter-input">
+                <i class="fa-solid fa-house"></i>
+
+                <select id="filter-rental-type" name="rental_type_id">
+                  <option value="">Loading property types...</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="filter-field">
+              <label for="filter-min-price"> Minimum price </label>
+
+              <div class="filter-input">
+                <i class="fa-solid fa-peso-sign"></i>
+
+                <input
+                  type="number"
+                  id="filter-min-price"
+                  name="min_price"
+                  placeholder="Minimum"
+                  min="0"
+                  step="500"
+                />
+              </div>
+            </div>
+
+            <div class="filter-field">
+              <label for="filter-max-price"> Maximum price </label>
+
+              <div class="filter-input">
+                <i class="fa-solid fa-peso-sign"></i>
+
+                <input
+                  type="number"
+                  id="filter-max-price"
+                  name="max_price"
+                  placeholder="Maximum"
+                  min="0"
+                  step="500"
+                />
+              </div>
+            </div>
+
+            <div class="filter-field">
+              <label for="filter-bedrooms"> Bedrooms </label>
+
+              <div class="filter-input">
+                <i class="fa-solid fa-bed"></i>
+
+                <select id="filter-bedrooms" name="bedroom_no">
+                  <option value="">Any bedrooms</option>
+                  <option value="0">Studio</option>
+                  <option value="1">1 bedroom</option>
+                  <option value="2">2 bedrooms</option>
+                  <option value="3">3 bedrooms</option>
+                  <option value="4">4 bedrooms</option>
+                  <option value="5">5 bedrooms</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="filter-actions">
+              <button
+                type="submit"
+                class="apply-filter-button"
+                id="apply-filter-button"
+              >
+                <i class="fa-solid fa-filter"></i>
+                <span>Apply Filters</span>
+              </button>
+
+              <button
+                type="button"
+                class="reset-filter-button"
+                id="reset-filter-button"
+              >
+                Reset
+              </button>
+            </div>
+          </form>
+
+          <div class="properties-toolbar">
+            <div>
+              <h2>Available Properties</h2>
+
+              <p id="properties-total">Loading properties...</p>
+            </div>
+
+            <div class="sort-wrapper">
+              <label for="filter-sort">Sort by</label>
+
+              <select id="filter-sort" name="sort">
+                <option value="newest">Newest first</option>
+
+                <option value="price_low">Lowest price</option>
+
+                <option value="price_high">Highest price</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="properties-grid" id="properties-grid"></div>
+
+          <div class="properties-message hidden" id="properties-message"></div>
+
+          <nav
+            class="pagination hidden"
+            id="properties-pagination"
+            aria-label="Properties pagination"
+          ></nav>
+        </div>
+      </section>
+    </main>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/site-navbar.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/notifications.js"></script>
+    <script src="../../assets/js/properties.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/chat-bubble.js"></script>
+  </body>
+</html>
