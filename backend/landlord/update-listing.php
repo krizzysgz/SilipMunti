@@ -57,6 +57,9 @@ $longitude = filter_var(
 $bedroomValue = $data['bedroom_no'] ?? null;
 $listingSizeValue = $data['listing_size'] ?? null;
 $occupancyValue = $data['occupancy_limit'] ?? null;
+$availabilityStatus = strtolower(trim(
+    $data['availability_status'] ?? ''
+));
 
 $bedroomNumber = (
     $bedroomValue === null || $bedroomValue === ''
@@ -156,6 +159,15 @@ if (
         'Occupancy limit must be at least one.';
 }
 
+if (!in_array(
+    $availabilityStatus,
+    ['available', 'occupied'],
+    true
+)) {
+    $errors['availability_status'] =
+        'Select a valid availability status.';
+}
+
 if (!is_array($nearbyEstablishments)) {
     $errors['nearby_establishments'] =
         'Nearby establishments must be a list.';
@@ -183,7 +195,23 @@ if ($errors !== []) {
 
 try {
     $getListing = $pdo->prepare("
-        SELECT id
+        SELECT
+            id,
+            rental_type_id,
+            title,
+            description,
+            price,
+            address,
+            barangay,
+            latitude,
+            longitude,
+            bedroom_no,
+            listing_size,
+            occupancy_limit,
+            verification_status,
+            nearby_establishments,
+            transport_routes,
+            amenities
         FROM listings
         WHERE id = :listing_id
             AND landlord_id = :landlord_id
@@ -196,7 +224,9 @@ try {
         'landlord_id' => $landlord['id']
     ]);
 
-    if (!$getListing->fetch()) {
+    $currentListing = $getListing->fetch();
+
+    if (!$currentListing) {
         http_response_code(404);
 
         echo json_encode([
@@ -253,6 +283,89 @@ try {
         );
     }
 
+    $normalizeStoredList = static function (mixed $value): array {
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            $value = is_array($decoded) ? $decoded : [];
+        }
+
+        if (!is_array($value)) {
+            return [];
+        }
+
+        $items = array_values(array_filter(
+            array_map(
+                static fn (mixed $item): string => trim((string) $item),
+                $value
+            ),
+            static fn (string $item): bool => $item !== ''
+        ));
+
+        sort($items, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $items;
+    };
+
+    $currentContent = [
+        'rental_type_id' => (int) $currentListing['rental_type_id'],
+        'title' => trim((string) $currentListing['title']),
+        'description' => trim((string) ($currentListing['description'] ?? '')),
+        'price' => (float) $currentListing['price'],
+        'address' => trim((string) $currentListing['address']),
+        'barangay' => trim((string) $currentListing['barangay']),
+        'latitude' => (float) $currentListing['latitude'],
+        'longitude' => (float) $currentListing['longitude'],
+        'bedroom_no' => $currentListing['bedroom_no'] === null
+            ? null
+            : (int) $currentListing['bedroom_no'],
+        'listing_size' => $currentListing['listing_size'] === null
+            ? null
+            : (float) $currentListing['listing_size'],
+        'occupancy_limit' => $currentListing['occupancy_limit'] === null
+            ? null
+            : (int) $currentListing['occupancy_limit'],
+        'nearby_establishments' => $normalizeStoredList(
+            $currentListing['nearby_establishments']
+        ),
+        'transport_routes' => $normalizeStoredList(
+            $currentListing['transport_routes']
+        ),
+        'amenities' => $normalizeStoredList(
+            $currentListing['amenities']
+        )
+    ];
+
+    $submittedContent = [
+        'rental_type_id' => (int) $rentalTypeId,
+        'title' => $title,
+        'description' => $description,
+        'price' => (float) $price,
+        'address' => $address,
+        'barangay' => $barangay,
+        'latitude' => (float) $latitude,
+        'longitude' => (float) $longitude,
+        'bedroom_no' => $bedroomNumber,
+        'listing_size' => $listingSize === null
+            ? null
+            : (float) $listingSize,
+        'occupancy_limit' => $occupancyLimit,
+        'nearby_establishments' => $normalizeStoredList(
+            $nearbyEstablishments
+        ),
+        'transport_routes' => $normalizeStoredList(
+            $transportRoutes
+        ),
+        'amenities' => $normalizeStoredList($amenities)
+    ];
+
+    $contentChanged = $currentContent !== $submittedContent;
+    $verificationStatus = (
+        $currentListing['verification_status'] === 'verified'
+        && !$contentChanged
+    )
+        ? 'verified'
+        : 'pending';
+
     $updateListing = $pdo->prepare("
         UPDATE listings
         SET
@@ -268,7 +381,8 @@ try {
             bedroom_no = :bedroom_no,
             listing_size = :listing_size,
             occupancy_limit = :occupancy_limit,
-            verification_status = 'verified',
+            availability_status = :availability_status,
+            verification_status = :verification_status,
             nearby_establishments = :nearby_establishments,
             transport_routes = :transport_routes,
             amenities = :amenities,
@@ -290,6 +404,8 @@ try {
         'bedroom_no' => $bedroomNumber,
         'listing_size' => $listingSize,
         'occupancy_limit' => $occupancyLimit,
+        'availability_status' => $availabilityStatus,
+        'verification_status' => $verificationStatus,
         'nearby_establishments' => $nearbyEstablishmentsJson,
         'transport_routes' => $transportRoutesJson,
         'amenities' => $amenitiesJson,
@@ -299,12 +415,15 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' => 'Property listing updated successfully.',
+        'message' => $verificationStatus === 'pending'
+            ? 'Property details updated and submitted for admin review.'
+            : 'Property availability updated successfully.',
         'data' => [
             'listing_id' => (int) $listingId,
             'title' => $title,
             'price' => (float) $price,
-            'verification_status' => 'verified'
+            'availability_status' => $availabilityStatus,
+            'verification_status' => $verificationStatus
         ]
     ]);
 } catch (Throwable $exception) {

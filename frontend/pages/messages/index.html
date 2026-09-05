@@ -22,61 +22,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
 
-    <link rel="stylesheet" href="../../assets/css/global.css" />
+    <link rel="stylesheet" href="../../assets/css/global.css?v=4" />
 
-    <link rel="stylesheet" href="../../assets/css/messages.css" />
+    <link rel="stylesheet" href="../../assets/css/messages.css?v=2" />
   </head>
 
   <body>
-    <header class="site-header">
-      <nav class="navbar">
-        <a
-          class="navbar-brand"
-          href="../../index.html"
-          aria-label="SilipMunti homepage"
-        >
-          <img
-            class="navbar-logo"
-            src="../../assets/images/SilipMunti.png"
-            alt="SilipMunti"
-          />
-        </a>
-
-        <div class="navbar-links">
-          <a href="../../index.html">Home</a>
-          <a href="../properties/index.html">Properties</a>
-          <a href="../about/index.html">About</a>
-          <a href="../landlords/index.html">Landlords</a>
-          <a href="index.html" class="active"> Messages </a>
-        </div>
-
-        <div class="navbar-actions">
-          <a
-            class="notification-button"
-            href="../notifications/index.html"
-            aria-label="Notifications"
-          >
-            <i class="fa-solid fa-bell"></i>
-            <span id="notification-count" class="notification-count hidden">
-              0
-            </span>
-          </a>
-
-          <button
-            id="profile-button"
-            class="profile-button"
-            type="button"
-            aria-label="Open profile menu"
-          >
-            <img
-              id="navbar-profile-picture"
-              src="../../assets/images/default-profile.png"
-              alt=""
-            />
-          </button>
-        </div>
-      </nav>
-    </header>
+    <site-navbar active-page="messages"></site-navbar>
 
     <main class="messages-page">
       <section id="messages-app" class="messages-layout">
@@ -197,7 +149,7 @@
               <div class="chat-user-avatar">
                 <img
                   id="chat-user-picture"
-                  src="../../assets/images/default-profile.png"
+                  src="../../assets/images/default-profile.svg"
                   alt=""
                 />
 
@@ -240,7 +192,7 @@
             <a id="property-summary" class="property-summary" href="#">
               <img
                 id="property-image"
-                src="../../assets/images/property-placeholder.png"
+                src="../../assets/images/property-placeholder.svg"
                 alt=""
               />
 
@@ -368,7 +320,7 @@
           <div class="information-user">
             <img
               id="information-user-picture"
-              src="../../assets/images/default-profile.png"
+              src="../../assets/images/default-profile.svg"
               alt=""
             />
 
@@ -426,7 +378,7 @@
         <div class="conversation-image-wrapper">
           <img
             class="conversation-image"
-            src="../../assets/images/property-placeholder.png"
+            src="../../assets/images/property-placeholder.svg"
             alt=""
           />
 
@@ -453,7 +405,7 @@
       <article class="message-row">
         <img
           class="message-avatar"
-          src="../../assets/images/default-profile.png"
+          src="../../assets/images/default-profile.svg"
           alt=""
         />
 
@@ -469,7 +421,9 @@
       </article>
     </template>
 
-    <script src="../../assets/js/config.js"></script>
-    <script src="../../assets/js/messages.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/site-navbar.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/notifications.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/messages.js?v=3"></script>
   </body>
 </html>

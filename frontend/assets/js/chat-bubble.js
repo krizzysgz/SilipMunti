@@ -4,10 +4,10 @@
   const MESSAGES_PAGE = "/SilipMunti/frontend/pages/messages/index.html";
 
   const DEFAULT_PROFILE =
-    "/SilipMunti/frontend/assets/images/default-profile.png";
+    "/SilipMunti/frontend/assets/images/default-profile.svg";
 
   const DEFAULT_PROPERTY =
-    "/SilipMunti/frontend/assets/images/property-placeholder.png";
+    "/SilipMunti/frontend/assets/images/property-placeholder.svg";
 
   const currentPath = window.location.pathname.toLowerCase();
 
@@ -163,7 +163,7 @@
   }
 
   async function apiRequest(url, options = {}) {
-    const response = await fetch(url, {
+    const response = await window.SilipMuntiSession.secureFetch(url, {
       credentials: "include",
       cache: "no-store",
       ...options,

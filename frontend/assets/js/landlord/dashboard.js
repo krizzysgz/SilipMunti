@@ -8,33 +8,11 @@ const LANDLORD_INQUIRIES_API =
 
 const NOTIFICATIONS_API = "/SilipMunti/backend/notifications/get-all.php";
 
-const LANDLORD_LANDLORD_FRONTEND_BASE = "/SilipMunti/frontend";
-
-const topbarProfileButton = document.querySelector("#topbar-profile-button");
-
-const topbarProfileDropdown = document.querySelector(
-  "#topbar-profile-dropdown",
-);
-
-const dropdownLandlordPicture = document.querySelector(
-  "#dropdown-landlord-picture",
-);
-
 const dropdownLandlordName = document.querySelector("#dropdown-landlord-name");
-
-const topbarLogoutButton = document.querySelector("#topbar-logout-button");
-
-const sidebar = document.querySelector("#dashboard-sidebar");
-const sidebarToggle = document.querySelector("#sidebar-toggle");
-const sidebarClose = document.querySelector("#sidebar-close");
-const logoutButton = document.querySelector("#logout-button");
 const dashboardSearch = document.querySelector("#dashboard-search");
 
 const landlordName = document.querySelector("#landlord-name");
 const landlordTopbarName = document.querySelector("#landlord-topbar-name");
-const landlordProfilePicture = document.querySelector(
-  "#landlord-profile-picture",
-);
 const currentDateElement = document.querySelector("#current-date");
 
 const verificationBanner = document.querySelector("#verification-banner");
@@ -48,9 +26,6 @@ const totalListingsElement = document.querySelector("#total-listings");
 const verifiedListingsElement = document.querySelector("#verified-listings");
 const pendingListingsElement = document.querySelector("#pending-listings");
 const activeInquiriesElement = document.querySelector("#active-inquiries");
-
-const sidebarListingCount = document.querySelector("#sidebar-listing-count");
-const sidebarMessageCount = document.querySelector("#sidebar-message-count");
 
 const summaryTotal = document.querySelector("#summary-total");
 const summaryVerified = document.querySelector("#summary-verified");
@@ -169,22 +144,6 @@ function getInitials(name) {
     .join("");
 }
 
-function getProfilePictureUrl(path) {
-  if (!path) {
-    return `${LANDLORD_FRONTEND_BASE}/assets/images/default-profile.png`;
-  }
-
-  if (
-    path.startsWith("http://") ||
-    path.startsWith("https://") ||
-    path.startsWith("/")
-  ) {
-    return path;
-  }
-
-  return `/SilipMunti/backend/${path}`;
-}
-
 function getListingImage(listing) {
   const firstImage = listing.images?.[0]?.image_url;
 
@@ -192,7 +151,7 @@ function getListingImage(listing) {
     return firstImage;
   }
 
-  return `${LANDLORD_FRONTEND_BASE}/assets/images/property-placeholder.png`;
+  return `${LANDLORD_FRONTEND_BASE}/assets/images/property-placeholder.svg`;
 }
 
 function showDashboardMessage(message, type = "error") {
@@ -277,16 +236,7 @@ async function loadAuthenticatedLandlord() {
   landlordTopbarName.textContent = fullName;
   dropdownLandlordName.textContent = fullName;
 
-  landlordProfilePicture.src = getProfilePictureUrl(user.profile_picture);
-  dropdownLandlordPicture.src = getProfilePictureUrl(user.profile_picture);
-
-  landlordProfilePicture.addEventListener(
-    "error",
-    () => {
-      landlordProfilePicture.src = `${LANDLORD_FRONTEND_BASE}/assets/images/default-profile.png`;
-    },
-    { once: true },
-  );
+  window.SilipMuntiLandlordShell?.setLandlordProfile(user);
 
   return user;
 }
@@ -328,7 +278,7 @@ function updateListingStatistics() {
   totalListingsElement.textContent = counts.total;
   verifiedListingsElement.textContent = counts.verified;
   pendingListingsElement.textContent = counts.pending;
-  sidebarListingCount.textContent = counts.total;
+  window.SilipMuntiLandlordShell?.setListingCount(counts.total);
 
   summaryTotal.textContent = counts.total;
   summaryVerified.textContent = counts.verified;
@@ -484,7 +434,6 @@ function renderRecentListings(listings = landlordListings) {
               <img
                 src="${escapeHtml(getListingImage(listing))}"
                 alt="${escapeHtml(listing.title)}"
-                onerror="this.src='${LANDLORD_FRONTEND_BASE}/assets/images/property-placeholder.png'"
               />
 
               <div>
@@ -529,6 +478,16 @@ function renderRecentListings(listings = landlordListings) {
       `;
     })
     .join("");
+
+  recentListingsBody.querySelectorAll(".property-cell img").forEach((image) => {
+    image.addEventListener(
+      "error",
+      () => {
+        image.src = `${LANDLORD_FRONTEND_BASE}/assets/images/property-placeholder.svg`;
+      },
+      { once: true },
+    );
+  });
 }
 
 function getActiveInquiries() {
@@ -547,8 +506,7 @@ function updateInquiryStatistics() {
     0,
   );
 
-  sidebarMessageCount.textContent = unreadMessages;
-  sidebarMessageCount.classList.toggle("hidden", unreadMessages < 1);
+  window.SilipMuntiLandlordShell?.setMessageCount(unreadMessages);
 }
 
 function renderRecentInquiries(inquiries = landlordInquiries) {

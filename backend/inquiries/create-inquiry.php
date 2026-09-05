@@ -1,13 +1,14 @@
 <?php
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
+header('X-Content-Type-Options: nosniff');
 
-require_once '../config/database.php';
-require_once '../middleware/auth.php';
+require_once __DIR__ . '/../middleware/auth.php';
+require_once __DIR__ . '/../security/csrf.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-
     echo json_encode([
         'success' => false,
         'message' => 'Method not allowed.'
@@ -17,11 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $renter = require_role($pdo, ['renter']);
 
-$data = json_decode(file_get_contents('php://input'), true);
+require_csrf_token();
+
+$data = json_decode(
+    file_get_contents('php://input'),
+    true
+);
 
 if (!is_array($data)) {
     http_response_code(400);
-
     echo json_encode([
         'success' => false,
         'message' => 'Invalid JSON data.'
@@ -30,11 +35,13 @@ if (!is_array($data)) {
 }
 
 $listingId = $data['listing_id'] ?? '';
-$messageText = trim($data['message_text'] ?? '');
+$rawMessageText = $data['message_text'] ?? '';
+$messageText = is_string($rawMessageText)
+    ? trim($rawMessageText)
+    : '';
 
 if (!ctype_digit((string) $listingId) || (int) $listingId < 1) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Valid listing ID is required.'
@@ -44,7 +51,6 @@ if (!ctype_digit((string) $listingId) || (int) $listingId < 1) {
 
 if ($messageText === '') {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Message is required.'
@@ -54,7 +60,6 @@ if ($messageText === '') {
 
 if (mb_strlen($messageText) > 2000) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Message must not exceed 2000 characters.'
@@ -69,8 +74,8 @@ $listingStmt = $pdo->prepare("
         title
     FROM listings
     WHERE id = :listing_id
-        AND verification_status = 'verified'
-        AND deleted_at IS NULL
+      AND verification_status = 'verified'
+      AND deleted_at IS NULL
     LIMIT 1
 ");
 
@@ -82,7 +87,6 @@ $listing = $listingStmt->fetch();
 
 if (!$listing) {
     http_response_code(404);
-
     echo json_encode([
         'success' => false,
         'message' => 'Listing not found.'
@@ -99,8 +103,8 @@ try {
             inquiry_status
         FROM inquiries
         WHERE listing_id = :listing_id
-            AND renter_id = :renter_id
-            AND deleted_at IS NULL
+          AND renter_id = :renter_id
+          AND deleted_at IS NULL
         LIMIT 1
         FOR UPDATE
     ");
@@ -208,7 +212,6 @@ try {
     $pdo->commit();
 
     http_response_code($isNewInquiry ? 201 : 200);
-
     echo json_encode([
         'success' => true,
         'message' => $isNewInquiry
@@ -221,13 +224,14 @@ try {
             'inquiry_status' => 'pending'
         ]
     ]);
-} catch (PDOException $e) {
+} catch (Throwable $exception) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
 
-    http_response_code(500);
+    error_log($exception->getMessage());
 
+    http_response_code(500);
     echo json_encode([
         'success' => false,
         'message' => 'Unable to create inquiry.'

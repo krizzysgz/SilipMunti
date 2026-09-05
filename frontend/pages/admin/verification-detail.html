@@ -8,7 +8,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
-    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css" />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css?v=4" />
   </head>
 
   <body>
@@ -35,11 +35,10 @@
           </div>
 
           <div class="admin-topbar-profile">
-            <img
-              id="admin-profile-picture"
-              src="/SilipMunti/frontend/assets/images/default-profile.png"
-              alt="Admin profile"
-            />
+            <span class="admin-profile-avatar" id="admin-profile-avatar" aria-label="Admin profile picture">
+              <img id="admin-profile-picture" alt="" hidden />
+              <span id="admin-profile-initials" aria-hidden="true">A</span>
+            </span>
             <div>
               <strong id="admin-name">Admin</strong>
               <span>Administrator</span>
@@ -52,22 +51,16 @@
             <div>
               <span class="admin-eyebrow">Landlord profile</span>
               <h1 id="landlord-name">Verification details</h1>
-              <p id="landlord-email">
-                Review documents submitted by this landlord.
-              </p>
+              <p id="landlord-email">Review documents submitted by this landlord.</p>
             </div>
-            <span class="admin-status not-submitted" id="landlord-status"
-              >Loading</span
-            >
+            <span class="admin-status not-submitted" id="landlord-status">Loading</span>
           </div>
 
           <div class="admin-message hidden" id="admin-message">Message</div>
 
           <section class="admin-detail-hero">
             <div class="admin-landlord-profile">
-              <div class="admin-landlord-avatar large" id="landlord-avatar">
-                L
-              </div>
+              <div class="admin-landlord-avatar large" id="landlord-avatar">L</div>
               <div>
                 <strong id="hero-landlord-name">Landlord</strong>
                 <span id="hero-landlord-email">Email</span>
@@ -92,15 +85,9 @@
             <div class="admin-panel-header">
               <div>
                 <h2>Required documents</h2>
-                <p>
-                  Valid ID, barangay clearance, and land title are required.
-                </p>
+                <p>Valid ID, barangay clearance, and land title are required.</p>
               </div>
-              <button
-                type="button"
-                class="admin-refresh-button"
-                id="refresh-button"
-              >
+              <button type="button" class="admin-refresh-button" id="refresh-button">
                 <i class="fa-solid fa-rotate-right"></i>
                 <span>Refresh</span>
               </button>
@@ -121,9 +108,7 @@
         </button>
         <span class="admin-eyebrow">Reject document</span>
         <h2 id="reject-modal-title">Reject verification document?</h2>
-        <p>
-          Add a clear reason so the landlord knows what document to resubmit.
-        </p>
+        <p>Add a clear reason so the landlord knows what document to resubmit.</p>
         <textarea
           id="rejection-reason"
           rows="5"
@@ -140,8 +125,8 @@
       </div>
     </div>
 
-    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-verification-detail.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-verification-detail.js?v=3"></script>
   </body>
 </html>

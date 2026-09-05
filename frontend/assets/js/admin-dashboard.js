@@ -1,4 +1,9 @@
 (function () {
+  "use strict";
+
+  if (window.SilipMuntiAdminDashboardInitialized) return;
+  window.SilipMuntiAdminDashboardInitialized = true;
+
   const API_ROOT = "/SilipMunti/backend";
   const FRONTEND_ROOT = "/SilipMunti/frontend";
 
@@ -11,6 +16,7 @@
   const messageBox = document.querySelector("#admin-message");
   const recentDocumentsBody = document.querySelector("#recent-documents-body");
   const topbarSearch = document.querySelector("#topbar-search");
+  const actionEmptyState = document.querySelector("#admin-action-empty");
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -26,6 +32,12 @@
 
     messageBox.textContent = message;
     messageBox.className = `admin-message ${type}`;
+  }
+
+  function hideMessage() {
+    if (!messageBox) return;
+    messageBox.textContent = "";
+    messageBox.className = "admin-message hidden";
   }
 
   function setText(selector, value) {
@@ -56,20 +68,67 @@
     return labels[type] || "Document";
   }
 
+  function getInitials(firstName, lastName) {
+    const initials = `${String(firstName ?? "").charAt(0)}${String(
+      lastName ?? "",
+    ).charAt(0)}`.toUpperCase();
+
+    return initials || "A";
+  }
+
+  function resolveProfileUrl(profilePicture) {
+    const value = String(profilePicture ?? "").trim();
+    if (!value) return null;
+
+    if (/^(https?:|data:|blob:)/i.test(value) || value.startsWith("/")) {
+      return value;
+    }
+
+    if (value.startsWith("SilipMunti/")) return `/${value}`;
+    if (value.startsWith("backend/")) return `/SilipMunti/${value}`;
+
+    return `${API_ROOT}/${value.replace(/^\/+/, "")}`;
+  }
+
+  function setProfilePicture(profilePicture, initials) {
+    const avatar = document.querySelector("#admin-profile-avatar");
+    const picture = document.querySelector("#admin-profile-picture");
+    const initialsElement = document.querySelector("#admin-profile-initials");
+
+    if (!avatar || !picture || !initialsElement) return;
+
+    initialsElement.textContent = initials;
+    avatar.classList.remove("has-image");
+    picture.hidden = true;
+    picture.removeAttribute("src");
+
+    const profileUrl = resolveProfileUrl(profilePicture);
+    if (!profileUrl) return;
+
+    picture.onload = () => {
+      picture.hidden = false;
+      avatar.classList.add("has-image");
+    };
+
+    picture.onerror = () => {
+      picture.hidden = true;
+      picture.removeAttribute("src");
+      avatar.classList.remove("has-image");
+    };
+
+    picture.src = profileUrl;
+  }
+
   function hydrateAdmin(user) {
     const fullName = `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim();
     const displayName = fullName || "Admin";
-    const profileUrl = user.profile_picture
-      ? user.profile_picture.startsWith("/")
-        ? user.profile_picture
-        : `${API_ROOT}/${user.profile_picture}`
-      : `${FRONTEND_ROOT}/assets/images/default-profile.png`;
 
     setText("#admin-name", displayName);
     setText("#admin-heading-name", displayName.split(" ")[0] || "Admin");
-
-    const picture = document.querySelector("#admin-profile-picture");
-    if (picture) picture.src = profileUrl;
+    setProfilePicture(
+      user.profile_picture,
+      getInitials(user.first_name, user.last_name),
+    );
   }
 
   async function requireAdmin() {
@@ -94,7 +153,13 @@
       credentials: "include",
       cache: "no-store",
     });
-    const result = await response.json();
+    let result;
+
+    try {
+      result = await response.json();
+    } catch (error) {
+      throw new Error("The server returned an invalid response.");
+    }
 
     if (!response.ok || !result.success) {
       throw new Error(result.message || "Unable to load admin data.");
@@ -133,23 +198,35 @@
       .map(
         (document) => `
           <tr>
-            <td>
+            <td data-label="Landlord">
               <div class="admin-user-cell">
                 <strong>${escapeHtml(document.landlord_name)}</strong>
                 <span>${escapeHtml(document.landlord_email)}</span>
               </div>
             </td>
-            <td>${escapeHtml(formatDocumentType(document.document_type))}</td>
-            <td>
+            <td data-label="Document">${escapeHtml(formatDocumentType(document.document_type))}</td>
+            <td data-label="Status">
               <span class="admin-status ${escapeHtml(document.verification_status)}">
                 ${escapeHtml(document.verification_status)}
               </span>
             </td>
-            <td>${escapeHtml(formatDate(document.created_at))}</td>
+            <td data-label="Submitted">${escapeHtml(formatDate(document.created_at))}</td>
           </tr>
         `,
       )
       .join("");
+  }
+
+  function renderDocumentsError(message) {
+    if (!recentDocumentsBody) return;
+
+    recentDocumentsBody.innerHTML = `
+      <tr>
+        <td colspan="4" class="admin-table-message">
+          ${escapeHtml(message || "Unable to load verification requests.")}
+        </td>
+      </tr>
+    `;
   }
 
   async function loadDocuments() {
@@ -177,36 +254,32 @@
   }
 
   async function loadListings() {
-    try {
-      const result = await fetchJson(endpoints.listings);
-      const listings = extractArray(result, ["listings"]);
-      setText("#total-listings", listings.length);
-    } catch (error) {
-      setText("#total-listings", "0");
-    }
+    const result = await fetchJson(endpoints.listings);
+    const listings = extractArray(result, ["listings"]);
+    setText("#total-listings", listings.length);
   }
 
   async function loadUsers() {
-    try {
-      const result = await fetchJson(endpoints.users);
-      const users = extractArray(result, ["users"]);
-      setText("#total-users", users.length);
-    } catch (error) {
-      setText("#total-users", "0");
-    }
+    const result = await fetchJson(endpoints.users);
+    const users = extractArray(result, ["users"]);
+    setText("#total-users", users.length);
   }
 
   function setupSearch() {
     topbarSearch?.addEventListener("input", () => {
       const keyword = topbarSearch.value.trim().toLowerCase();
+      let visibleCards = 0;
 
       document.querySelectorAll(".admin-action-card").forEach((card) => {
         const searchable = card.dataset.searchText || card.textContent || "";
-        card.classList.toggle(
-          "hidden",
-          keyword !== "" && !searchable.toLowerCase().includes(keyword),
-        );
+        const isHidden =
+          keyword !== "" && !searchable.toLowerCase().includes(keyword);
+
+        card.classList.toggle("hidden", isHidden);
+        if (!isHidden) visibleCards += 1;
       });
+
+      actionEmptyState?.classList.toggle("hidden", visibleCards > 0);
     });
   }
 
@@ -214,12 +287,40 @@
     const admin = await requireAdmin();
     if (!admin) return;
 
+    hideMessage();
     setupSearch();
 
-    try {
-      await Promise.all([loadDocuments(), loadListings(), loadUsers()]);
-    } catch (error) {
-      showMessage(error.message || "Unable to load dashboard data.", "error");
+    const results = await Promise.allSettled([
+      loadDocuments(),
+      loadListings(),
+      loadUsers(),
+    ]);
+
+    const [documentsResult, listingsResult, usersResult] = results;
+
+    if (documentsResult.status === "rejected") {
+      setText("#total-documents", "0");
+      setText("#pending-documents", "0");
+      renderDocumentsError(documentsResult.reason?.message);
+    }
+
+    if (listingsResult.status === "rejected") {
+      setText("#total-listings", "0");
+    }
+
+    if (usersResult.status === "rejected") {
+      setText("#total-users", "0");
+    }
+
+    const failedRequests = results.filter(
+      (result) => result.status === "rejected",
+    ).length;
+
+    if (failedRequests > 0) {
+      showMessage(
+        `${failedRequests} dashboard data source${failedRequests > 1 ? "s" : ""} could not be loaded. Please refresh the page.`,
+        "error",
+      );
     }
   }
 

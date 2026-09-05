@@ -654,6 +654,222 @@ select {
   }
 }
 
+/* Shared sign-in prompt for protected renter actions on public pages. */
+body.sm-auth-prompt-open {
+  overflow: hidden;
+}
+
+.sm-auth-prompt {
+  position: fixed;
+  z-index: 5000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.sm-auth-prompt.hidden {
+  display: none;
+}
+
+.sm-auth-prompt-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgba(8, 15, 43, 0.58);
+  backdrop-filter: blur(4px);
+  cursor: default;
+}
+
+.sm-auth-prompt-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 440px);
+  padding: 34px;
+  border: 1px solid #e0e5f2;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(8, 20, 64, 0.25);
+  animation: sm-auth-prompt-in 180ms ease-out;
+}
+
+.sm-auth-prompt-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid #e0e5f2;
+  border-radius: 50%;
+  place-items: center;
+  color: #62708b;
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+.sm-auth-prompt-close:hover {
+  border-color: #c8d1e8;
+  color: #1737c7;
+  background: #f6f8ff;
+}
+
+.sm-auth-prompt-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+  place-items: center;
+  color: #1737c7;
+  background: #eef2ff;
+  font-size: 1.1rem;
+}
+
+.sm-auth-prompt-label {
+  margin: 0 0 8px;
+  color: #1737c7;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.sm-auth-prompt-card h2 {
+  margin: 0;
+  color: #111d48;
+  font-size: clamp(1.35rem, 4vw, 1.65rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.sm-auth-prompt-card
+  > p:not(.sm-auth-prompt-label):not(.sm-auth-prompt-register) {
+  margin: 12px 0 0;
+  color: #66728a;
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.sm-auth-prompt-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.sm-auth-prompt-cancel,
+.sm-auth-prompt-login {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 11px;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.sm-auth-prompt-cancel {
+  border: 1px solid #d7deee;
+  color: #394663;
+  background: #ffffff;
+}
+
+.sm-auth-prompt-login {
+  border: 1px solid #1737c7;
+  color: #ffffff;
+  background: #1737c7;
+}
+
+.sm-auth-prompt-cancel:hover,
+.sm-auth-prompt-login:hover {
+  transform: translateY(-1px);
+}
+
+.sm-auth-prompt-cancel:hover {
+  border-color: #bbc7e2;
+  background: #f8f9fd;
+}
+
+.sm-auth-prompt-login:hover {
+  background: #102cab;
+  box-shadow: 0 10px 22px rgba(23, 55, 199, 0.22);
+}
+
+.sm-auth-prompt-register {
+  margin: 18px 0 0;
+  color: #778299;
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.sm-auth-prompt-register a {
+  color: #1737c7;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sm-auth-prompt-register a:hover {
+  text-decoration: underline;
+}
+
+@keyframes sm-auth-prompt-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .sm-auth-prompt {
+    padding: 16px;
+  }
+
+  .sm-auth-prompt-card {
+    padding: 28px 22px 24px;
+    border-radius: 16px;
+  }
+
+  .sm-auth-prompt-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-auth-prompt-card {
+    animation: none;
+  }
+
+  .sm-auth-prompt-close,
+  .sm-auth-prompt-cancel,
+  .sm-auth-prompt-login {
+    transition: none;
+  }
+}
+
 @media (max-width: 850px) {
   .navbar-content.open {
     display: flex !important;

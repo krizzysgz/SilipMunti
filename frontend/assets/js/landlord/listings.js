@@ -64,9 +64,13 @@
   const topbarLogoutButton = document.querySelector("#topbar-logout-button");
 
   const notificationButton = document.querySelector("#notification-button");
+  const pagination = document.querySelector("#landlord-listings-pagination");
+
+  const PAGE_SIZE = 6;
 
   let landlordListings = [];
   let listingToDelete = null;
+  let currentPage = 1;
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -140,7 +144,7 @@
 
   function getProfilePictureUrl(profilePicture) {
     if (!profilePicture) {
-      return `${FRONTEND_PATH}/assets/images/default-profile.png`;
+      return `${FRONTEND_PATH}/assets/images/default-profile.svg`;
     }
 
     if (
@@ -172,6 +176,7 @@
     listingsGrid?.classList.add("hidden");
     emptyState?.classList.add("hidden");
     errorState?.classList.add("hidden");
+    pagination?.classList.add("hidden");
   }
 
   function showListingsState() {
@@ -186,6 +191,7 @@
     listingsGrid?.classList.add("hidden");
     errorState?.classList.add("hidden");
     emptyState?.classList.remove("hidden");
+    pagination?.classList.add("hidden");
 
     if (emptyMessage) {
       emptyMessage.textContent = message;
@@ -197,6 +203,7 @@
     listingsGrid?.classList.add("hidden");
     emptyState?.classList.add("hidden");
     errorState?.classList.remove("hidden");
+    pagination?.classList.add("hidden");
 
     if (errorMessage) {
       errorMessage.textContent = message;
@@ -238,8 +245,88 @@
     }
 
     if (sidebarListingCount) {
-      sidebarListingCount.textContent = total;
+      window.SilipMuntiLandlordShell?.setListingCount(total);
     }
+  }
+
+  function getPaginationPages(totalPages) {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const pages = [1];
+    let start = Math.max(2, currentPage - 1);
+    let end = Math.min(totalPages - 1, currentPage + 1);
+
+    if (currentPage <= 4) end = 5;
+    if (currentPage >= totalPages - 3) start = totalPages - 4;
+    if (start > 2) pages.push("ellipsis-start");
+    for (let page = start; page <= end; page += 1) pages.push(page);
+    if (end < totalPages - 1) pages.push("ellipsis-end");
+    pages.push(totalPages);
+    return pages;
+  }
+
+  function renderPagination(totalItems) {
+    if (!pagination) return;
+
+    if (totalItems < 1) {
+      pagination.classList.add("hidden");
+      pagination.innerHTML = "";
+      return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+    const pageButtons = getPaginationPages(totalPages)
+      .map((page) => {
+        if (typeof page !== "number") {
+          return '<span class="landlord-page-ellipsis" aria-hidden="true">…</span>';
+        }
+
+        const active = page === currentPage;
+        return `
+          <button
+            type="button"
+            class="landlord-page-button${active ? " active" : ""}"
+            data-page="${page}"
+            aria-label="Go to page ${page}"
+            ${active ? 'aria-current="page"' : ""}
+          >${page}</button>
+        `;
+      })
+      .join("");
+
+    pagination.innerHTML = `
+      <span class="landlord-pagination-info">
+        Showing <strong>${start}–${end}</strong> of
+        <strong>${totalItems}</strong> ${totalItems === 1 ? "property" : "properties"}
+      </span>
+      <div class="landlord-pagination-controls">
+        <button
+          type="button"
+          class="landlord-page-button previous"
+          data-page="${currentPage - 1}"
+          ${currentPage === 1 ? "disabled" : ""}
+        >
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+          <span>Previous</span>
+        </button>
+        ${pageButtons}
+        <button
+          type="button"
+          class="landlord-page-button next"
+          data-page="${currentPage + 1}"
+          ${currentPage === totalPages ? "disabled" : ""}
+        >
+          <span>Next</span>
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    `;
+    pagination.classList.remove("hidden");
   }
 
   function createListingCard(listing) {
@@ -446,6 +533,16 @@
 
   function renderListings() {
     const filteredListings = getFilteredListings();
+    const totalPages = Math.max(
+      1,
+      Math.ceil(filteredListings.length / PAGE_SIZE),
+    );
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const pageListings = filteredListings.slice(
+      startIndex,
+      startIndex + PAGE_SIZE,
+    );
 
     if (resultText) {
       const total = filteredListings.length;
@@ -468,9 +565,10 @@
       return;
     }
 
-    listingsGrid.innerHTML = filteredListings.map(createListingCard).join("");
+    listingsGrid.innerHTML = pageListings.map(createListingCard).join("");
 
     showListingsState();
+    renderPagination(filteredListings.length);
   }
 
   async function loadCurrentLandlord() {
@@ -499,17 +597,9 @@
       .filter(Boolean)
       .join(" ");
 
-    const profilePicture = getProfilePictureUrl(user.profile_picture);
-
     const topbarName = document.querySelector("#landlord-topbar-name");
 
     const dropdownName = document.querySelector("#dropdown-landlord-name");
-
-    const topbarPicture = document.querySelector("#landlord-profile-picture");
-
-    const dropdownPicture = document.querySelector(
-      "#dropdown-landlord-picture",
-    );
 
     if (topbarName) {
       topbarName.textContent = fullName || "Landlord";
@@ -519,13 +609,7 @@
       dropdownName.textContent = fullName || "Landlord";
     }
 
-    if (topbarPicture) {
-      topbarPicture.src = profilePicture;
-    }
-
-    if (dropdownPicture) {
-      dropdownPicture.src = profilePicture;
-    }
+    window.SilipMuntiLandlordShell?.setLandlordProfile(user);
 
     return user;
   }
@@ -606,16 +690,19 @@
     `;
 
     try {
-      const response = await fetch(DELETE_LISTING_API, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await window.SilipMuntiSession.secureFetch(
+        DELETE_LISTING_API,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            listing_id: listingId,
+          }),
         },
-        credentials: "include",
-        body: JSON.stringify({
-          listing_id: listingId,
-        }),
-      });
+      );
 
       const result = await response.json();
 
@@ -647,18 +734,46 @@
   }
 
   function initializeFilters() {
-    listingSearch?.addEventListener("input", renderListings);
+    listingSearch?.addEventListener("input", () => {
+      currentPage = 1;
+      renderListings();
+    });
 
-    verificationFilter?.addEventListener("change", renderListings);
+    verificationFilter?.addEventListener("change", () => {
+      currentPage = 1;
+      renderListings();
+    });
 
-    availabilityFilter?.addEventListener("change", renderListings);
+    availabilityFilter?.addEventListener("change", () => {
+      currentPage = 1;
+      renderListings();
+    });
 
     topbarSearch?.addEventListener("input", () => {
       if (listingSearch) {
         listingSearch.value = topbarSearch.value;
       }
 
+      currentPage = 1;
       renderListings();
+    });
+
+    pagination?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-page]");
+      if (!button || button.disabled) return;
+
+      const requestedPage = Number(button.dataset.page);
+      const totalPages = Math.max(
+        1,
+        Math.ceil(getFilteredListings().length / PAGE_SIZE),
+      );
+      if (!Number.isInteger(requestedPage)) return;
+
+      currentPage = Math.min(Math.max(1, requestedPage), totalPages);
+      renderListings();
+      document
+        .querySelector(".listings-management-card")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
 

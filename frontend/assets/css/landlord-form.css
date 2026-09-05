@@ -178,6 +178,13 @@
   color: var(--red);
   font-size: 11px;
 }
+
+.field-help {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .field-meta {
   display: flex;
   justify-content: space-between;

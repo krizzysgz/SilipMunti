@@ -234,18 +234,21 @@
   async function reviewDocument(documentId, action, reason = "") {
     hideMessage();
 
-    const response = await fetch(endpoints.reviewDocument, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await window.SilipMuntiSession.secureFetch(
+      endpoints.reviewDocument,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          document_id: Number(documentId),
+          action,
+          rejection_reason: reason,
+        }),
       },
-      body: JSON.stringify({
-        document_id: Number(documentId),
-        action,
-        rejection_reason: reason,
-      }),
-    });
+    );
 
     const result = await response.json();
 
@@ -345,7 +348,7 @@
       ? user.profile_picture.startsWith("/")
         ? user.profile_picture
         : `${API_ROOT}/${user.profile_picture}`
-      : `${FRONTEND_ROOT}/assets/images/default-profile.png`;
+      : `${FRONTEND_ROOT}/assets/images/default-profile.svg`;
 
     document.querySelector("#admin-name").textContent = displayName;
     document.querySelector("#admin-profile-picture").src = profileUrl;

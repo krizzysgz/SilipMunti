@@ -17,10 +17,14 @@
   const deleteModal = document.querySelector("#delete-modal");
   const deleteModalTitle = document.querySelector("#delete-modal-title");
   const deleteConfirm = document.querySelector("#delete-confirm");
+  const pagination = document.querySelector("#users-pagination");
+
+  const PAGE_SIZE = 10;
 
   let users = [];
   let deleteTarget = null;
   let searchTimer = null;
+  let currentPage = 1;
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -80,7 +84,7 @@
 
   function getProfileUrl(user) {
     if (!user.profilePicture) {
-      return `${FRONTEND_ROOT}/assets/images/default-profile.png`;
+      return `${FRONTEND_ROOT}/assets/images/default-profile.svg`;
     }
 
     return user.profilePicture.startsWith("/")
@@ -108,8 +112,81 @@
     );
   }
 
+  function getPaginationPages(totalPages) {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const pages = [1];
+    let start = Math.max(2, currentPage - 1);
+    let end = Math.min(totalPages - 1, currentPage + 1);
+
+    if (currentPage <= 4) end = 5;
+    if (currentPage >= totalPages - 3) start = totalPages - 4;
+    if (start > 2) pages.push("ellipsis-start");
+    for (let page = start; page <= end; page += 1) pages.push(page);
+    if (end < totalPages - 1) pages.push("ellipsis-end");
+    pages.push(totalPages);
+    return pages;
+  }
+
+  function renderPagination(totalItems) {
+    if (!pagination) return;
+
+    if (totalItems < 1) {
+      pagination.classList.add("hidden");
+      pagination.innerHTML = "";
+      return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+    const pageButtons = getPaginationPages(totalPages)
+      .map((page) => {
+        if (typeof page !== "number") {
+          return '<span class="admin-page-ellipsis" aria-hidden="true">…</span>';
+        }
+
+        const active = page === currentPage;
+        return `
+          <button type="button" class="admin-page-button${active ? " active" : ""}"
+            data-page="${page}" aria-label="Go to page ${page}"
+            ${active ? 'aria-current="page"' : ""}>${page}</button>
+        `;
+      })
+      .join("");
+
+    pagination.innerHTML = `
+      <span class="admin-pagination-info">
+        Showing <strong>${start}–${end}</strong> of
+        <strong>${totalItems}</strong> ${totalItems === 1 ? "user" : "users"}
+      </span>
+      <div class="admin-pagination-controls">
+        <button type="button" class="admin-page-button previous"
+          data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+          <span>Previous</span>
+        </button>
+        ${pageButtons}
+        <button type="button" class="admin-page-button next"
+          data-page="${currentPage + 1}" ${currentPage === totalPages ? "disabled" : ""}>
+          <span>Next</span>
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    `;
+    pagination.classList.remove("hidden");
+  }
+
   function renderUsers() {
     updateSummary();
+    const totalPages = Math.max(1, Math.ceil(users.length / PAGE_SIZE));
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const pageUsers = users.slice(startIndex, startIndex + PAGE_SIZE);
+    renderPagination(users.length);
 
     if (users.length < 1) {
       tableBody.innerHTML = `
@@ -120,7 +197,7 @@
       return;
     }
 
-    tableBody.innerHTML = users
+    tableBody.innerHTML = pageUsers
       .map((user) => {
         const isDeleted = Boolean(user.deletedAt);
 
@@ -198,6 +275,7 @@
   async function loadUsers() {
     hideMessage();
     refreshButton.disabled = true;
+    pagination?.classList.add("hidden");
     tableBody.innerHTML = `
       <tr>
         <td colspan="6" class="admin-table-message">Loading users...</td>
@@ -226,6 +304,7 @@
       renderUsers();
     } catch (error) {
       users = [];
+      pagination?.classList.add("hidden");
       updateSummary();
       tableBody.innerHTML = `
         <tr>
@@ -239,7 +318,7 @@
   }
 
   async function sendUserAction(endpoint, userId) {
-    const response = await fetch(endpoint, {
+    const response = await window.SilipMuntiSession.secureFetch(endpoint, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -286,28 +365,38 @@
       return null;
     }
 
-    const fullName = `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim();
-    const displayName = fullName || "Admin";
-    const profileUrl = user.profile_picture
-      ? user.profile_picture.startsWith("/")
-        ? user.profile_picture
-        : `${API_ROOT}/${user.profile_picture}`
-      : `${FRONTEND_ROOT}/assets/images/default-profile.png`;
-
-    document.querySelector("#admin-name").textContent = displayName;
-    document.querySelector("#admin-profile-picture").src = profileUrl;
+    window.SilipMuntiAdminShell?.setAdminProfile(user);
 
     return user;
   }
 
   function setupEvents() {
     refreshButton.addEventListener("click", loadUsers);
-    roleFilter.addEventListener("change", loadUsers);
-    recordStatusFilter.addEventListener("change", loadUsers);
+    roleFilter.addEventListener("change", () => {
+      currentPage = 1;
+      loadUsers();
+    });
+    recordStatusFilter.addEventListener("change", () => {
+      currentPage = 1;
+      loadUsers();
+    });
 
     topbarSearch.addEventListener("input", () => {
       window.clearTimeout(searchTimer);
+      currentPage = 1;
       searchTimer = window.setTimeout(loadUsers, 350);
+    });
+
+    pagination?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-page]");
+      if (!button || button.disabled) return;
+
+      const requestedPage = Number(button.dataset.page);
+      const totalPages = Math.max(1, Math.ceil(users.length / PAGE_SIZE));
+      if (!Number.isInteger(requestedPage)) return;
+
+      currentPage = Math.min(Math.max(1, requestedPage), totalPages);
+      renderUsers();
     });
 
     document.addEventListener("click", async (event) => {

@@ -5,9 +5,21 @@ function env_value(string $key, ?string $default = null): ?string
     static $variables = null;
 
     if ($variables === null) {
-        $envPath = dirname(__DIR__, 2) . '/.env';
+        $envPaths = [
+            dirname(__DIR__) . '/.env',
+            dirname(__DIR__, 2) . '/.env'
+        ];
 
-        if (!is_file($envPath) || !is_readable($envPath)) {
+        $envPath = null;
+
+        foreach ($envPaths as $candidatePath) {
+            if (is_file($candidatePath) && is_readable($candidatePath)) {
+                $envPath = $candidatePath;
+                break;
+            }
+        }
+
+        if ($envPath === null) {
             throw new RuntimeException('.env file was not found.');
         }
 

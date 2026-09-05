@@ -24,7 +24,7 @@
   let loading = false;
 
   async function apiRequest(url, options = {}) {
-    const response = await fetch(url, {
+    const response = await window.SilipMuntiSession.secureFetch(url, {
       credentials: "include",
       cache: "no-store",
       ...options,

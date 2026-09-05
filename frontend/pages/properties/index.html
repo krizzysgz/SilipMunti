@@ -12,12 +12,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
 
-    <link rel="stylesheet" href="../../assets/css/global.css" />
+    <link rel="stylesheet" href="../../assets/css/global.css?v=2" />
+
+    <link rel="stylesheet" href="../../assets/css/properties.css" />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/notifications.css"
+      href="/SilipMunti/frontend/assets/css/ai-reco.css?v=3"
     />
-    <link rel="stylesheet" href="../../assets/css/properties.css" />
     <link
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/chat-bubble.css"
@@ -39,6 +40,15 @@
               Browse available rental properties from verified landlords
               throughout Muntinlupa City.
             </p>
+
+            <button
+              type="button"
+              class="sm-ai-properties-trigger"
+              data-ai-reco-open
+            >
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Help me find the right rental</span>
+            </button>
           </div>
         </div>
       </section>
@@ -199,11 +209,59 @@
         </div>
       </section>
     </main>
-
-    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/site-navbar.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/notifications.js"></script>
-    <script src="../../assets/js/properties.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/chat-bubble.js"></script>
+    <footer class="site-footer" id="about">
+      <div class="footer-container">
+        <div>
+          <img
+            class="footer-logo"
+            src="/SilipMunti/frontend/assets/images/SilipMunti.png"
+            alt="SilipMunti"
+          />
+          <p>
+            Muntinlupa's trusted marketplace for verified rental properties.
+            Find your next home with confidence and ease.
+          </p>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook"
+              ><i class="fa-brands fa-facebook"></i
+            ></a>
+            <a href="#" aria-label="Instagram"
+              ><i class="fa-brands fa-instagram"></i
+            ></a>
+            <a href="#" aria-label="TikTok"
+              ><i class="fa-brands fa-tiktok"></i
+            ></a>
+            <a href="#" aria-label="X"
+              ><i class="fa-brands fa-x-twitter"></i
+            ></a>
+          </div>
+        </div>
+        <div>
+          <h3>Quick Links</h3>
+          <a href="/SilipMunti/frontend/index.html">Home</a>
+          <a href="/SilipMunti/frontend/index.html#about">About</a>
+          <a href="/SilipMunti/frontend/pages/properties/index.html"
+            >Properties</a
+          >
+          <a href="/SilipMunti/frontend/index.html#landlords">Landlords</a>
+        </div>
+        <div>
+          <h3>Support</h3>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+        </div>
+        <div>
+          <h3>Contact Us</h3>
+          <p><i class="fa-solid fa-phone"></i> 09945443908</p>
+          <p><i class="fa-solid fa-envelope"></i> silipmunti@gmail.com</p>
+        </div>
+      </div>
+      <p class="copyright">© 2026 SilipMunti. All rights reserved.</p>
+    </footer>
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/site-navbar.js?v=3"></script>
+    <script src="../../assets/js/properties.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/ai-reco.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/chat-bubble.js?v=2"></script>
   </body>
 </html>

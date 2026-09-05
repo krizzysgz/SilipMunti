@@ -23,9 +23,14 @@
 
     <link rel="stylesheet" href="../../assets/css/global.css" />
 
-    <link rel="stylesheet" href="../../assets/css/auth.css" />
+    <link rel="stylesheet" href="../../assets/css/auth.css?v=3" />
 
-    <script src="../../assets/js/register.js" defer></script>
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+      defer
+    ></script>
+
+    <script src="../../assets/js/register.js?v=3" defer></script>
   </head>
 
   <body>
@@ -38,7 +43,7 @@
               href="../../index.html"
               aria-label="Go to homepage"
             >
-              <img src="../../assets/images/logo.png" alt="SilipMunti" />
+              <img src="../../assets/images/SilipMunti.png" alt="SilipMunti" />
             </a>
 
             <div class="auth-heading">
@@ -245,12 +250,103 @@
                 </span>
               </label>
 
-              <button id="register-button" class="login-button" type="submit">
-                <span>Create Account</span>
+              <div
+                id="registration-turnstile-section"
+                class="turnstile-section"
+                hidden
+              >
+                <div id="registration-turnstile-widget"></div>
+
+                <small
+                  id="registration-turnstile-error"
+                  class="field-error turnstile-error"
+                  aria-live="polite"
+                ></small>
+              </div>
+
+              <button
+                id="register-button"
+                class="login-button"
+                type="submit"
+                disabled
+              >
+                <span>Preparing secure registration...</span>
 
                 <i class="fa-solid fa-arrow-right"></i>
               </button>
             </form>
+
+            <section class="otp-panel hidden" id="otp-panel">
+              <div class="otp-icon" aria-hidden="true">
+                <i class="fa-solid fa-envelope-circle-check"></i>
+              </div>
+
+              <div class="otp-heading">
+                <h2>Verify your email</h2>
+                <p>
+                  Enter the 6-digit code sent to
+                  <strong id="otp-email"></strong>.
+                </p>
+              </div>
+
+              <form id="otp-form" novalidate>
+                <label class="form-field otp-field">
+                  <span>Verification code</span>
+
+                  <input
+                    id="otp"
+                    name="otp"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    placeholder="000000"
+                    required
+                  />
+
+                  <small class="field-error" data-error-for="otp"></small>
+                </label>
+
+                <button
+                  id="verify-otp-button"
+                  class="login-button"
+                  type="submit"
+                >
+                  <span>Verify and Create Account</span>
+                  <i class="fa-solid fa-circle-check"></i>
+                </button>
+              </form>
+
+              <div
+                id="resend-turnstile-section"
+                class="turnstile-section"
+                hidden
+              >
+                <div id="resend-turnstile-widget"></div>
+
+                <small
+                  id="resend-turnstile-error"
+                  class="field-error turnstile-error"
+                  aria-live="polite"
+                ></small>
+              </div>
+
+              <div class="otp-actions">
+                <button id="resend-otp-button" type="button">
+                  Resend code
+                </button>
+
+                <button id="edit-details-button" type="button">
+                  <i class="fa-solid fa-arrow-left"></i>
+                  Edit registration details
+                </button>
+              </div>
+
+              <p class="otp-note">
+                The code expires in 10 minutes. Never share it with anyone.
+              </p>
+            </section>
 
             <p class="register-link">
               Already have an account?

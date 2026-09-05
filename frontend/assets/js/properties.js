@@ -41,6 +41,7 @@ const favoriteListingIds = new Set();
 let currentUser = null;
 let currentPage = 1;
 let currentRequest = null;
+let activeLandlordId = "";
 
 const listingsPerPage = 12;
 
@@ -155,11 +156,11 @@ function updateFavoriteButton(button, listingId) {
 
 async function toggleFavorite(listingId, button) {
   if (!currentUser) {
-    const currentUrl = window.location.pathname + window.location.search;
-
-    sessionStorage.setItem("silip_munti_redirect", currentUrl);
-
-    window.location.href = "../auth/login.html";
+    window.SilipMuntiSession?.showLoginPrompt({
+      title: "Save this property",
+      message:
+        "Sign in using a renter account to add this rental to your favorites.",
+    });
 
     return;
   }
@@ -177,7 +178,13 @@ async function toggleFavorite(listingId, button) {
   button.disabled = true;
 
   try {
-    const response = await fetch(
+    if (!window.SilipMuntiSession?.secureFetch) {
+      throw new Error(
+        "Request security is unavailable. Refresh the page and try again.",
+      );
+    }
+
+    const response = await window.SilipMuntiSession.secureFetch(
       isFavorite ? REMOVE_FAVORITE_API : ADD_FAVORITE_API,
       {
         method: isFavorite ? "DELETE" : "POST",
@@ -192,6 +199,15 @@ async function toggleFavorite(listingId, button) {
     );
 
     const result = await response.json();
+
+    if (response.status === 401) {
+      currentUser = null;
+      window.SilipMuntiSession?.showLoginPrompt({
+        title: "Your session has ended",
+        message: "Sign in again to update your saved properties.",
+      });
+      return;
+    }
 
     if (!response.ok || !result.success) {
       throw new Error(result.message || "Unable to update favorite.");
@@ -266,12 +282,12 @@ function createPropertyCard(listing) {
 
   image.className = "property-image";
   image.src =
-    listing.primary_image || "../../assets/images/property-placeholder.jpg";
+    listing.primary_image || "../../assets/images/property-placeholder.svg";
   image.alt = listing.title || "Rental property";
   image.loading = "lazy";
 
   image.addEventListener("error", () => {
-    image.src = "../../assets/images/property-placeholder.jpg";
+    image.src = "../../assets/images/property-placeholder.svg";
   });
 
   const typeBadge = document.createElement("span");
@@ -464,6 +480,7 @@ function getFilterParameters() {
     min_price: minPriceInput.value,
     max_price: maxPriceInput.value,
     bedroom_no: bedroomsSelect.value,
+    landlord_id: activeLandlordId,
     sort: sortSelect.value,
     page: String(currentPage),
     limit: String(listingsPerPage),
@@ -502,6 +519,11 @@ function updatePageUrl(parameters) {
 
 function setFilterValuesFromUrl() {
   const parameters = new URLSearchParams(window.location.search);
+
+  const requestedLandlordId = parameters.get("landlord_id") ?? "";
+  activeLandlordId = /^\d+$/.test(requestedLandlordId)
+    ? requestedLandlordId
+    : "";
 
   searchInput.value = parameters.get("search") ?? "";
 
@@ -730,6 +752,7 @@ resetFilterButton.addEventListener("click", () => {
   filterForm.reset();
   sortSelect.value = "newest";
   currentPage = 1;
+  activeLandlordId = "";
 
   loadProperties(true);
 });

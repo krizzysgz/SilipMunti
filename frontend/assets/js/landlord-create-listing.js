@@ -5,7 +5,6 @@
   const endpoints = {
     createListing: `${API_ROOT}/landlord/create-listing.php`,
     getDocuments: `${API_ROOT}/landlord/get-documents.php`,
-    getListings: `${API_ROOT}/landlord/get-listings.php`,
     getRentalTypes: `${API_ROOT}/rental-types/get-all.php`,
     getNotifications: `${API_ROOT}/notifications/get-all.php?status=unread`,
     uploadImage: `${API_ROOT}/landlord/upload-listing-image.php`,
@@ -23,8 +22,18 @@
   const imagePickerHelp = document.querySelector("#image-picker-help");
   const submitButton = document.querySelector("#submit-button");
   const notificationCount = document.querySelector("#notification-count");
+  const latitudeInput = document.querySelector("#latitude");
+  const longitudeInput = document.querySelector("#longitude");
+  const mapStatus = document.querySelector("#create-map-status");
+  const mapLocateButton = document.querySelector("#create-map-locate");
+  const mapSearchInput = document.querySelector("#create-map-search");
+  const mapSearchButton = document.querySelector("#create-map-search-button");
+  const addressInput = form?.elements.address;
+  const barangayInput = form?.elements.barangay;
+  const cityInput = form?.elements.city;
 
   let selectedImages = [];
+  let mapPickerController = null;
 
   function showMessage(message, type = "error") {
     if (!messageBox) return;
@@ -56,25 +65,8 @@
       .replaceAll("'", "&#039;");
   }
 
-  function getProfileUrl(user) {
-    if (!user?.profile_picture) {
-      return `${FRONTEND_ROOT}/assets/images/default-profile.png`;
-    }
-
-    return user.profile_picture.startsWith("/")
-      ? user.profile_picture
-      : `${API_ROOT}/${user.profile_picture}`;
-  }
-
   function hydrateTopbarUser(user) {
-    const fullName = `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim();
-    const displayName = fullName || "Landlord";
-    const profileUrl = getProfileUrl(user);
-
-    document.querySelector("#landlord-topbar-name").textContent = displayName;
-    document.querySelector("#dropdown-landlord-name").textContent = displayName;
-    document.querySelector("#landlord-profile-picture").src = profileUrl;
-    document.querySelector("#dropdown-landlord-picture").src = profileUrl;
+    window.SilipMuntiLandlordShell?.setLandlordProfile(user);
   }
 
   async function loadCurrentUser() {
@@ -109,23 +101,6 @@
       notificationCount.classList.toggle("hidden", count < 1);
     } catch (error) {
       notificationCount.classList.add("hidden");
-    }
-  }
-
-  async function loadSidebarCounts() {
-    try {
-      const response = await fetch(endpoints.getListings, {
-        credentials: "include",
-        cache: "no-store",
-      });
-      const result = await response.json();
-      const listings = Array.isArray(result.data?.listings)
-        ? result.data.listings
-        : [];
-
-      window.SilipMuntiLandlordShell?.setListingCount(listings.length);
-    } catch (error) {
-      window.SilipMuntiLandlordShell?.setListingCount(0);
     }
   }
 
@@ -287,8 +262,37 @@
     return Object.values(errors).filter(Boolean).join(" ");
   }
 
+  async function setupMapPicker() {
+    if (!window.SilipMuntiMaps || !latitudeInput || !longitudeInput) return;
+
+    try {
+      mapPickerController = await window.SilipMuntiMaps.createPicker({
+        element: "#create-property-map",
+        latitude: latitudeInput.value,
+        longitude: longitudeInput.value,
+        latitudeInput,
+        longitudeInput,
+        locateButton: mapLocateButton,
+        statusElement: mapStatus,
+        searchInput: mapSearchInput,
+        searchButton: mapSearchButton,
+        addressInput,
+        barangayInput,
+        cityInput,
+      });
+    } catch (error) {
+      if (mapStatus) {
+        mapStatus.textContent =
+          "The map could not be loaded. Enter valid coordinates manually.";
+        mapStatus.dataset.type = "error";
+      }
+    }
+  }
+
   function getFormPayload() {
     const formData = new FormData(form);
+    const latitudeValue = getFieldValue(formData, "latitude");
+    const longitudeValue = getFieldValue(formData, "longitude");
 
     return {
       rental_type_id: Number(getFieldValue(formData, "rental_type_id")),
@@ -297,11 +301,13 @@
       price: Number(getFieldValue(formData, "price")),
       address: getFieldValue(formData, "address"),
       barangay: getFieldValue(formData, "barangay"),
-      latitude: Number(getFieldValue(formData, "latitude")),
-      longitude: Number(getFieldValue(formData, "longitude")),
+      latitude: latitudeValue === "" ? null : Number(latitudeValue),
+      longitude: longitudeValue === "" ? null : Number(longitudeValue),
       bedroom_no: getFieldValue(formData, "bedroom_no"),
       listing_size: getFieldValue(formData, "listing_size"),
       occupancy_limit: getFieldValue(formData, "occupancy_limit"),
+      availability_status:
+        getFieldValue(formData, "availability_status") || "available",
       nearby_establishments: splitList(formData.get("nearby_establishments")),
       transport_routes: splitList(formData.get("transport_routes")),
       amenities: splitList(formData.get("amenities")),
@@ -310,15 +316,28 @@
 
   async function createListing() {
     const payload = getFormPayload();
+    const coordinates = window.SilipMuntiMaps?.normalizeCoordinates(
+      payload.latitude,
+      payload.longitude,
+    );
 
-    const response = await fetch(endpoints.createListing, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
+    if (!coordinates) {
+      throw new Error(
+        "Select the property location on the map or enter valid coordinates.",
+      );
+    }
+
+    const response = await window.SilipMuntiSession.secureFetch(
+      endpoints.createListing,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       },
-      body: JSON.stringify(payload),
-    });
+    );
 
     const result = await response.json();
 
@@ -350,11 +369,14 @@
       imageData.append("listing_id", String(listingId));
       imageData.append("image", image);
 
-      const response = await fetch(endpoints.uploadImage, {
-        method: "POST",
-        credentials: "include",
-        body: imageData,
-      });
+      const response = await window.SilipMuntiSession.secureFetch(
+        endpoints.uploadImage,
+        {
+          method: "POST",
+          credentials: "include",
+          body: imageData,
+        },
+      );
 
       const result = await response.json();
 
@@ -388,6 +410,9 @@
         setSubmitting(true, "Uploading images...");
         await uploadListingImages(listingId);
 
+        await window.SilipMuntiLandlordShell?.refreshCounts({
+          useCache: false,
+        });
         showMessage("Listing created successfully. Redirecting...", "success");
 
         window.setTimeout(() => {
@@ -407,13 +432,13 @@
     setupImageInput();
     setupFormSubmit();
 
-    await Promise.all([
-      loadNotificationCount(),
-      loadSidebarCounts(),
-      loadRentalTypes(),
-    ]);
+    await Promise.all([loadNotificationCount(), loadRentalTypes()]);
 
-    await checkVerification();
+    const isVerified = await checkVerification();
+
+    if (isVerified) {
+      await setupMapPicker();
+    }
   }
 
   initialize();

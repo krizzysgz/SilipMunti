@@ -1,4 +1,20 @@
 /* INDEX START */
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+  background: #f9d84a;
+}
+
+main {
+  background: #f8f8f8;
+}
+
 .site-header {
   position: sticky;
   top: 0;
@@ -911,8 +927,26 @@
 
 /* LANDING EXTRA SECTIONS START */
 .home-section {
+  position: relative;
   padding: 50px 0 70px;
   background: #f8f8f8;
+}
+
+.home-section:not(.reviews-section)::after {
+  content: "";
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  width: min(calc(100% - 48px), 1660px);
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    #aebaf4 8%,
+    #aebaf4 92%,
+    transparent
+  );
+  transform: translateX(-50%);
 }
 
 .home-section + .home-section {
@@ -1158,41 +1192,188 @@
   box-shadow: 0 12px 25px rgb(0 0 0 / 14%);
 }
 
-.home-landlord-card img {
+.home-landlord-photo {
+  position: relative;
+  overflow: hidden;
+  background: #eef1ff;
+}
+
+.home-landlord-photo img {
   width: 100%;
-  height: 310px;
+  height: 260px;
+  display: block;
   object-fit: cover;
   object-position: top;
 }
 
-.home-landlord-card div {
-  padding: 16px;
+.home-landlord-badge {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #064e3b;
+  background: #d1fae5;
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 5px 15px rgb(0 0 0 / 14%);
 }
 
-.home-landlord-card strong {
+.home-landlord-info {
+  display: flex;
+  min-height: 180px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 18px;
+}
+
+.home-landlord-info > strong {
   display: block;
   color: #112bc1;
   font-size: 17px;
   font-weight: 800;
 }
 
-.home-landlord-card span {
+.home-landlord-info p {
+  margin: 5px 0 0;
+  color: #202431;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.home-landlord-areas {
+  min-height: 40px;
+  margin: 8px 0 18px;
   color: #666b78;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.home-landlord-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  color: #112bc1;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.home-landlord-card:hover .home-landlord-link {
+  color: #071d91;
+}
+
+.landlord-empty-state {
+  grid-column: 1 / -1;
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: 28px;
+  border: 1px dashed #cbd3f7;
+  border-radius: 16px;
+  color: #6b7180;
+  background: #f8f9ff;
+  text-align: center;
+}
+
+.landlord-empty-state i {
+  color: #112bc1;
+  font-size: 28px;
+}
+
+.landlord-empty-state strong {
+  color: #202431;
+}
+
+.landlord-empty-state span {
   font-size: 13px;
 }
 
 .reviews-section {
   overflow: hidden;
+  padding-bottom: 70px;
 }
 
 .review-carousel {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
   gap: 24px;
+  overflow: hidden;
+  padding: 12px 0 30px;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.review-row {
+  width: 100%;
+  overflow: hidden;
+}
+
+.review-empty {
+  display: grid;
+  width: min(100% - 48px, 720px);
+  min-height: 190px;
+  margin-inline: auto;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px dashed #b8c2f4;
+  border-radius: 14px;
+  color: #666b78;
+  background: #ffffff;
+  text-align: center;
+}
+
+.review-empty i {
+  color: #112bc1;
+  font-size: 34px;
+}
+
+.review-empty strong {
+  color: #112bc1;
+  font-size: 18px;
+}
+
+.review-empty span {
+  font-size: 13px;
+}
+
+.review-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.review-track-left {
+  animation: reviewMarqueeLeft 80s linear infinite;
+}
+
+.review-track-right {
+  animation: reviewMarqueeRight 82s linear infinite;
+}
+
+.review-carousel:hover .review-track,
+.review-carousel:focus-within .review-track {
+  animation-play-state: paused;
+}
+
+.review-set {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 360px;
+  gap: 18px;
+  padding-right: 18px;
 }
 
 .review-card {
   display: flex;
+  width: 360px;
   min-height: 230px;
   flex-direction: column;
   padding: 22px 24px;
@@ -1201,8 +1382,16 @@
   border-bottom-color: #f9d84a;
   border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 12px 25px rgb(0 0 0 / 14%);
+  /* box-shadow: 0 12px 25px rgb(0 0 0 / 14%); */
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
 }
+
+/* .review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px rgb(0 0 0 / 16%);
+} */
 
 .review-top {
   display: flex;
@@ -1245,6 +1434,26 @@
   place-items: center;
   border-radius: 50%;
   background: #eef1ff;
+}
+
+@keyframes reviewMarqueeLeft {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes reviewMarqueeRight {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
 }
 
 .site-footer {
@@ -1307,8 +1516,7 @@
     min-height: 460px;
   }
 
-  .landlord-grid,
-  .review-carousel {
+  .landlord-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1351,6 +1559,11 @@
     padding: 34px 0 46px;
   }
 
+  .home-section:not(.reviews-section)::after {
+    bottom: 18px;
+    width: calc(100% - 32px);
+  }
+
   .section-heading {
     flex-direction: column;
   }
@@ -1373,8 +1586,46 @@
     width: min(380px, 84vw);
   }
 
+  .review-carousel {
+    gap: 16px;
+    padding-bottom: 20px;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000000 3%,
+      #000000 97%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000000 3%,
+      #000000 97%,
+      transparent
+    );
+  }
+
+  .review-set {
+    grid-auto-columns: min(82vw, 320px);
+    gap: 14px;
+    padding-right: 14px;
+  }
+
+  .review-card {
+    width: min(82vw, 320px);
+    min-height: 215px;
+    padding: 20px;
+  }
+
+  .review-track-left {
+    animation-duration: 36s;
+  }
+
+  .review-track-right {
+    animation-duration: 40s;
+  }
+
   .landlord-grid,
-  .review-carousel,
   .footer-container {
     grid-template-columns: 1fr;
   }
@@ -1382,6 +1633,218 @@
   .footer-container {
     width: min(100% - 32px, 1660px);
     gap: 28px;
+  }
+}
+
+.home-motion-ready .hero-content h1,
+.home-motion-ready .hero-content p,
+.home-motion-ready .search-panel {
+  opacity: 0;
+  transition:
+    opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-motion-ready .hero-content h1 {
+  transform: translateY(28px);
+  transition-delay: 0.08s;
+}
+
+.home-motion-ready .hero-content p {
+  transform: translateY(22px);
+  transition-delay: 0.2s;
+}
+
+.home-motion-ready .search-panel {
+  transform: translateY(24px) scale(0.985);
+  transition-delay: 0.34s;
+}
+
+.home-motion-ready .search-field,
+.home-motion-ready .search-button {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease,
+    box-shadow 0.2s ease;
+}
+
+.home-motion-ready .search-field:nth-child(1) {
+  transition-delay: 0.5s;
+}
+
+.home-motion-ready .search-field:nth-child(2) {
+  transition-delay: 0.58s;
+}
+
+.home-motion-ready .search-field:nth-child(3) {
+  transition-delay: 0.66s;
+}
+
+.home-motion-ready .search-button {
+  transition-delay: 0.74s;
+}
+
+.home-motion-ready .home-motion-loaded .hero-content h1,
+.home-motion-ready .home-motion-loaded .hero-content p,
+.home-motion-ready .home-motion-loaded .search-panel,
+.home-motion-ready .home-motion-loaded .search-field,
+.home-motion-ready .home-motion-loaded .search-button {
+  opacity: 1;
+  transform: none;
+}
+
+.home-motion-ready .home-motion-loaded .search-button:hover {
+  transform: translateY(-2px);
+}
+
+.home-motion-ready .home-motion-loaded .search-button:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.home-motion-loaded .hero {
+  animation: home-hero-pan 15s ease-in-out 1s infinite alternate;
+}
+
+.home-motion-ready .home-reveal-up,
+.home-motion-ready .home-reveal-left,
+.home-motion-ready .home-reveal-right,
+.home-motion-ready .home-card-reveal {
+  opacity: 0;
+  transition:
+    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+  transition-delay: var(--home-reveal-delay, 0ms);
+}
+
+.home-motion-ready .home-reveal-up,
+.home-motion-ready .home-card-reveal {
+  transform: translateY(28px);
+}
+
+.home-motion-ready .home-reveal-left {
+  transform: translateX(-34px);
+}
+
+.home-motion-ready .home-reveal-right {
+  transform: translateX(34px);
+}
+
+.home-motion-ready .home-reveal-up.is-visible,
+.home-motion-ready .home-reveal-left.is-visible,
+.home-motion-ready .home-reveal-right.is-visible,
+.home-motion-ready .home-card-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.home-motion-ready .property-card.home-card-reveal.is-visible:hover {
+  transform: translateY(-6px);
+}
+
+.home-motion-ready .location-card.home-card-reveal.is-visible:hover {
+  transform: translateY(-4px);
+}
+
+.select-wrapper select {
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.select-wrapper:hover select {
+  border-color: #c7cff5;
+  background: #f8f9ff;
+}
+
+.search-button:active,
+.carousel-button:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.section-heading a i {
+  transition: transform 0.22s ease;
+}
+
+.section-heading a:hover i {
+  transform: translateX(4px);
+}
+
+.favorite-button {
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.favorite-button:hover {
+  transform: scale(1.08);
+}
+
+.home-landlord-card {
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease;
+}
+
+.home-landlord-card img {
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-motion-ready .home-landlord-card.home-card-reveal.is-visible:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 20px 38px rgb(0 0 0 / 17%);
+}
+
+.home-landlord-card:hover img {
+  transform: scale(1.035);
+}
+
+.review-card:hover .review-top i {
+  transform: translateY(-3px) rotate(-5deg);
+}
+
+.review-top i {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes home-hero-pan {
+  from {
+    background-position: center center;
+  }
+
+  to {
+    background-position: 54% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .hero-content h1,
+  .hero-content p,
+  .search-panel,
+  .search-field,
+  .search-button,
+  .home-reveal-up,
+  .home-reveal-left,
+  .home-reveal-right,
+  .home-card-reveal,
+  .property-card,
+  .property-image,
+  .location-card,
+  .home-landlord-card,
+  .home-landlord-card img,
+  .favorite-button,
+  .review-top i {
+    animation: none;
+    transition: none;
+  }
+
+  .review-track {
+    animation-play-state: paused;
   }
 }
 /* LANDING EXTRA SECTIONS END */

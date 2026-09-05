@@ -54,7 +54,7 @@ a {
   padding: 11px 21px;
   border: 1px solid transparent;
   border-radius: 12px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
@@ -156,7 +156,7 @@ a {
   margin-bottom: 11px;
   color: #13783a;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 500;
   text-transform: uppercase;
 }
 
@@ -169,7 +169,7 @@ a {
   margin: 0 0 10px;
   color: var(--blue);
   font-size: clamp(30px, 3vw, 47px);
-  font-weight: 800;
+  font-weight: 600;
   line-height: 1.16;
 }
 
@@ -202,7 +202,7 @@ a {
 
 .property-price > span {
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .property-price small {
@@ -305,7 +305,7 @@ a {
   background: rgb(0 0 0 / 52%);
   color: #ffffff;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .gallery-more-overlay i {
@@ -380,6 +380,7 @@ a {
 .property-content-section,
 .landlord-card,
 .inquiry-card,
+.listing-review-card,
 .safety-card {
   border: 1px solid var(--border);
   border-radius: 15px;
@@ -489,6 +490,297 @@ a {
   font-size: 13px;
 }
 
+.property-reviews-section {
+  overflow: hidden;
+}
+
+.reviews-section-heading {
+  margin-bottom: 18px;
+}
+
+.reviews-section-heading .section-title {
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+
+.reviews-section-heading .section-title > span {
+  margin-top: 2px;
+}
+
+.reviews-section-heading .section-title p {
+  margin: 5px 0 0;
+  color: #6c6c6c;
+  font-size: 12px;
+}
+
+.listing-reviews-overview {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 24px;
+  padding: 22px;
+  border: 1px solid #d9e0ff;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8f9ff, #fffdf2);
+}
+
+.listing-review-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-right: 24px;
+  border-right: 1px solid #dce2f5;
+  text-align: center;
+}
+
+.listing-review-summary > span {
+  color: #686868;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.listing-review-summary > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin: 7px 0 5px;
+}
+
+.listing-review-summary strong {
+  color: var(--blue);
+  font-size: 42px;
+  line-height: 1;
+}
+
+.listing-review-summary small {
+  color: #707070;
+  font-size: 10px;
+}
+
+.listing-review-summary p {
+  margin: 0 0 7px;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.listing-rating-breakdown {
+  display: grid;
+  align-content: center;
+  gap: 9px;
+}
+
+.rating-breakdown-row {
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 10px;
+}
+
+.rating-breakdown-label {
+  color: #424242;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.rating-breakdown-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dfe3f3;
+}
+
+.rating-breakdown-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--blue), #5067e8);
+  transition: width 420ms ease;
+}
+
+.rating-breakdown-count {
+  color: #707070;
+  font-size: 10px;
+  text-align: right;
+}
+
+.listing-review-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 17px 0;
+  padding: 13px 14px;
+  border: 1px solid #e1e4ef;
+  border-radius: 10px;
+  background: #f7f8fa;
+}
+
+.listing-review-filter-bar > strong {
+  flex-shrink: 0;
+  color: #444444;
+  font-size: 11px;
+}
+
+.listing-rating-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rating-filter-button {
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid #d7dbe8;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #555555;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.rating-filter-button span {
+  margin-left: 3px;
+  color: #888888;
+}
+
+.rating-filter-button:hover,
+.rating-filter-button.active {
+  border-color: var(--blue);
+  background: #eef1ff;
+  color: var(--blue);
+}
+
+.rating-filter-button.active span {
+  color: var(--blue);
+}
+
+.listing-reviews-status {
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 11px;
+  padding: 24px;
+  border: 1px dashed #bcc6f4;
+  border-radius: 12px;
+  background: #fbfbfe;
+  color: #666666;
+  font-size: 12px;
+  text-align: center;
+}
+
+.listing-reviews-status i {
+  color: var(--blue);
+  font-size: 25px;
+}
+
+.listing-reviews-status.error {
+  border-color: #f0b8b8;
+  background: #fffafa;
+  color: #9b3434;
+}
+
+.listing-reviews-status.error i {
+  color: #d94040;
+}
+
+.listing-reviews-status.hidden,
+.listing-reviews-list.hidden {
+  display: none;
+}
+
+.listing-reviews-list {
+  display: block;
+  border-top: 1px solid #e5e7ef;
+}
+
+.renter-review-card {
+  min-width: 0;
+  padding: 22px 4px;
+  border-bottom: 1px solid #e5e7ef;
+  background: #ffffff;
+}
+
+.renter-review-card:last-child {
+  border-bottom: 0;
+}
+
+.renter-review-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.renter-review-author {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.renter-review-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 2px solid #eef1ff;
+  border-radius: 50%;
+  background: #eef1ff;
+  object-fit: cover;
+}
+
+.renter-review-meta {
+  min-width: 0;
+}
+
+.renter-review-meta strong,
+.renter-review-meta time {
+  display: block;
+}
+
+.renter-review-meta strong {
+  overflow: hidden;
+  color: #242424;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.renter-review-meta time {
+  margin-top: 3px;
+  color: #8a8a8a;
+  font-size: 9px;
+}
+
+.renter-review-rating {
+  flex-shrink: 0;
+  padding: 7px 10px;
+  border: 1px solid #cfd7ff;
+  border-radius: 7px;
+  background: #eef1ff;
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.renter-review-comment {
+  margin: 15px 0 0 56px;
+  color: #414141;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
 .property-sidebar {
   position: sticky;
   top: 116px;
@@ -498,6 +790,7 @@ a {
 
 .landlord-card,
 .inquiry-card,
+.listing-review-card,
 .safety-card {
   padding: 23px;
 }
@@ -508,7 +801,7 @@ a {
   gap: 7px;
   color: var(--blue);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 500;
   letter-spacing: 0.7px;
   text-transform: uppercase;
 }
@@ -542,7 +835,7 @@ a {
   margin: 0;
   color: #13783a;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .landlord-information p i {
@@ -569,6 +862,48 @@ a {
 .inquiry-button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+.listing-review-card {
+  position: relative;
+  overflow: hidden;
+  border-color: #d8def7;
+  background: linear-gradient(145deg, #ffffff, #f7f8ff);
+}
+
+.listing-review-card::after {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  right: -56px;
+  bottom: -62px;
+  border: 17px solid rgb(17 43 193 / 6%);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.listing-review-card h2 {
+  position: relative;
+  z-index: 1;
+  margin: 14px 0 8px;
+  color: var(--blue);
+  font-size: 20px;
+}
+
+.listing-review-card p {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 19px;
+  color: #666666;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.listing-review-button {
+  position: relative;
+  z-index: 1;
+  width: 100%;
 }
 
 .safety-card {
@@ -636,7 +971,7 @@ a {
   left: 28px;
   color: #ffffff;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .lightbox-close,
@@ -744,7 +1079,7 @@ a {
   display: block;
   margin-bottom: 8px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .inquiry-modal-card textarea {
@@ -924,6 +1259,39 @@ a {
     padding: 23px;
   }
 
+  .listing-reviews-overview {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 18px;
+  }
+
+  .listing-review-summary {
+    padding: 0 0 18px;
+    border-right: 0;
+    border-bottom: 1px solid #dce2f5;
+  }
+
+  .listing-review-filter-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .listing-rating-filters {
+    width: 100%;
+  }
+
+  .rating-filter-button {
+    flex: 1 1 calc(33.333% - 8px);
+  }
+
+  .renter-review-top {
+    align-items: flex-start;
+  }
+
+  .renter-review-comment {
+    margin-left: 0;
+  }
+
   .property-sidebar {
     grid-template-columns: 1fr;
   }
@@ -1029,7 +1397,7 @@ a {
 .navbar-links a:hover,
 .navbar-links a.active {
   color: #112bc1;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .navbar-links a.active::after {
@@ -1096,7 +1464,7 @@ a {
   background: #f9d84a;
   color: #112bc1;
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 15px;
   text-align: center;
 }
@@ -1287,5 +1655,1414 @@ a {
 @media (max-width: 640px) {
   .profile-dropdown {
     right: 0;
+  }
+}
+
+:root {
+  --blue: #1737c8;
+  --blue-dark: #0d269f;
+  --blue-deep: #081b72;
+  --blue-soft: #eef2ff;
+  --yellow: #ffd84a;
+  --text: #111827;
+  --muted: #667085;
+  --border: #e1e6f2;
+  --background: #f4f6fb;
+  --shadow-sm: 0 8px 24px rgb(24 43 99 / 7%);
+  --shadow-md: 0 18px 45px rgb(24 43 99 / 11%);
+  --shadow-blue: 0 14px 30px rgb(23 55 200 / 22%);
+}
+
+body {
+  background:
+    radial-gradient(circle at 92% 8%, rgb(255 216 74 / 12%), transparent 24rem),
+    radial-gradient(circle at 8% 32%, rgb(23 55 200 / 7%), transparent 27rem),
+    var(--background);
+  color: var(--text);
+}
+
+.property-page {
+  animation: property-page-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.property-container {
+  width: min(100% - 64px, 1460px);
+  padding-top: 34px;
+}
+
+.breadcrumbs {
+  width: fit-content;
+  margin-bottom: 28px;
+  padding: 9px 13px;
+  border: 1px solid rgb(225 230 242 / 85%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 76%);
+  box-shadow: 0 5px 18px rgb(28 43 85 / 5%);
+  backdrop-filter: blur(10px);
+  animation: property-slide-down 0.45s 0.03s ease-out both;
+}
+
+.breadcrumbs a {
+  transition: color 0.2s ease;
+}
+
+.breadcrumbs a:hover {
+  color: var(--blue-dark);
+}
+
+.property-heading {
+  margin-bottom: 30px;
+  animation: property-rise 0.55s 0.06s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.verified-label {
+  padding: 7px 11px;
+  border: 1px solid #bfe8cf;
+  border-radius: 999px;
+  background: #effbf4;
+  color: #087a44;
+  letter-spacing: 0.35px;
+}
+
+.verified-label i {
+  color: #0f9a58;
+}
+
+.property-heading h1 {
+  max-width: 900px;
+  color: #101a44;
+  font-size: clamp(31px, 3vw, 48px);
+  letter-spacing: -1.35px;
+}
+
+.property-address {
+  color: var(--muted);
+}
+
+.property-price-wrapper {
+  padding: 14px 16px 14px 20px;
+  border: 1px solid #dce3fa;
+  border-radius: 18px;
+  background: rgb(255 255 255 / 88%);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(12px);
+}
+
+.property-price > span {
+  letter-spacing: -1px;
+}
+
+.favorite-button {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #d7def6;
+  box-shadow: 0 7px 18px rgb(23 55 200 / 10%);
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.favorite-button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: var(--shadow-blue);
+}
+
+.favorite-button.active i {
+  animation: property-heart-pop 0.42s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.gallery-grid {
+  overflow: hidden;
+  border: 4px solid #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 22px 55px rgb(17 31 78 / 16%);
+  animation: property-gallery-reveal 0.72s 0.12s cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+.gallery-preview::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 65%, rgb(7 18 68 / 22%));
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.gallery-preview img {
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.4s ease;
+}
+
+.gallery-preview:hover img {
+  filter: saturate(1.05) contrast(1.02);
+  transform: scale(1.045);
+}
+
+.gallery-preview:hover::after {
+  opacity: 1;
+}
+
+.gallery-more-overlay {
+  background: linear-gradient(
+    145deg,
+    rgb(8 27 114 / 75%),
+    rgb(23 55 200 / 65%)
+  );
+  backdrop-filter: blur(3px);
+  transition: background 0.3s ease;
+}
+
+.gallery-more-overlay i {
+  transition: transform 0.3s ease;
+}
+
+.gallery-preview:hover .gallery-more-overlay i {
+  transform: scale(1.12) rotate(-3deg);
+}
+
+.property-layout {
+  gap: 30px;
+}
+
+.property-main-column {
+  gap: 22px;
+}
+
+.property-facts {
+  border-color: #dde3f1;
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  animation: property-rise 0.55s 0.18s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.property-fact {
+  min-height: 84px;
+  border-color: #edf0f7;
+  transition:
+    transform 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.fact-icon {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #dfe5ff;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #f3f6ff, #e8edff);
+  box-shadow: inset 0 1px 0 #ffffff;
+  transition:
+    transform 0.28s ease,
+    color 0.28s ease,
+    background 0.28s ease;
+}
+
+.property-fact strong {
+  color: #17296f;
+  font-size: 14px;
+}
+
+.property-fact small {
+  color: #7b8499;
+  font-weight: 600;
+}
+
+.property-content-section,
+.landlord-card,
+.inquiry-card,
+.listing-review-card,
+.safety-card {
+  border-color: #e0e5f0;
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.property-content-section {
+  padding: 28px;
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+  animation: property-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.property-main-column > .property-content-section:nth-of-type(1) {
+  animation-delay: 0.22s;
+}
+
+.property-main-column > .property-content-section:nth-of-type(2) {
+  animation-delay: 0.27s;
+}
+
+.property-main-column > .property-content-section:nth-of-type(3) {
+  animation-delay: 0.32s;
+}
+
+.property-main-column > .property-content-section:nth-of-type(4) {
+  animation-delay: 0.37s;
+}
+
+.property-main-column > .property-content-section:nth-of-type(n + 5) {
+  animation-delay: 0.42s;
+}
+
+.section-title > span {
+  width: 5px;
+  height: 27px;
+  background: linear-gradient(180deg, var(--yellow), #ffb800);
+  box-shadow: 0 4px 10px rgb(255 184 0 / 28%);
+}
+
+.section-title h2 {
+  color: #10257e;
+  font-size: 20px;
+  letter-spacing: -0.25px;
+}
+
+.property-description {
+  color: #4b5568;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.detail-chip,
+.detail-list-item {
+  border-color: #dfe5f5;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #fbfcff, #f4f6ff);
+  color: #35405a;
+  box-shadow: 0 3px 10px rgb(22 45 126 / 4%);
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.listing-reviews-overview {
+  border: 1px solid #e1e6f4;
+  border-radius: 17px;
+  background: linear-gradient(145deg, #f8faff, #ffffff);
+}
+
+.rating-breakdown-fill {
+  transform-origin: left center;
+  animation: property-rating-grow 0.8s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.rating-filter-button {
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.renter-review-card {
+  padding: 20px 0;
+  animation: property-review-reveal 0.45s ease-out backwards;
+}
+
+.renter-review-card:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.renter-review-card:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+.renter-review-avatar {
+  box-shadow: 0 5px 15px rgb(23 55 200 / 12%);
+}
+
+.property-sidebar {
+  top: 108px;
+  gap: 20px;
+}
+
+.property-sidebar > * {
+  animation: property-sidebar-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1)
+    backwards;
+}
+
+.property-sidebar > :nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.property-sidebar > :nth-child(2) {
+  animation-delay: 0.26s;
+}
+
+.property-sidebar > :nth-child(3) {
+  animation-delay: 0.32s;
+}
+
+.property-sidebar > :nth-child(4) {
+  animation-delay: 0.38s;
+}
+
+.landlord-card,
+.inquiry-card,
+.listing-review-card,
+.safety-card {
+  padding: 25px;
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.landlord-avatar {
+  border: 1px solid #dce3ff;
+  background: linear-gradient(145deg, #f4f6ff, #e6ebff);
+  box-shadow: 0 8px 18px rgb(23 55 200 / 11%);
+}
+
+.inquiry-card {
+  overflow: hidden;
+  border-color: transparent;
+  background:
+    radial-gradient(circle at 100% 0, rgb(255 216 74 / 24%), transparent 10rem),
+    linear-gradient(145deg, #1737c8, #0a218f);
+  box-shadow: var(--shadow-blue);
+}
+
+.inquiry-card .card-label,
+.inquiry-card h2,
+.inquiry-card p {
+  color: #ffffff;
+}
+
+.inquiry-card p {
+  color: rgb(255 255 255 / 78%);
+}
+
+.inquiry-card .button-blue {
+  background: var(--yellow);
+  color: #101a44;
+  box-shadow: 0 10px 22px rgb(5 17 67 / 24%);
+}
+
+.inquiry-card .button-blue:hover {
+  background: #ffe477;
+}
+
+.listing-review-card {
+  background: linear-gradient(145deg, #ffffff, #f3f6ff);
+}
+
+.safety-card {
+  border-color: #f2df98;
+  background: linear-gradient(145deg, #fffdf4, #fff8d9);
+}
+
+.safety-icon {
+  box-shadow: 0 8px 18px rgb(190 140 0 / 13%);
+}
+
+.button {
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.22s ease,
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.button-blue {
+  box-shadow: 0 9px 20px rgb(23 55 200 / 20%);
+}
+
+.button-blue:hover {
+  box-shadow: 0 13px 28px rgb(23 55 200 / 28%);
+}
+
+.button-outline:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  box-shadow: 0 8px 18px rgb(23 55 200 / 10%);
+}
+
+.button:active,
+.favorite-button:active,
+.rating-filter-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.button:focus-visible,
+.favorite-button:focus-visible,
+.gallery-preview:focus-visible,
+.rating-filter-button:focus-visible,
+.lightbox-close:focus-visible,
+.lightbox-navigation:focus-visible,
+.modal-close-button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgb(23 55 200 / 24%);
+  outline-offset: 3px;
+}
+
+.image-lightbox {
+  animation: property-overlay-in 0.25s ease-out both;
+  backdrop-filter: blur(10px);
+}
+
+.lightbox-image-wrapper {
+  animation: property-modal-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.modal-overlay {
+  animation: property-overlay-in 0.25s ease-out both;
+  backdrop-filter: blur(8px);
+}
+
+.inquiry-modal-card {
+  border: 1px solid rgb(255 255 255 / 62%);
+  border-radius: 24px;
+  box-shadow: 0 30px 75px rgb(4 15 65 / 28%);
+  animation: property-modal-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.inquiry-modal-card textarea {
+  border-radius: 13px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.inquiry-modal-card textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgb(23 55 200 / 10%);
+}
+
+.property-status > i {
+  filter: drop-shadow(0 8px 16px rgb(23 55 200 / 20%));
+}
+
+.property-loading > i {
+  animation: property-spinner 0.8s linear infinite;
+}
+
+@media (hover: hover) {
+  .property-fact:hover {
+    z-index: 1;
+    background: #f8faff;
+    transform: translateY(-2px);
+  }
+
+  .property-fact:hover .fact-icon {
+    background: var(--blue);
+    color: #ffffff;
+    transform: translateY(-2px) rotate(-3deg);
+  }
+
+  .property-content-section:hover,
+  .landlord-card:hover,
+  .listing-review-card:hover,
+  .safety-card:hover {
+    border-color: #cfd8f5;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+  }
+
+  .detail-chip:hover,
+  .detail-list-item:hover {
+    border-color: #c9d4f8;
+    box-shadow: 0 7px 16px rgb(23 55 200 / 8%);
+    transform: translateY(-2px);
+  }
+
+  .rating-filter-button:hover {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes property-page-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes property-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes property-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes property-gallery-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes property-sidebar-reveal {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes property-review-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes property-rating-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes property-heart-pop {
+  0% {
+    transform: scale(0.7);
+  }
+  55% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes property-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes property-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes property-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 900px) {
+  .property-container {
+    width: min(100% - 38px, 1460px);
+  }
+
+  .property-price-wrapper {
+    width: 100%;
+  }
+
+  .property-sidebar > * {
+    animation-name: property-rise;
+  }
+}
+
+@media (max-width: 640px) {
+  .property-container {
+    width: min(100% - 28px, 1460px);
+    padding-top: 20px;
+  }
+
+  .breadcrumbs {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+
+  .property-heading h1 {
+    letter-spacing: -0.7px;
+  }
+
+  .property-price-wrapper {
+    padding: 12px 13px 12px 16px;
+  }
+
+  .gallery-grid,
+  .gallery-grid.two-images {
+    border-width: 3px;
+    border-radius: 18px;
+  }
+
+  .property-facts,
+  .property-content-section,
+  .landlord-card,
+  .inquiry-card,
+  .listing-review-card,
+  .safety-card {
+    border-radius: 17px;
+  }
+
+  .property-content-section,
+  .landlord-card,
+  .inquiry-card,
+  .listing-review-card,
+  .safety-card {
+    padding: 21px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.listing-reviews-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 6px;
+  padding: 18px 4px 2px;
+  border-top: 1px solid #e5e9f3;
+  animation: reviews-action-reveal 0.35s ease-out both;
+}
+
+.listing-reviews-actions p {
+  margin: 0;
+  color: #778198;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.listing-reviews-toggle {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 10px 16px;
+  border: 1px solid #cad5f8;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #ffffff, #f3f6ff);
+  color: var(--blue);
+  box-shadow: 0 7px 17px rgb(23 55 200 / 8%);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.listing-reviews-toggle i {
+  font-size: 10px;
+  transition: transform 0.25s ease;
+}
+
+.listing-reviews-toggle[aria-expanded="true"] i {
+  transform: rotate(180deg);
+}
+
+.listing-reviews-toggle:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  box-shadow: 0 10px 22px rgb(23 55 200 / 13%);
+  transform: translateY(-2px);
+}
+
+.listing-reviews-toggle:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.listing-reviews-toggle:focus-visible {
+  outline: 3px solid rgb(23 55 200 / 22%);
+  outline-offset: 3px;
+}
+
+@keyframes reviews-action-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .listing-reviews-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .listing-reviews-actions p {
+    text-align: center;
+  }
+
+  .listing-reviews-toggle {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listing-reviews-actions,
+  .listing-reviews-toggle,
+  .listing-reviews-toggle i {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:root {
+  --blue: #2341b4;
+  --blue-dark: #19328f;
+  --blue-deep: #14245f;
+  --blue-soft: #f2f4fb;
+  --yellow: #d8b83f;
+  --text: #202633;
+  --muted: #6f7787;
+  --border: #e1e4eb;
+  --background: #f6f7f9;
+  --shadow-sm: 0 4px 14px rgb(20 36 95 / 5%);
+  --shadow-md: 0 10px 28px rgb(20 36 95 / 8%);
+  --shadow-blue: 0 8px 20px rgb(35 65 180 / 12%);
+}
+
+body {
+  background: var(--background);
+}
+
+.property-page h1,
+.property-page h2,
+.property-page h3,
+.property-page strong,
+.property-status h1,
+.inquiry-modal-card h2 {
+  font-weight: 600;
+}
+
+.breadcrumbs a,
+.verified-label,
+.button,
+.card-label,
+.property-fact small,
+.rating-breakdown-label,
+.rating-filter-button,
+.renter-review-rating,
+.listing-review-filter-bar > strong,
+.listing-reviews-actions p,
+.listing-reviews-toggle,
+.inquiry-modal-card label {
+  font-weight: 500;
+}
+
+.property-price > span,
+.listing-review-summary strong {
+  font-weight: 600;
+}
+
+.breadcrumbs {
+  width: auto;
+  margin-bottom: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.property-heading {
+  margin-bottom: 26px;
+}
+
+.verified-label {
+  padding: 5px 8px;
+  border-color: #d8e5dc;
+  border-radius: 6px;
+  background: #f3f8f5;
+  color: #2f6d49;
+  font-size: 11px;
+  letter-spacing: 0.1px;
+  text-transform: none;
+}
+
+.verified-label i {
+  color: #3e8059;
+}
+
+.property-heading h1 {
+  color: #202633;
+  font-size: clamp(30px, 2.8vw, 44px);
+  letter-spacing: -0.8px;
+  line-height: 1.2;
+}
+
+.property-price-wrapper {
+  padding: 12px 14px;
+  border-color: #e0e4ec;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: none;
+}
+
+.property-price > span {
+  font-size: 30px;
+  letter-spacing: -0.5px;
+}
+
+.favorite-button {
+  width: 44px;
+  height: 44px;
+  border-color: #dfe3eb;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.favorite-button:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.favorite-button.active {
+  background: var(--blue);
+  color: #ffffff;
+}
+
+.gallery-grid {
+  border: 1px solid #e2e5eb;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgb(24 32 57 / 10%);
+}
+
+.gallery-preview img {
+  transition:
+    transform 0.35s ease,
+    filter 0.3s ease;
+}
+
+.gallery-preview:hover img {
+  filter: none;
+  transform: scale(1.018);
+}
+
+.gallery-more-overlay {
+  background: rgb(18 25 48 / 58%);
+  backdrop-filter: blur(2px);
+  font-weight: 500;
+}
+
+.gallery-preview:hover .gallery-more-overlay i {
+  transform: none;
+}
+
+.property-layout {
+  gap: 26px;
+}
+
+.property-main-column {
+  gap: 18px;
+}
+
+.property-facts {
+  border-color: var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.property-fact {
+  min-height: 80px;
+  border-color: #eceef2;
+}
+
+.fact-icon {
+  width: 40px;
+  height: 40px;
+  border-color: #e1e5ef;
+  border-radius: 8px;
+  background: #f3f5fa;
+  box-shadow: none;
+}
+
+.property-fact strong {
+  color: #26345f;
+  font-weight: 500;
+}
+
+.property-content-section,
+.landlord-card,
+.inquiry-card,
+.listing-review-card,
+.safety-card {
+  border-color: var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.property-content-section {
+  padding: 25px;
+}
+
+.section-title {
+  gap: 10px;
+}
+
+.section-title > span {
+  width: 3px;
+  height: 22px;
+  background: #4961bd;
+  box-shadow: none;
+}
+
+.section-title h2 {
+  color: #26345f;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.property-description {
+  color: #555e6d;
+  line-height: 1.75;
+}
+
+.detail-chip,
+.detail-list-item {
+  padding: 9px 11px;
+  border-color: #e0e4ec;
+  border-radius: 6px;
+  background: #f8f9fb;
+  box-shadow: none;
+}
+
+.listing-reviews-overview {
+  border-color: #e1e4eb;
+  border-radius: 10px;
+  background: #f8f9fb;
+}
+
+.listing-review-summary strong {
+  color: #263f9e;
+  font-size: 38px;
+}
+
+.rating-breakdown-fill {
+  background: #4961bd;
+}
+
+.listing-review-filter-bar {
+  border-color: #e2e5eb;
+  border-radius: 8px;
+  background: #f7f8fa;
+}
+
+.rating-filter-button {
+  border-radius: 6px;
+  color: #616a79;
+}
+
+.rating-filter-button:hover,
+.rating-filter-button.active {
+  border-color: #9eacd9;
+  background: #f2f4fb;
+  color: #2d469f;
+}
+
+.listing-reviews-status {
+  border-color: #ccd3e4;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.renter-review-card {
+  padding: 20px 2px;
+}
+
+.renter-review-avatar {
+  border-width: 1px;
+  border-color: #e1e5ef;
+  box-shadow: none;
+}
+
+.renter-review-meta strong {
+  color: #2b303a;
+  font-weight: 500;
+}
+
+.renter-review-rating {
+  padding: 6px 9px;
+  border-color: #d9deec;
+  border-radius: 6px;
+  background: #f5f6fa;
+  color: #3d519e;
+}
+
+.property-sidebar {
+  gap: 16px;
+}
+
+.landlord-card,
+.inquiry-card,
+.listing-review-card,
+.safety-card {
+  padding: 22px;
+}
+
+.card-label {
+  color: #52617f;
+  letter-spacing: 0.35px;
+}
+
+.landlord-avatar {
+  border-color: #e0e4ed;
+  background: #f3f5fa;
+  box-shadow: none;
+}
+
+.landlord-information h2,
+.inquiry-card h2,
+.listing-review-card h2,
+.safety-card h2 {
+  color: #26345f;
+  font-weight: 600;
+}
+
+.inquiry-card {
+  overflow: visible;
+  border-color: #dce1eb;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.inquiry-card .card-label {
+  color: #52617f;
+}
+
+.inquiry-card h2 {
+  color: #26345f;
+}
+
+.inquiry-card p {
+  color: #677080;
+}
+
+.inquiry-card .button-blue {
+  background: var(--blue);
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.inquiry-card .button-blue:hover {
+  background: var(--blue-dark);
+}
+
+.listing-review-card {
+  background: #ffffff;
+}
+
+.listing-review-card::after {
+  display: none;
+}
+
+.safety-card {
+  border-color: #e7e1c9;
+  background: #fbfaf5;
+}
+
+.safety-icon {
+  border-radius: 8px;
+  background: #f5f0da;
+  color: #685b2b;
+  box-shadow: none;
+}
+
+.button {
+  min-height: 42px;
+  padding: 10px 17px;
+  border-radius: 8px;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.button:hover,
+.button-blue:hover,
+.button-outline:hover {
+  box-shadow: none;
+  transform: translateY(-1px);
+}
+
+.button-outline:hover {
+  background: #f3f5fa;
+}
+
+.inquiry-modal-card {
+  border-color: #e2e5eb;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgb(17 24 39 / 18%);
+}
+
+.modal-icon,
+.modal-close-button {
+  border-radius: 8px;
+}
+
+.listing-reviews-actions {
+  padding-top: 15px;
+}
+
+.listing-reviews-toggle {
+  min-height: 40px;
+  padding: 9px 14px;
+  border-color: #d8dde8;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #344b9e;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.listing-reviews-toggle:hover {
+  border-color: #aeb9d9;
+  background: #f5f6fa;
+  box-shadow: none;
+  transform: translateY(-1px);
+}
+
+@media (hover: hover) {
+  .property-fact:hover {
+    background: #f8f9fb;
+    transform: none;
+  }
+
+  .property-fact:hover .fact-icon {
+    background: #e9edf7;
+    color: var(--blue);
+    transform: none;
+  }
+
+  .property-content-section:hover,
+  .landlord-card:hover,
+  .listing-review-card:hover,
+  .safety-card:hover {
+    border-color: #d4d9e3;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+
+  .detail-chip:hover,
+  .detail-list-item:hover {
+    border-color: #d4d9e3;
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+@keyframes property-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes property-gallery-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes property-sidebar-reveal {
+  from {
+    opacity: 0;
+    transform: translateX(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes property-heart-pop {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes property-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .property-content-section,
+  .landlord-card,
+  .inquiry-card,
+  .listing-review-card,
+  .safety-card {
+    border-radius: 10px;
+  }
+}
+
+/* Final typography and overlay refinement */
+.listing-review-summary > span,
+.listing-review-summary p,
+.rating-breakdown-label,
+.landlord-information p,
+.inquiry-modal-card label,
+.lightbox-counter {
+  font-weight: 500;
+}
+
+.listing-review-summary > span {
+  color: #687182;
+  letter-spacing: 0.35px;
+  text-transform: none;
+}
+
+.listing-review-summary p {
+  color: #56627a;
+}
+
+.landlord-information p {
+  color: #397254;
+}
+
+.modal-overlay {
+  background: rgb(18 24 38 / 54%);
+  backdrop-filter: blur(3px);
+}
+
+.inquiry-modal-card {
+  padding: 28px;
+}
+
+.inquiry-modal-card h2 {
+  color: #26345f;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.inquiry-modal-card > p,
+.inquiry-modal-card textarea {
+  color: #5f6877;
+}
+
+.modal-icon {
+  background: #eef1f8;
+  color: #344b9e;
+  font-size: 19px;
+}
+
+.modal-close-button,
+.lightbox-close,
+.lightbox-navigation {
+  box-shadow: 0 6px 18px rgb(15 23 42 / 14%);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.modal-close-button:hover,
+.lightbox-close:hover,
+.lightbox-navigation:hover {
+  background: #f2f4f8;
+  color: #263f9e;
+  transform: translateY(-1px);
+}
+
+.lightbox-navigation:hover {
+  transform: translateY(-50%) scale(1.02);
+}
+
+.lightbox-image-wrapper img {
+  border-radius: 10px;
+  box-shadow: 0 18px 50px rgb(0 0 0 / 32%);
+}
+
+@media (max-width: 640px) {
+  .inquiry-modal-card {
+    padding: 24px 20px 20px;
+  }
+
+  .inquiry-modal-card h2 {
+    font-size: 21px;
   }
 }

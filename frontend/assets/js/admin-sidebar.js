@@ -14,7 +14,6 @@ class AdminSidebar extends HTMLElement {
               alt="SilipMunti logo"
             />
           </a>
-
           <button
             type="button"
             class="admin-sidebar-close"
@@ -115,12 +114,47 @@ if (!customElements.get("admin-sidebar")) {
 const SilipMuntiAdminShell = (() => {
   let initialized = false;
 
+  function getToggleButton() {
+    return document.querySelector("#admin-sidebar-toggle");
+  }
+
+  function getSidebar() {
+    return document.querySelector("#admin-sidebar");
+  }
+
+  function ensureBackdrop() {
+    let backdrop = document.querySelector("#admin-sidebar-backdrop");
+
+    if (backdrop) return backdrop;
+
+    backdrop = document.createElement("button");
+    backdrop.type = "button";
+    backdrop.id = "admin-sidebar-backdrop";
+    backdrop.className = "admin-sidebar-backdrop";
+    backdrop.setAttribute("aria-label", "Close admin navigation");
+    document.body.appendChild(backdrop);
+
+    return backdrop;
+  }
+
+  function updateAccessibility(isOpen) {
+    getToggleButton()?.setAttribute("aria-expanded", String(isOpen));
+    getSidebar()?.setAttribute(
+      "aria-hidden",
+      String(!isOpen && window.innerWidth <= 960),
+    );
+  }
+
   function closeSidebar() {
     document.body.classList.remove("admin-sidebar-open");
+    updateAccessibility(false);
   }
 
   function openSidebar() {
+    ensureBackdrop();
     document.body.classList.add("admin-sidebar-open");
+    updateAccessibility(true);
+    document.querySelector("#admin-sidebar-close")?.focus();
   }
 
   async function logout() {
@@ -136,8 +170,10 @@ const SilipMuntiAdminShell = (() => {
 
   function initialize() {
     if (initialized) return;
-
     initialized = true;
+
+    ensureBackdrop();
+    updateAccessibility(false);
 
     document.addEventListener("click", (event) => {
       const target = event.target;
@@ -154,6 +190,13 @@ const SilipMuntiAdminShell = (() => {
         return;
       }
 
+      if (target.closest("#admin-sidebar-backdrop")) {
+        event.preventDefault();
+        closeSidebar();
+        getToggleButton()?.focus();
+        return;
+      }
+
       if (target.closest("#logout-button")) {
         event.preventDefault();
         logout();
@@ -161,6 +204,14 @@ const SilipMuntiAdminShell = (() => {
       }
 
       const sidebar = document.querySelector("#admin-sidebar");
+
+      if (
+        window.innerWidth <= 960 &&
+        target.closest("#admin-sidebar .admin-nav-link")
+      ) {
+        closeSidebar();
+        return;
+      }
 
       if (
         document.body.classList.contains("admin-sidebar-open") &&
@@ -179,26 +230,97 @@ const SilipMuntiAdminShell = (() => {
     window.addEventListener("resize", () => {
       if (window.innerWidth > 960) {
         closeSidebar();
+        getSidebar()?.removeAttribute("aria-hidden");
+      } else {
+        updateAccessibility(
+          document.body.classList.contains("admin-sidebar-open"),
+        );
       }
     });
   }
 
   function setPendingCount(value) {
     const element = document.querySelector("#pending-count");
-
     if (!element) return;
 
     const count = Math.max(0, Number(value) || 0);
-
     element.textContent = count > 99 ? "99+" : String(count);
     element.classList.toggle("hidden", count < 1);
+  }
+
+  function getInitials(firstName, lastName) {
+    const initials = `${String(firstName ?? "").charAt(0)}${String(
+      lastName ?? "",
+    ).charAt(0)}`.toUpperCase();
+
+    return initials || "A";
+  }
+
+  function resolveProfileUrl(profilePicture) {
+    const value = String(profilePicture ?? "").trim();
+    if (!value) return null;
+
+    if (/^(https?:|data:|blob:)/i.test(value) || value.startsWith("/")) {
+      return value;
+    }
+
+    if (value.startsWith("SilipMunti/")) return `/${value}`;
+    if (value.startsWith("backend/")) return `/SilipMunti/${value}`;
+
+    return `/SilipMunti/backend/${value.replace(/^\/+/, "")}`;
+  }
+
+  function setAdminProfile(user = {}) {
+    const fullName = `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim();
+    const displayName = fullName || "Admin";
+    const avatar = document.querySelector("#admin-profile-avatar");
+    const picture = document.querySelector("#admin-profile-picture");
+    const initialsElement = document.querySelector("#admin-profile-initials");
+    const nameElement = document.querySelector("#admin-name");
+
+    if (nameElement) nameElement.textContent = displayName;
+    if (!avatar || !picture || !initialsElement) return;
+
+    initialsElement.textContent = getInitials(user.first_name, user.last_name);
+    avatar.classList.remove("has-image");
+    picture.hidden = true;
+    picture.removeAttribute("src");
+
+    const profileUrl = resolveProfileUrl(user.profile_picture);
+    if (!profileUrl) return;
+
+    picture.onload = () => {
+      picture.hidden = false;
+      avatar.classList.add("has-image");
+    };
+
+    picture.onerror = () => {
+      picture.hidden = true;
+      picture.removeAttribute("src");
+      avatar.classList.remove("has-image");
+    };
+
+    picture.src = profileUrl;
   }
 
   return {
     initialize,
     closeSidebar,
+    setAdminProfile,
     setPendingCount,
   };
 })();
 
 window.SilipMuntiAdminShell = SilipMuntiAdminShell;
+
+function initializeAdminShell() {
+  window.SilipMuntiAdminShell?.initialize();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeAdminShell, {
+    once: true,
+  });
+} else {
+  initializeAdminShell();
+}

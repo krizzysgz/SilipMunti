@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/session.php';
+require_once __DIR__ . '/../security/csrf.php';
 
 function authentication_error(string $message, int $status, array $data = []): never
 {
@@ -48,7 +49,7 @@ function clear_user_session(): void
     }
 }
 
-function require_login(PDO $pdo): array
+function current_user(PDO $pdo): ?array
 {
     $userId = $_SESSION['user_id'] ?? null;
 
@@ -56,10 +57,7 @@ function require_login(PDO $pdo): array
         !is_int($userId)
         && !ctype_digit((string) $userId)
     ) {
-        authentication_error(
-            'You must log in first.',
-            401
-        );
+        return null;
     }
 
     $getUser = $pdo->prepare("
@@ -70,7 +68,8 @@ function require_login(PDO $pdo): array
             email,
             phone_number,
             role,
-            profile_picture
+            profile_picture,
+            created_at
         FROM users
         WHERE id = :user_id
             AND deleted_at IS NULL
@@ -85,14 +84,26 @@ function require_login(PDO $pdo): array
 
     if (!$user) {
         clear_user_session();
+        return null;
+    }
 
+    $user['id'] = (int) $user['id'];
+
+    return $user;
+}
+
+function require_login(PDO $pdo): array
+{
+    $user = current_user($pdo);
+
+    if (!$user) {
         authentication_error(
-            'User account is no longer available.',
+            'You must log in first.',
             401
         );
     }
 
-    $user['id'] = (int) $user['id'];
+    require_csrf_token();
 
     return $user;
 }

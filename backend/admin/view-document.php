@@ -126,6 +126,9 @@ try {
     );
     header('Cache-Control: no-store, private');
     header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Content-Security-Policy: sandbox; default-src \'none\'');
+    header('Cross-Origin-Resource-Policy: same-origin');
 
     readfile($realFilePath);
     exit;

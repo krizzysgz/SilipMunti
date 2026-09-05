@@ -38,13 +38,13 @@ class SiteNavbar extends HTMLElement {
                 </a>
               </li>
               <li>
-                <a href="/SilipMunti/frontend/index.html#about"${isActive("about")}>
+                <a href="/SilipMunti/frontend/pages/about/index.html"${isActive("about")}>
                   About
                 </a>
               </li>
               <li>
-                <a href="/SilipMunti/frontend/index.html#landlords"${isActive("landlords")}>
-                  Landlords
+                <a href="/SilipMunti/frontend/pages/landlord/index.html"${isActive("landlords")}>
+                  Landlord
                 </a>
               </li>
             </ul>
@@ -88,7 +88,7 @@ class SiteNavbar extends HTMLElement {
                 >
                   <img
                     id="navbar-profile-picture"
-                    src="/SilipMunti/frontend/assets/images/default-profile.png"
+                    src="/SilipMunti/frontend/assets/images/default-profile.svg"
                     alt="Profile picture"
                   />
                 </button>
@@ -97,7 +97,7 @@ class SiteNavbar extends HTMLElement {
                   <div class="profile-summary">
                     <img
                       id="dropdown-profile-picture"
-                      src="/SilipMunti/frontend/assets/images/default-profile.png"
+                      src="/SilipMunti/frontend/assets/images/default-profile.svg"
                       alt="Profile"
                     />
                     <div>
@@ -116,7 +116,7 @@ class SiteNavbar extends HTMLElement {
 
                   <a
                     href="/SilipMunti/frontend/pages/messages/index.html"
-                    class="dropdown-link"
+                    class="dropdown-link${activePage === "messages" ? " active" : ""}"
                   >
                     <i class="fa-solid fa-comments"></i>
                     Messages
@@ -129,6 +129,13 @@ class SiteNavbar extends HTMLElement {
                     >
                       <i class="fa-solid fa-heart"></i>
                       My Favorites
+                    </a>
+                    <a
+                      href="/SilipMunti/frontend/pages/reviews/index.html?type=platform"
+                      class="dropdown-link${activePage === "reviews" ? " active" : ""}"
+                    >
+                      <i class="fa-solid fa-pen-to-square"></i>
+                      Reviews & Feedback
                     </a>
                   </div>
 
@@ -211,7 +218,7 @@ const SilipMuntiSiteNavbar = (() => {
     const urls = {
       admin: `${FRONTEND_ROOT}/pages/admin/dashboard.html`,
       landlord: `${FRONTEND_ROOT}/pages/landlord/dashboard.html`,
-      renter: `${FRONTEND_ROOT}/pages/renter/index.html`,
+      renter: `${FRONTEND_ROOT}/index.html`,
     };
 
     return urls[role] || `${FRONTEND_ROOT}/index.html`;
@@ -219,7 +226,7 @@ const SilipMuntiSiteNavbar = (() => {
 
   function getProfileUrl(profilePicture) {
     if (!profilePicture) {
-      return `${FRONTEND_ROOT}/assets/images/default-profile.png`;
+      return `${FRONTEND_ROOT}/assets/images/default-profile.svg`;
     }
 
     if (
@@ -237,7 +244,7 @@ const SilipMuntiSiteNavbar = (() => {
 
     image.addEventListener("error", () => {
       image.onerror = null;
-      image.src = `${FRONTEND_ROOT}/assets/images/default-profile.png`;
+      image.src = `${FRONTEND_ROOT}/assets/images/default-profile.svg`;
     });
   }
 

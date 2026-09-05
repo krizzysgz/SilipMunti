@@ -1,9 +1,11 @@
 <?php
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
+header('X-Content-Type-Options: nosniff');
 
-require_once '../config/database.php';
-require_once '../middleware/auth.php';
+require_once __DIR__ . '/../middleware/auth.php';
+require_once __DIR__ . '/../security/csrf.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -12,12 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'success' => false,
         'message' => 'Method not allowed.'
     ]);
+
     exit;
 }
 
 $renter = require_role($pdo, ['renter']);
 
-$data = json_decode(file_get_contents('php://input'), true);
+require_csrf_token();
+
+$data = json_decode(
+    file_get_contents('php://input'),
+    true
+);
 
 if (!is_array($data)) {
     http_response_code(400);
@@ -26,6 +34,7 @@ if (!is_array($data)) {
         'success' => false,
         'message' => 'Invalid JSON data.'
     ]);
+
     exit;
 }
 
@@ -38,17 +47,19 @@ if (!ctype_digit((string) $listingId) || (int) $listingId < 1) {
         'success' => false,
         'message' => 'Valid listing ID is required.'
     ]);
+
     exit;
 }
 
-$listingStmt = $pdo->prepare("
+$listingStmt = $pdo->prepare('
     SELECT id
     FROM listings
     WHERE id = :listing_id
-        AND verification_status = 'verified'
+        AND verification_status = \'verified\'
+        AND availability_status = \'available\'
         AND deleted_at IS NULL
     LIMIT 1
-");
+');
 
 $listingStmt->execute([
     'listing_id' => (int) $listingId
@@ -59,18 +70,19 @@ if (!$listingStmt->fetch()) {
 
     echo json_encode([
         'success' => false,
-        'message' => 'Listing not found.'
+        'message' => 'Available listing not found.'
     ]);
+
     exit;
 }
 
-$favoriteStmt = $pdo->prepare("
+$favoriteStmt = $pdo->prepare('
     SELECT id
     FROM favorites
     WHERE renter_id = :renter_id
         AND listing_id = :listing_id
     LIMIT 1
-");
+');
 
 $favoriteStmt->execute([
     'renter_id' => $renter['id'],
@@ -84,10 +96,11 @@ if ($favoriteStmt->fetch()) {
         'success' => false,
         'message' => 'Listing is already in your favorites.'
     ]);
+
     exit;
 }
 
-$insertStmt = $pdo->prepare("
+$insertStmt = $pdo->prepare('
     INSERT INTO favorites (
         renter_id,
         listing_id,
@@ -98,7 +111,7 @@ $insertStmt = $pdo->prepare("
         :listing_id,
         NOW()
     )
-");
+');
 
 $insertStmt->execute([
     'renter_id' => $renter['id'],
@@ -111,6 +124,8 @@ echo json_encode([
     'success' => true,
     'message' => 'Listing added to favorites.',
     'data' => [
-        'favorite_id' => (int) $pdo->lastInsertId()
+        'favorite_id' => (int) $pdo->lastInsertId(),
+        'listing_id' => (int) $listingId,
+        'is_favorite' => true
     ]
 ]);

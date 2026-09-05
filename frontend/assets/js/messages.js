@@ -10,10 +10,10 @@ const endpoints = {
 };
 
 const DEFAULT_PROFILE =
-  "/SilipMunti/frontend/assets/images/default-profile.png";
+  "/SilipMunti/frontend/assets/images/default-profile.svg";
 
 const DEFAULT_PROPERTY =
-  "/SilipMunti/frontend/assets/images/property-placeholder.png";
+  "/SilipMunti/frontend/assets/images/property-placeholder.svg";
 
 const messagesApp = document.querySelector("#messages-app");
 const conversationPanel = document.querySelector("#conversation-panel");
@@ -108,7 +108,7 @@ let isSendingMessage = false;
 let replyingToMessage = null;
 
 async function apiRequest(url, options = {}) {
-  const response = await fetch(url, {
+  const response = await window.SilipMuntiSession.secureFetch(url, {
     credentials: "include",
     cache: "no-store",
     ...options,

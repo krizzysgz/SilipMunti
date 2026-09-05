@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Share your experience using the SilipMunti rental platform."
+    />
+    <title>Reviews & Feedback | SilipMunti</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/global.css?v=2" />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/notifications.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/reviews.css?v=2"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/chat-bubble.css"
+    />
+  </head>
+
+  <body>
+    <site-navbar active-page="reviews"></site-navbar>
+
+    <main>
+      <section class="review-hero">
+        <div class="review-container review-hero-content">
+          <a
+            class="review-back-link"
+            id="review-back-link"
+            href="/SilipMunti/frontend/index.html"
+          >
+            <i class="fa-solid fa-arrow-left"></i>
+            Back to home
+          </a>
+
+          <span class="review-eyebrow" id="review-hero-eyebrow"
+            >Reviews & Feedback</span
+          >
+          <h1 id="review-hero-title">
+            Tell us about your <span>SilipMunti experience.</span>
+          </h1>
+          <p id="review-hero-description">
+            Your feedback helps us improve the platform and build a better
+            rental experience for the Muntinlupa community.
+          </p>
+        </div>
+      </section>
+
+      <section class="review-section">
+        <div class="review-container review-layout">
+          <aside class="review-information">
+            <div class="review-target-card">
+              <span class="target-icon" id="review-target-icon">
+                <i class="fa-solid fa-house-circle-check"></i>
+              </span>
+              <img
+                class="review-target-image review-hidden"
+                id="review-target-image"
+                src="/SilipMunti/frontend/assets/images/property-placeholder.svg"
+                alt="Property"
+              />
+              <div>
+                <span class="target-label">You are reviewing</span>
+                <h2 id="review-target-title">SilipMunti Platform</h2>
+                <p id="review-target-description">
+                  Share your overall experience searching, comparing rentals,
+                  and communicating through SilipMunti.
+                </p>
+                <div
+                  class="review-target-details review-hidden"
+                  id="review-target-details"
+                >
+                  <span id="review-target-location"></span>
+                  <strong id="review-target-price"></strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="review-guidelines">
+              <h3>A helpful review is:</h3>
+              <ul>
+                <li>
+                  <i class="fa-solid fa-circle-check"></i>
+                  Based on your actual platform experience
+                </li>
+                <li>
+                  <i class="fa-solid fa-circle-check"></i>
+                  Clear, respectful, and easy to understand
+                </li>
+                <li>
+                  <i class="fa-solid fa-circle-check"></i>
+                  Focused on features and services you used
+                </li>
+              </ul>
+            </div>
+
+            <div class="review-privacy-note">
+              <i class="fa-solid fa-circle-info"></i>
+              <p>
+                Your name and review may appear in SilipMunti's public renter
+                feedback section once published.
+              </p>
+            </div>
+          </aside>
+
+          <div class="review-form-card">
+            <div class="form-heading">
+              <span>Share your feedback</span>
+              <h2 id="review-form-title">How was your overall experience?</h2>
+              <p id="review-form-description">
+                Select a rating from 1 to 5 and tell us what you think.
+              </p>
+            </div>
+
+            <div
+              id="review-form-message"
+              class="review-message review-hidden"
+              role="alert"
+              aria-live="polite"
+            ></div>
+
+            <form id="platform-review-form" novalidate>
+              <fieldset class="rating-fieldset">
+                <legend>
+                  Experience rating <span aria-hidden="true">*</span>
+                </legend>
+
+                <div class="rating-options" id="rating-options">
+                  <button
+                    type="button"
+                    class="rating-option"
+                    data-rating="1"
+                    aria-pressed="false"
+                  >
+                    1
+                  </button>
+                  <button
+                    type="button"
+                    class="rating-option"
+                    data-rating="2"
+                    aria-pressed="false"
+                  >
+                    2
+                  </button>
+                  <button
+                    type="button"
+                    class="rating-option"
+                    data-rating="3"
+                    aria-pressed="false"
+                  >
+                    3
+                  </button>
+                  <button
+                    type="button"
+                    class="rating-option"
+                    data-rating="4"
+                    aria-pressed="false"
+                  >
+                    4
+                  </button>
+                  <button
+                    type="button"
+                    class="rating-option"
+                    data-rating="5"
+                    aria-pressed="false"
+                  >
+                    5
+                  </button>
+                </div>
+
+                <input
+                  type="hidden"
+                  id="review-rating"
+                  name="rating"
+                  value=""
+                />
+
+                <div class="rating-scale">
+                  <span>1 — Lowest</span>
+                  <strong id="selected-rating-label">Select your rating</strong>
+                  <span>5 — Highest</span>
+                </div>
+              </fieldset>
+
+              <div class="comment-field">
+                <div class="field-label-row">
+                  <label for="review-comment">
+                    Tell us about your experience
+                    <span aria-hidden="true">*</span>
+                  </label>
+                  <span id="comment-counter">0 / 1000</span>
+                </div>
+
+                <textarea
+                  id="review-comment"
+                  name="comment"
+                  rows="7"
+                  maxlength="1000"
+                  placeholder="What did you like? What could we improve?"
+                  required
+                ></textarea>
+                <small>
+                  Do not include phone numbers, addresses, or other sensitive
+                  personal information.
+                </small>
+              </div>
+
+              <div class="review-form-actions">
+                <a
+                  class="cancel-review-button"
+                  href="/SilipMunti/frontend/index.html"
+                >
+                  Cancel
+                </a>
+                <button
+                  type="submit"
+                  class="submit-review-button"
+                  id="submit-review-button"
+                  disabled
+                >
+                  <span>Submit Review</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </div>
+            </form>
+
+            <div
+              id="review-success"
+              class="review-success review-hidden"
+              aria-live="polite"
+            >
+              <span class="success-icon">
+                <i class="fa-solid fa-check"></i>
+              </span>
+              <h2 id="review-success-title">Thank you for your feedback.</h2>
+              <p id="review-success-description">
+                Your SilipMunti experience review was submitted successfully.
+              </p>
+              <a
+                href="/SilipMunti/frontend/index.html"
+                class="submit-review-button"
+                id="review-success-link"
+              >
+                <span id="review-success-link-text">Return to Home</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <img
+            class="footer-logo"
+            src="/SilipMunti/frontend/assets/images/SilipMunti.png"
+            alt="SilipMunti"
+          />
+          <p>
+            Muntinlupa's trusted marketplace for verified rental properties—
+            helping you find your next home with confidence and ease.
+          </p>
+          <div class="social-links">
+            <a href="#" aria-label="Facebook"
+              ><i class="fa-brands fa-facebook"></i
+            ></a>
+            <a href="#" aria-label="Instagram"
+              ><i class="fa-brands fa-instagram"></i
+            ></a>
+            <a href="#" aria-label="TikTok"
+              ><i class="fa-brands fa-tiktok"></i
+            ></a>
+            <a href="#" aria-label="X"
+              ><i class="fa-brands fa-x-twitter"></i
+            ></a>
+          </div>
+        </div>
+
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <a href="/SilipMunti/frontend/index.html">Home</a>
+          <a href="/SilipMunti/frontend/pages/about/index.html">About</a>
+          <a href="/SilipMunti/frontend/pages/properties/index.html"
+            >Properties</a
+          >
+          <a href="/SilipMunti/frontend/pages/auth/register.html"
+            >Landlords</a
+          >
+        </div>
+
+        <div class="footer-column">
+          <h3>Support</h3>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+        </div>
+
+        <div class="footer-column footer-contact">
+          <h3>Contact Us</h3>
+          <p><i class="fa-solid fa-phone"></i> 09945443908</p>
+          <p><i class="fa-solid fa-envelope"></i> silipmunti@gmail.com</p>
+        </div>
+      </div>
+      <p class="copyright">© 2026 SilipMunti. All rights reserved.</p>
+    </footer>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/site-navbar.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/notifications.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/reviews.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/chat-bubble.js?v=2"></script>
+  </body>
+</html>

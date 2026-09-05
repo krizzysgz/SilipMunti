@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verified Landlord | SilipMunti</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/global.css?v=2" />
+    <link rel="stylesheet" href="../../assets/css/landlord-profile.css?v=4" />
+  </head>
+  <body>
+    <site-navbar active-page="landlords"></site-navbar>
+
+    <main class="public-landlord-page">
+      <section class="landlord-profile-hero">
+        <div class="landlord-profile-container">
+          <a class="landlord-back-link" href="index.html">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            Back to verified landlords
+          </a>
+
+          <div class="landlord-profile-card" id="landlord-profile-card">
+            <div class="landlord-profile-skeleton" aria-hidden="true"></div>
+          </div>
+
+          <div
+            class="landlord-profile-message hidden"
+            id="landlord-profile-message"
+            role="alert"
+          ></div>
+
+          <nav class="landlord-profile-tabs" aria-label="Landlord profile">
+            <button
+              class="landlord-profile-tab active"
+              type="button"
+              data-profile-tab="properties"
+              aria-selected="true"
+            >
+              <i class="fa-solid fa-building" aria-hidden="true"></i>
+              Properties
+            </button>
+            <button
+              class="landlord-profile-tab"
+              type="button"
+              data-profile-tab="reviews"
+              aria-selected="false"
+            >
+              <i class="fa-solid fa-star" aria-hidden="true"></i>
+              Reviews
+              <span id="reviews-tab-count">0</span>
+            </button>
+            <button
+              class="landlord-profile-tab"
+              type="button"
+              data-profile-tab="about"
+              aria-selected="false"
+            >
+              <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+              About
+            </button>
+          </nav>
+        </div>
+      </section>
+
+      <section class="landlord-profile-content-section">
+        <div class="landlord-profile-container">
+          <section
+            class="landlord-tab-panel active"
+            id="properties-panel"
+            data-profile-panel="properties"
+          >
+            <div class="landlord-listings-heading">
+              <div>
+                <span class="section-eyebrow">Available rentals</span>
+                <h2>Verified Properties</h2>
+                <p id="landlord-listings-summary">
+                  Loading this landlord's available properties...
+                </p>
+              </div>
+            </div>
+
+            <div class="public-property-grid" id="landlord-listings-grid"></div>
+            <div
+              class="landlord-listings-message hidden"
+              id="landlord-listings-message"
+            ></div>
+          </section>
+
+          <section
+            class="landlord-tab-panel"
+            id="reviews-panel"
+            data-profile-panel="reviews"
+            hidden
+          >
+            <div class="landlord-listings-heading">
+              <div>
+                <span class="section-eyebrow">Renter feedback</span>
+                <h2>Property Reviews</h2>
+                <p>
+                  Published reviews from this landlord's verified properties.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="landlord-rating-summary"
+              id="landlord-rating-summary"
+            ></div>
+            <div class="landlord-review-list" id="landlord-review-list"></div>
+          </section>
+
+          <section
+            class="landlord-tab-panel"
+            id="about-panel"
+            data-profile-panel="about"
+            hidden
+          >
+            <div class="landlord-listings-heading">
+              <div>
+                <span class="section-eyebrow">Public information</span>
+                <h2>About This Landlord</h2>
+                <p>
+                  Safe account and verification details available to renters.
+                </p>
+              </div>
+            </div>
+
+            <div class="landlord-about-grid">
+              <article class="landlord-about-card">
+                <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+                <div>
+                  <strong>Identity verified</strong>
+                  <p>
+                    Required landlord documents were reviewed and approved by
+                    SilipMunti.
+                  </p>
+                </div>
+              </article>
+              <article class="landlord-about-card">
+                <i
+                  class="fa-solid fa-building-circle-check"
+                  aria-hidden="true"
+                ></i>
+                <div>
+                  <strong id="about-listing-count"
+                    >0 available properties</strong
+                  >
+                  <p>
+                    Only verified and currently available listings are shown.
+                  </p>
+                </div>
+              </article>
+              <article class="landlord-about-card">
+                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                <div>
+                  <strong>Property locations</strong>
+                  <p id="about-locations">No available locations right now.</p>
+                </div>
+              </article>
+              <article class="landlord-about-card">
+                <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                <div>
+                  <strong>SilipMunti member</strong>
+                  <p id="about-member-since">Membership date unavailable.</p>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="public-landlord-footer">
+      <p>© 2026 SilipMunti. All rights reserved.</p>
+    </footer>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/site-navbar.js?v=4"></script>
+    <script src="../../assets/js/landlord-profile.js?v=2"></script>
+  </body>
+</html>

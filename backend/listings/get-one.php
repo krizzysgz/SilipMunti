@@ -1,8 +1,18 @@
 <?php
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
-require_once '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Method not allowed.'
+    ]);
+    exit;
+}
 
 $listingId = $_GET['id'] ?? '';
 
@@ -51,6 +61,7 @@ $stmt = $pdo->prepare("
         AND u.deleted_at IS NULL
         AND rt.deleted_at IS NULL
         AND l.verification_status = 'verified'
+        AND l.availability_status = 'available'
     LIMIT 1
 ");
 
@@ -88,11 +99,23 @@ $imageStmt->execute([
 $images = $imageStmt->fetchAll();
 
 foreach ($images as &$image) {
-    $image['image_url'] =
-        '/SilipMunti/backend/' . $image['image_path'];
+    $image['id'] = (int) $image['id'];
+    $imagePath = $image['image_path'];
+
+    if (
+        preg_match('/^https?:\/\//i', $imagePath)
+        || str_starts_with($imagePath, '/')
+    ) {
+        $image['image_url'] = $imagePath;
+    } else {
+        $image['image_url'] =
+            '/SilipMunti/backend/' . ltrim($imagePath, '/');
+    }
 
     unset($image['image_path']);
 }
+
+unset($image);
 
 $listing['images'] = $images;
 $listing['primary_image'] = $images[0]['image_url'] ?? null;

@@ -8,7 +8,10 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
-    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css" />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/admin.css?v=4"
+    />
   </head>
 
   <body>
@@ -119,11 +122,14 @@
           </div>
 
           <div class="admin-topbar-profile">
-            <img
-              id="admin-profile-picture"
-              src="/SilipMunti/frontend/assets/images/default-profile.png"
-              alt="Admin profile"
-            />
+            <span
+              class="admin-profile-avatar"
+              id="admin-profile-avatar"
+              aria-label="Admin profile picture"
+            >
+              <img id="admin-profile-picture" alt="" hidden />
+              <span id="admin-profile-initials" aria-hidden="true">A</span>
+            </span>
             <div>
               <strong id="admin-name">Admin</strong>
               <span>Administrator</span>
@@ -149,22 +155,22 @@
             <div class="admin-summary-card blue">
               <i class="fa-solid fa-folder-open"></i>
               <span>Total Documents</span>
-              <strong id="total-documents">0</strong>
+              <strong id="total-documents" aria-live="polite">—</strong>
             </div>
             <div class="admin-summary-card yellow">
               <i class="fa-solid fa-clock"></i>
               <span>Pending Verifications</span>
-              <strong id="pending-documents">0</strong>
+              <strong id="pending-documents" aria-live="polite">—</strong>
             </div>
             <div class="admin-summary-card green">
               <i class="fa-solid fa-building-circle-check"></i>
               <span>Total Listings</span>
-              <strong id="total-listings">0</strong>
+              <strong id="total-listings" aria-live="polite">—</strong>
             </div>
             <div class="admin-summary-card red">
               <i class="fa-solid fa-users"></i>
               <span>Total Users</span>
-              <strong id="total-users">0</strong>
+              <strong id="total-users" aria-live="polite">—</strong>
             </div>
           </section>
 
@@ -186,8 +192,10 @@
                   <span class="admin-action-icon blue">
                     <i class="fa-solid fa-file-shield"></i>
                   </span>
-                  <strong>Review Verifications</strong>
-                  <p>Approve or reject landlord documents.</p>
+                  <span class="admin-action-copy">
+                    <strong>Review Verifications</strong>
+                    <p>Approve or reject landlord documents.</p>
+                  </span>
                   <i class="fa-solid fa-arrow-right"></i>
                 </a>
 
@@ -199,8 +207,10 @@
                   <span class="admin-action-icon green">
                     <i class="fa-solid fa-building"></i>
                   </span>
-                  <strong>Manage Listings</strong>
-                  <p>Review property listings and visibility.</p>
+                  <span class="admin-action-copy">
+                    <strong>Manage Listings</strong>
+                    <p>Review property listings and visibility.</p>
+                  </span>
                   <i class="fa-solid fa-arrow-right"></i>
                 </a>
 
@@ -212,8 +222,10 @@
                   <span class="admin-action-icon yellow">
                     <i class="fa-solid fa-users"></i>
                   </span>
-                  <strong>Manage Users</strong>
-                  <p>Check renter, landlord, and admin accounts.</p>
+                  <span class="admin-action-copy">
+                    <strong>Manage Users</strong>
+                    <p>Check renter, landlord, and admin accounts.</p>
+                  </span>
                   <i class="fa-solid fa-arrow-right"></i>
                 </a>
 
@@ -225,11 +237,16 @@
                   <span class="admin-action-icon purple">
                     <i class="fa-solid fa-tags"></i>
                   </span>
-                  <strong>Rental Types</strong>
-                  <p>Create and update rental categories.</p>
+                  <span class="admin-action-copy">
+                    <strong>Rental Types</strong>
+                    <p>Create and update rental categories.</p>
+                  </span>
                   <i class="fa-solid fa-arrow-right"></i>
                 </a>
               </div>
+              <p class="admin-action-empty hidden" id="admin-action-empty">
+                No admin modules match your search.
+              </p>
             </article>
 
             <article class="admin-panel">
@@ -260,7 +277,11 @@
                   <tbody id="recent-documents-body">
                     <tr>
                       <td colspan="4" class="admin-table-message">
-                        Loading...
+                        <span
+                          class="admin-inline-loader"
+                          aria-hidden="true"
+                        ></span>
+                        Loading verification requests...
                       </td>
                     </tr>
                   </tbody>
@@ -272,8 +293,8 @@
       </div>
     </div>
 
-    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-dashboard.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-dashboard.js?v=3"></script>
   </body>
 </html>

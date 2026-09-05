@@ -1,0 +1,13 @@
+.env
+
+/.env
+/vendor/
+
+/storage/listing-images/*
+!/storage/listing-images/.htaccess
+
+/storage/profile-pictures/*
+!/storage/profile-pictures/.htaccess
+
+/storage/verification-documents/*
+!/storage/verification-documents/.htaccess

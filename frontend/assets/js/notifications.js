@@ -46,7 +46,7 @@
   const refreshButton = panel.querySelector("#notification-refresh");
 
   async function apiRequest(url, options = {}) {
-    const response = await fetch(url, {
+    const response = await window.SilipMuntiSession.secureFetch(url, {
       credentials: "include",
       cache: "no-store",
       ...options,

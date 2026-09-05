@@ -1,9 +1,9 @@
 <?php
 
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../config/session.php';
+require_once __DIR__ . '/../middleware/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
@@ -16,51 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     exit;
 }
 
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-
-    echo json_encode([
-        'success' => false,
-        'message' => 'You are not logged in.'
-    ]);
-
-    exit;
-}
-
 try {
-    $getUser = $pdo->prepare(
-        'SELECT
-            id,
-            first_name,
-            last_name,
-            email,
-            phone_number,
-            role,
-            profile_picture,
-            created_at
-         FROM users
-         WHERE id = ?
-           AND deleted_at IS NULL
-         LIMIT 1'
-    );
-
-    $getUser->execute([$_SESSION['user_id']]);
-
-    $user = $getUser->fetch();
-
-    if (!$user) {
-        $_SESSION = [];
-        session_destroy();
-
-        http_response_code(401);
-
-        echo json_encode([
-            'success' => false,
-            'message' => 'User account is no longer available.'
-        ]);
-
-        exit;
-    }
+    $user = require_login($pdo);
 
     echo json_encode([
         'success' => true,

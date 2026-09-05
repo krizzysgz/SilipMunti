@@ -2,9 +2,12 @@
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
+header('X-Content-Type-Options: nosniff');
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/session.php';
+require_once __DIR__ . '/../middleware/rate-limiter.php';
+require_once __DIR__ . '/../security/turnstile.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -28,6 +31,7 @@ if (!is_array($data)) {
 
 $email = strtolower(trim($data['email'] ?? ''));
 $password = $data['password'] ?? '';
+$turnstileToken = trim($data['turnstile_token'] ?? '');
 
 $errors = [];
 
@@ -58,7 +62,58 @@ if ($errors !== []) {
 }
 
 try {
-    $getUser = $pdo->prepare("
+    $rateLimitState = auth_rate_limit_check(
+        $pdo,
+        'login',
+        $email
+    );
+
+    if ($rateLimitState['blocked']) {
+        $retryAfter = max(
+            1,
+            (int) $rateLimitState['retry_after']
+        );
+
+        header('Retry-After: ' . $retryAfter);
+        http_response_code(429);
+
+        echo json_encode([
+            'success' => false,
+            'message' =>
+                'Too many login attempts. Try again later.',
+            'data' => [
+                'retry_after' => $retryAfter
+            ]
+        ]);
+
+        exit;
+    }
+
+    if (turnstile_is_enabled()) {
+        $turnstileResult = turnstile_verify_token(
+            $turnstileToken,
+            'login'
+        );
+
+        if (!$turnstileResult['success']) {
+            $serviceUnavailable =
+                $turnstileResult['reason']
+                === 'verification_service_unavailable';
+
+            http_response_code($serviceUnavailable ? 503 : 422);
+
+            echo json_encode([
+                'success' => false,
+                'message' => $serviceUnavailable
+                    ? 'Security verification is temporarily unavailable.'
+                    : 'Please complete the security verification again.'
+            ]);
+
+            exit;
+        }
+    }
+
+    $getUser = $pdo->prepare('
         SELECT
             id,
             first_name,
@@ -72,7 +127,7 @@ try {
         WHERE email = :email
             AND deleted_at IS NULL
         LIMIT 1
-    ");
+    ');
 
     $getUser->execute([
         'email' => $email
@@ -80,13 +135,49 @@ try {
 
     $user = $getUser->fetch();
 
-    if (
-        !$user
-        || !password_verify(
-            $password,
-            $user['password']
-        )
-    ) {
+    $dummyPasswordHash =
+        '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/'
+        . '.og/at2uheWG/igi.';
+
+    $passwordHash = $user
+        ? $user['password']
+        : $dummyPasswordHash;
+
+    $passwordIsValid = password_verify(
+        $password,
+        $passwordHash
+    );
+
+    if (!$user || !$passwordIsValid) {
+        $failureState = auth_rate_limit_record_failure(
+            $pdo,
+            'login',
+            $email
+        );
+
+        usleep(random_int(150000, 300000));
+
+        if ($failureState['blocked']) {
+            $retryAfter = max(
+                1,
+                (int) $failureState['retry_after']
+            );
+
+            header('Retry-After: ' . $retryAfter);
+            http_response_code(429);
+
+            echo json_encode([
+                'success' => false,
+                'message' =>
+                    'Too many login attempts. Try again later.',
+                'data' => [
+                    'retry_after' => $retryAfter
+                ]
+            ]);
+
+            exit;
+        }
+
         http_response_code(401);
 
         echo json_encode([
@@ -96,6 +187,12 @@ try {
 
         exit;
     }
+
+    auth_rate_limit_clear_success(
+        $pdo,
+        'login',
+        $email
+    );
 
     if (
         password_needs_rehash(
@@ -108,13 +205,19 @@ try {
             PASSWORD_DEFAULT
         );
 
-        $rehashStmt = $pdo->prepare("
+        if ($newHash === false) {
+            throw new RuntimeException(
+                'Unable to secure the password.'
+            );
+        }
+
+        $rehashStatement = $pdo->prepare('
             UPDATE users
             SET password = :password
             WHERE id = :user_id
-        ");
+        ');
 
-        $rehashStmt->execute([
+        $rehashStatement->execute([
             'password' => $newHash,
             'user_id' => $user['id']
         ]);
@@ -126,9 +229,12 @@ try {
 
     session_regenerate_id(true);
 
+    $_SESSION = [];
     $_SESSION['user_id'] = (int) $user['id'];
     $_SESSION['logged_in_at'] = time();
     $_SESSION['last_activity'] = time();
+    $_SESSION['session_started_at'] = time();
+    $_SESSION['last_regeneration'] = time();
 
     $user['id'] = (int) $user['id'];
 
@@ -141,7 +247,7 @@ try {
             'user' => $user
         ]
     ]);
-} catch (PDOException $exception) {
+} catch (Throwable $exception) {
     error_log($exception->getMessage());
 
     http_response_code(500);

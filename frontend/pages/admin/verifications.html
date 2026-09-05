@@ -8,7 +8,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
-    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css" />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/admin.css?v=5" />
   </head>
 
   <body>
@@ -37,11 +37,10 @@
           </div>
 
           <div class="admin-topbar-profile">
-            <img
-              id="admin-profile-picture"
-              src="/SilipMunti/frontend/assets/images/default-profile.png"
-              alt="Admin profile"
-            />
+            <span class="admin-profile-avatar" id="admin-profile-avatar" aria-label="Admin profile picture">
+              <img id="admin-profile-picture" alt="" hidden />
+              <span id="admin-profile-initials" aria-hidden="true">A</span>
+            </span>
             <div>
               <strong id="admin-name">Admin</strong>
               <span>Administrator</span>
@@ -54,10 +53,7 @@
             <div>
               <span class="admin-eyebrow">Document review</span>
               <h1>Landlord verifications</h1>
-              <p>
-                Select a landlord to review their required verification
-                documents.
-              </p>
+              <p>Select a landlord to review their required verification documents.</p>
             </div>
           </div>
 
@@ -92,11 +88,7 @@
                 <h2>Verification queue</h2>
                 <p id="result-text">Showing landlord verification records.</p>
               </div>
-              <button
-                type="button"
-                class="admin-refresh-button"
-                id="refresh-button"
-              >
+              <button type="button" class="admin-refresh-button" id="refresh-button">
                 <i class="fa-solid fa-rotate-right"></i>
                 <span>Refresh</span>
               </button>
@@ -117,17 +109,20 @@
             </div>
 
             <div class="admin-landlord-list" id="landlord-verification-list">
-              <div class="admin-card-message">
-                Loading landlord verification queue...
-              </div>
+              <div class="admin-card-message">Loading landlord verification queue...</div>
             </div>
+            <nav
+              class="admin-pagination hidden"
+              id="verifications-pagination"
+              aria-label="Verification queue pagination"
+            ></nav>
           </section>
         </main>
       </div>
     </div>
 
-    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-verifications.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-verifications.js?v=3"></script>
   </body>
 </html>

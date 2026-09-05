@@ -20,9 +20,18 @@
   const imageInput = document.querySelector("#image-upload");
   const imageUploadLabel = document.querySelector("#image-upload-label");
   const uploadMessage = document.querySelector("#upload-message");
+  const latitudeInput = document.querySelector("#latitude");
+  const longitudeInput = document.querySelector("#longitude");
+  const mapStatus = document.querySelector("#edit-map-status");
+  const mapLocateButton = document.querySelector("#edit-map-locate");
+  const mapSearchInput = document.querySelector("#edit-map-search");
+  const mapSearchButton = document.querySelector("#edit-map-search-button");
+  const addressInput = form?.elements.address;
+  const barangayInput = form?.elements.barangay;
+  let mapPickerController = null;
 
   const request = async (url, options = {}) => {
-    const response = await fetch(url, {
+    const response = await window.SilipMuntiSession.secureFetch(url, {
       credentials: "include",
       cache: "no-store",
       ...options,
@@ -112,6 +121,8 @@
     form.elements.bedroom_no.value = listing.bedroom_no ?? "";
     form.elements.listing_size.value = listing.listing_size ?? "";
     form.elements.occupancy_limit.value = listing.occupancy_limit ?? "";
+    form.elements.availability_status.value =
+      listing.availability_status || "available";
     document.querySelector("#amenities").value = inputFromList(
       listing.amenities,
     );
@@ -129,6 +140,38 @@
     renderImages();
   };
 
+  const setupMapPicker = async () => {
+    if (!window.SilipMuntiMaps || !latitudeInput || !longitudeInput) return;
+
+    if (mapSearchInput && !mapSearchInput.value.trim()) {
+      mapSearchInput.value = [addressInput?.value, barangayInput?.value]
+        .filter(Boolean)
+        .join(", ");
+    }
+
+    try {
+      mapPickerController = await window.SilipMuntiMaps.createPicker({
+        element: "#edit-property-map",
+        latitude: latitudeInput.value,
+        longitude: longitudeInput.value,
+        latitudeInput,
+        longitudeInput,
+        locateButton: mapLocateButton,
+        statusElement: mapStatus,
+        searchInput: mapSearchInput,
+        searchButton: mapSearchButton,
+        addressInput,
+        barangayInput,
+      });
+    } catch (error) {
+      if (mapStatus) {
+        mapStatus.textContent =
+          "The map could not be loaded. Enter valid coordinates manually.";
+        mapStatus.dataset.type = "error";
+      }
+    }
+  };
+
   const loadPage = async () => {
     if (!Number.isInteger(listingId) || listingId < 1)
       throw new Error("A valid listing ID is required.");
@@ -141,12 +184,7 @@
       window.location.href = "/SilipMunti/frontend/index.html";
       return;
     }
-    document.querySelector("#topbar-user-name").textContent =
-      `${user.first_name} ${user.last_name}`;
-    const picture = user.profile_picture
-      ? `/SilipMunti/backend/${user.profile_picture}`
-      : "/SilipMunti/frontend/assets/images/default-profile.png";
-    document.querySelector("#topbar-profile-picture").src = picture;
+    window.SilipMuntiLandlordShell?.setLandlordProfile(user);
     const [listingsResult] = await Promise.all([
       request(API.listings),
       populateRentalTypes(),
@@ -159,6 +197,7 @@
     populateForm();
     loading.classList.add("hidden");
     form.classList.remove("hidden");
+    await setupMapPicker();
   };
 
   form.addEventListener("submit", async (event) => {
@@ -180,6 +219,7 @@
       bedroom_no: form.elements.bedroom_no.value,
       listing_size: form.elements.listing_size.value,
       occupancy_limit: form.elements.occupancy_limit.value,
+      availability_status: form.elements.availability_status.value,
       amenities: listFromInput(document.querySelector("#amenities").value),
       nearby_establishments: listFromInput(
         document.querySelector("#nearby-establishments").value,
@@ -188,15 +228,33 @@
         document.querySelector("#transport-routes").value,
       ),
     };
+    const coordinates = window.SilipMuntiMaps?.normalizeCoordinates(
+      data.latitude,
+      data.longitude,
+    );
+
+    if (!coordinates) {
+      showMessage(
+        formMessage,
+        "Select the property location on the map or enter valid coordinates.",
+        "error",
+      );
+      saveButton.disabled = false;
+      saveButton.querySelector("span").textContent = "Save Changes";
+      return;
+    }
     try {
       const result = await request(API.update, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      document.querySelector("#verification-status").textContent = "pending";
+      listing.availability_status = result.data.availability_status;
+      listing.verification_status = result.data.verification_status;
+      document.querySelector("#verification-status").textContent =
+        result.data.verification_status;
       document.querySelector("#verification-status").className =
-        "status-badge pending";
+        `status-badge ${result.data.verification_status}`;
       showMessage(formMessage, result.message, "success");
     } catch (error) {
       showFieldErrors(error.errors);
@@ -264,35 +322,6 @@
     document.querySelector("#description-count").textContent =
       `${event.target.value.length}/5000`;
   });
-
-  const profileButton = document.querySelector("#topbar-profile-button");
-  const profileDropdown = document.querySelector("#topbar-profile-dropdown");
-  profileButton.addEventListener("click", (event) => {
-    event.stopPropagation();
-    profileDropdown.classList.toggle("hidden");
-    profileButton.setAttribute(
-      "aria-expanded",
-      String(!profileDropdown.classList.contains("hidden")),
-    );
-  });
-  document.addEventListener("click", () =>
-    profileDropdown.classList.add("hidden"),
-  );
-  document
-    .querySelector("#sidebar-toggle")
-    .addEventListener("click", () =>
-      document.querySelector("#dashboard-sidebar").classList.add("open"),
-    );
-  document
-    .querySelector("#sidebar-close")
-    .addEventListener("click", () =>
-      document.querySelector("#dashboard-sidebar").classList.remove("open"),
-    );
-  ["#sidebar-logout", "#dropdown-logout"].forEach((selector) =>
-    document
-      .querySelector(selector)
-      .addEventListener("click", () => window.SilipMuntiSession.logoutUser()),
-  );
 
   loadPage().catch((error) => {
     loading.classList.add("hidden");

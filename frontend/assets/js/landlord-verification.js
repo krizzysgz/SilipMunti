@@ -19,17 +19,7 @@ const verificationDescription = document.querySelector(
   "#verification-description",
 );
 const refreshButton = document.querySelector("#refresh-button");
-const logoutButton = document.querySelector("#logout-button");
 const addPropertyLink = document.querySelector("#add-property-link");
-const sidebar = document.querySelector("#dashboard-sidebar");
-const sidebarToggle = document.querySelector("#sidebar-toggle");
-const sidebarClose = document.querySelector("#sidebar-close");
-const topbarProfileButton = document.querySelector("#topbar-profile-button");
-const topbarProfileDropdown = document.querySelector(
-  "#topbar-profile-dropdown",
-);
-const topbarLogoutButton = document.querySelector("#topbar-logout-button");
-const notificationButton = document.querySelector("#notification-button");
 const notificationCount = document.querySelector("#notification-count");
 
 const NOTIFICATIONS_API =
@@ -249,26 +239,7 @@ async function loadCurrentUser() {
     return null;
   }
 
-  const fullName = `${user.first_name} ${user.last_name}`.trim();
-
-  const displayName = fullName || "Landlord";
-  const topbarName = document.querySelector("#landlord-topbar-name");
-  const dropdownName = document.querySelector("#dropdown-landlord-name");
-
-  if (topbarName) topbarName.textContent = displayName;
-  if (dropdownName) dropdownName.textContent = displayName;
-
-  const profileUrl = user.profile_picture
-    ? user.profile_picture.startsWith("/")
-      ? user.profile_picture
-      : `/SilipMunti/backend/${user.profile_picture}`
-    : "/SilipMunti/frontend/assets/images/default-profile.png";
-
-  const topbarPicture = document.querySelector("#landlord-profile-picture");
-  const dropdownPicture = document.querySelector("#dropdown-landlord-picture");
-
-  if (topbarPicture) topbarPicture.src = profileUrl;
-  if (dropdownPicture) dropdownPicture.src = profileUrl;
+  window.SilipMuntiLandlordShell?.setLandlordProfile(user);
 
   return user;
 }
@@ -382,11 +353,14 @@ function setupUploadForms() {
       try {
         const formData = new FormData(uploadForm);
 
-        const response = await fetch(UPLOAD_DOCUMENT_API, {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        });
+        const response = await window.SilipMuntiSession.secureFetch(
+          UPLOAD_DOCUMENT_API,
+          {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+          },
+        );
 
         const result = await response.json();
 

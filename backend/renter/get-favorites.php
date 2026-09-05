@@ -1,9 +1,9 @@
 <?php
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
-require_once '../config/database.php';
-require_once '../middleware/auth.php';
+require_once __DIR__ . '/../middleware/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
@@ -70,6 +70,11 @@ $imageStmt = $pdo->prepare("
 ");
 
 foreach ($favorites as &$favorite) {
+    $favorite['favorite_id'] = (int) $favorite['favorite_id'];
+    $favorite['listing_id'] = (int) $favorite['listing_id'];
+    $favorite['rental_type_id'] = (int) $favorite['rental_type_id'];
+    $favorite['price'] = (float) $favorite['price'];
+
     $imageStmt->execute([
         'listing_id' => $favorite['listing_id']
     ]);
@@ -77,15 +82,29 @@ foreach ($favorites as &$favorite) {
     $images = $imageStmt->fetchAll();
 
     foreach ($images as &$image) {
-        $image['image_url'] =
-            '/SilipMunti/backend/' . $image['image_path'];
+        $image['id'] = (int) $image['id'];
+        $imagePath = $image['image_path'];
+
+        if (
+            preg_match('/^https?:\/\//i', $imagePath)
+            || str_starts_with($imagePath, '/')
+        ) {
+            $image['image_url'] = $imagePath;
+        } else {
+            $image['image_url'] =
+                '/SilipMunti/backend/' . ltrim($imagePath, '/');
+        }
 
         unset($image['image_path']);
     }
 
+    unset($image);
+
     $favorite['images'] = $images;
     $favorite['primary_image'] = $images[0]['image_url'] ?? null;
 }
+
+unset($favorite);
 
 echo json_encode([
     'success' => true,

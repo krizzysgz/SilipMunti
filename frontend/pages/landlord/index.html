@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verified Landlords | SilipMunti</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../../assets/css/global.css?v=2" />
+    <link rel="stylesheet" href="../../assets/css/landlord-directory.css?v=2" />
+  </head>
+  <body>
+    <site-navbar active-page="landlords"></site-navbar>
+
+    <main class="landlord-directory-page">
+      <section class="landlord-directory-banner">
+        <div class="landlord-directory-container">
+          <div class="landlord-directory-hero-grid">
+            <div class="landlord-directory-intro">
+              <span class="directory-label">
+                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                Trusted across Muntinlupa
+              </span>
+              <h1>
+                Find rentals from<br />landlords you can <span>trust.</span>
+              </h1>
+              <p>
+                Explore verified property owners, compare their available
+                rentals, and read published renter reviews in one place.
+              </p>
+              <div class="directory-hero-actions">
+                <a
+                  class="directory-hero-primary"
+                  href="#verified-landlord-directory"
+                >
+                  Browse landlords
+                  <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </a>
+                <a
+                  class="directory-hero-secondary"
+                  href="../properties/index.html"
+                >
+                  Explore properties
+                </a>
+              </div>
+            </div>
+
+            <div
+              class="landlord-directory-visual"
+              aria-label="Verified rental property"
+            >
+              <div class="directory-visual-frame">
+                <img
+                  src="../../assets/images/hero-property.jpg"
+                  alt="Residential property in Muntinlupa"
+                />
+              </div>
+
+              <div class="directory-floating-card directory-floating-card-top">
+                <span><i class="fa-solid fa-shield-halved"></i></span>
+                <div>
+                  <strong>Verified profiles</strong>
+                  <small>Documents reviewed before approval</small>
+                </div>
+              </div>
+
+              <div
+                class="directory-floating-card directory-floating-card-bottom"
+              >
+                <span><i class="fa-solid fa-building-circle-check"></i></span>
+                <div>
+                  <strong>Trusted listings</strong>
+                  <small>Only verified rentals are displayed</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="landlord-trust-strip"
+        aria-label="Platform trust information"
+      >
+        <div class="landlord-trust-item">
+          <strong id="directory-landlord-count">—</strong>
+          <span>Verified landlords</span>
+        </div>
+        <div class="landlord-trust-item">
+          <i class="fa-solid fa-house-circle-check" aria-hidden="true"></i>
+          <span
+            ><strong id="directory-listing-count">—</strong> active rental
+            listings</span
+          >
+        </div>
+        <div class="landlord-trust-item">
+          <i class="fa-solid fa-comments" aria-hidden="true"></i>
+          <span>Direct renter–landlord connection</span>
+        </div>
+      </section>
+
+      <section
+        class="landlord-directory-content"
+        id="verified-landlord-directory"
+      >
+        <div class="landlord-directory-container">
+          <form class="landlord-directory-filters" id="landlord-filter-form">
+            <label class="directory-search-field">
+              <span>Search landlords</span>
+              <div class="directory-input">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input
+                  id="landlord-search"
+                  name="search"
+                  type="search"
+                  maxlength="100"
+                  placeholder="Name or property location"
+                />
+              </div>
+            </label>
+
+            <label>
+              <span>Property location</span>
+              <div class="directory-input">
+                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                <select id="landlord-location" name="barangay">
+                  <option value="">All locations</option>
+                  <option value="Alabang">Alabang</option>
+                  <option value="Ayala Alabang">Ayala Alabang</option>
+                  <option value="Bayanan">Bayanan</option>
+                  <option value="Buli">Buli</option>
+                  <option value="Cupang">Cupang</option>
+                  <option value="Poblacion">Poblacion</option>
+                  <option value="Putatan">Putatan</option>
+                  <option value="Sucat">Sucat</option>
+                  <option value="Tunasan">Tunasan</option>
+                </select>
+              </div>
+            </label>
+
+            <label>
+              <span>Sort by</span>
+              <div class="directory-input">
+                <i
+                  class="fa-solid fa-arrow-down-wide-short"
+                  aria-hidden="true"
+                ></i>
+                <select id="landlord-sort" name="sort">
+                  <option value="listings_desc">Most properties</option>
+                  <option value="rating_desc">Highest rated</option>
+                  <option value="newest">Newest verified</option>
+                  <option value="name_asc">Name A–Z</option>
+                </select>
+              </div>
+            </label>
+
+            <button class="directory-filter-button" type="submit">
+              <i class="fa-solid fa-filter" aria-hidden="true"></i>
+              Apply filters
+            </button>
+            <button
+              class="directory-reset-button"
+              id="landlord-filter-reset"
+              type="button"
+            >
+              Reset
+            </button>
+          </form>
+
+          <div class="landlord-directory-heading">
+            <div>
+              <span class="directory-eyebrow">Trusted owners</span>
+              <h2>All Verified Landlords</h2>
+              <p id="landlord-result-summary">Loading verified landlords...</p>
+            </div>
+          </div>
+
+          <div
+            class="landlord-directory-grid loading"
+            id="landlord-directory-grid"
+            aria-live="polite"
+          >
+            <div class="directory-card-skeleton"></div>
+            <div class="directory-card-skeleton"></div>
+            <div class="directory-card-skeleton"></div>
+            <div class="directory-card-skeleton"></div>
+          </div>
+
+          <div
+            class="landlord-directory-message hidden"
+            id="landlord-directory-message"
+          ></div>
+          <nav
+            class="landlord-directory-pagination hidden"
+            id="landlord-pagination"
+            aria-label="Landlord pages"
+          ></nav>
+        </div>
+      </section>
+    </main>
+
+    <footer class="landlord-directory-footer">
+      <p>© 2026 SilipMunti. All rights reserved.</p>
+    </footer>
+
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/site-navbar.js?v=4"></script>
+    <script src="../../assets/js/landlord-directory.js?v=2"></script>
+  </body>
+</html>

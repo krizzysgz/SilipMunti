@@ -8,7 +8,12 @@ const REMOVE_FAVORITE_API = "/SilipMunti/backend/renter/remove-favorite.php";
 
 const CREATE_INQUIRY_API = "/SilipMunti/backend/inquiries/create-inquiry.php";
 
+const GET_LISTING_REVIEWS_API =
+  "/SilipMunti/backend/reviews/get-by-listing.php";
+
 const MESSAGES_PAGE_URL = "/SilipMunti/frontend/pages/messages/index.html";
+
+const REVIEWS_PAGE_URL = "/SilipMunti/frontend/pages/reviews/index.html";
 
 const propertyLoading = document.querySelector("#property-loading");
 
@@ -52,6 +57,8 @@ const mapLocationAddress = document.querySelector("#map-location-address");
 
 const openMapButton = document.querySelector("#open-map-button");
 
+const propertyMap = document.querySelector("#property-map");
+
 const landlordName = document.querySelector("#landlord-name");
 
 const galleryGrid = document.querySelector("#gallery-grid");
@@ -71,6 +78,34 @@ const lightboxPreviousButton = document.querySelector("#lightbox-previous");
 const lightboxNextButton = document.querySelector("#lightbox-next");
 
 const openInquiryButton = document.querySelector("#open-inquiry-button");
+
+const writeReviewButton = document.querySelector("#write-review-button");
+
+const listingReviewAverage = document.querySelector("#listing-review-average");
+
+const listingReviewTotal = document.querySelector("#listing-review-total");
+
+const listingReviewsStatus = document.querySelector("#listing-reviews-status");
+
+const listingReviewsList = document.querySelector("#listing-reviews-list");
+
+const listingReviewsActions = document.querySelector(
+  "#listing-reviews-actions",
+);
+
+const listingReviewsVisibleCount = document.querySelector(
+  "#listing-reviews-visible-count",
+);
+
+const toggleListingReviewsButton = document.querySelector(
+  "#toggle-listing-reviews",
+);
+
+const listingRatingBreakdown = document.querySelector(
+  "#listing-rating-breakdown",
+);
+
+const listingRatingFilters = document.querySelector("#listing-rating-filters");
 
 const inquiryModal = document.querySelector("#inquiry-modal");
 
@@ -96,10 +131,16 @@ let currentUser = null;
 let currentListing = null;
 let galleryImages = [];
 let currentImageIndex = 0;
+let allListingReviews = [];
+let selectedReviewRating = "all";
+let showAllListingReviews = false;
+
+const INITIAL_LISTING_REVIEWS_LIMIT = 5;
+let propertyMapController = null;
 
 function getProfilePictureUrl(profilePicture) {
   if (!profilePicture) {
-    return "../../assets/images/default-profile.png";
+    return "../../assets/images/default-profile.svg";
   }
 
   if (/^https?:\/\//i.test(profilePicture)) {
@@ -120,6 +161,24 @@ function formatPrice(price) {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(Number(price) || 0);
+}
+
+function formatReviewDate(dateValue) {
+  if (!dateValue) {
+    return "Date unavailable";
+  }
+
+  const parsedDate = new Date(String(dateValue).replace(" ", "T"));
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "Date unavailable";
+  }
+
+  return new Intl.DateTimeFormat("en-PH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(parsedDate);
 }
 
 function parseListData(value) {
@@ -164,7 +223,7 @@ function setPropertyImageFallback(imageElement) {
   imageElement.addEventListener("error", () => {
     imageElement.onerror = null;
 
-    imageElement.src = "../../assets/images/property-placeholder.jpg";
+    imageElement.src = "../../assets/images/property-placeholder.svg";
   });
 }
 
@@ -237,12 +296,11 @@ async function toggleFavorite() {
   }
 
   if (!currentUser) {
-    sessionStorage.setItem(
-      "silip_munti_redirect",
-      window.location.pathname + window.location.search,
-    );
-
-    window.location.href = "../auth/login.html";
+    window.SilipMuntiSession?.showLoginPrompt({
+      title: "Save this property",
+      message:
+        "Sign in using a renter account to add this rental to your favorites.",
+    });
 
     return;
   }
@@ -260,7 +318,13 @@ async function toggleFavorite() {
   favoriteButton.disabled = true;
 
   try {
-    const response = await fetch(
+    if (!window.SilipMuntiSession?.secureFetch) {
+      throw new Error(
+        "Request security is unavailable. Refresh the page and try again.",
+      );
+    }
+
+    const response = await window.SilipMuntiSession.secureFetch(
       isFavorite ? REMOVE_FAVORITE_API : ADD_FAVORITE_API,
       {
         method: isFavorite ? "DELETE" : "POST",
@@ -275,6 +339,15 @@ async function toggleFavorite() {
     );
 
     const result = await response.json();
+
+    if (response.status === 401) {
+      currentUser = null;
+      window.SilipMuntiSession?.showLoginPrompt({
+        title: "Your session has ended",
+        message: "Sign in again to update your saved properties.",
+      });
+      return;
+    }
 
     if (!response.ok || !result.success) {
       throw new Error(result.message || "Unable to update favorite.");
@@ -349,7 +422,7 @@ function renderGallery(images) {
   if (galleryImages.length === 0) {
     galleryImages = [
       {
-        image_url: "../../assets/images/property-placeholder.jpg",
+        image_url: "../../assets/images/property-placeholder.svg",
       },
     ];
   }
@@ -510,6 +583,59 @@ function showPropertyError(message) {
   propertyError?.classList.remove("hidden");
 }
 
+async function initializePropertyMap(listing) {
+  if (!propertyMap || !window.SilipMuntiMaps) return;
+
+  const coordinates = window.SilipMuntiMaps.normalizeCoordinates(
+    listing.latitude,
+    listing.longitude,
+  );
+
+  if (!coordinates) {
+    propertyMap.classList.remove("is-loading");
+    propertyMap.classList.add("sm-map-unavailable");
+    propertyMap.textContent =
+      "The landlord has not provided a valid map location.";
+    openMapButton?.classList.add("hidden");
+    return;
+  }
+
+  try {
+    propertyMapController?.destroy?.();
+    propertyMapController = await window.SilipMuntiMaps.createViewer({
+      element: propertyMap,
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+      title: listing.title,
+      address: [listing.address, listing.barangay, listing.city]
+        .filter(Boolean)
+        .join(", "),
+    });
+
+    if (openMapButton) {
+      openMapButton.href = window.SilipMuntiMaps.externalUrl(
+        coordinates.latitude,
+        coordinates.longitude,
+        propertyMapController.provider,
+      );
+      openMapButton.classList.remove("hidden");
+    }
+  } catch (error) {
+    propertyMap.classList.remove("is-loading");
+    propertyMap.classList.add("sm-map-unavailable");
+    propertyMap.textContent =
+      "The map could not be loaded. You can still open the location externally.";
+
+    if (openMapButton) {
+      openMapButton.href = window.SilipMuntiMaps.externalUrl(
+        coordinates.latitude,
+        coordinates.longitude,
+      );
+      openMapButton.classList.remove("hidden");
+    }
+  }
+}
+
 function renderListing(listing) {
   currentListing = listing;
 
@@ -591,18 +717,6 @@ function renderListing(listing) {
       fullAddress || "Location is not specified.";
   }
 
-  if (openMapButton) {
-    if (listing.latitude && listing.longitude) {
-      const coordinates = `${listing.latitude},${listing.longitude}`;
-
-      openMapButton.href = `https://www.google.com/maps?q=${encodeURIComponent(coordinates)}`;
-
-      openMapButton.classList.remove("hidden");
-    } else {
-      openMapButton.classList.add("hidden");
-    }
-  }
-
   if (openInquiryButton) {
     openInquiryButton.disabled = !isAvailable;
 
@@ -650,6 +764,317 @@ function renderListing(listing) {
   propertyError?.classList.add("hidden");
 
   propertyPage?.classList.remove("hidden");
+
+  initializePropertyMap(listing);
+}
+
+function showListingReviewsStatus(message, state = "loading") {
+  if (!listingReviewsStatus) {
+    return;
+  }
+
+  const iconClass = {
+    loading: "fa-solid fa-spinner fa-spin",
+    empty: "fa-regular fa-message",
+    error: "fa-solid fa-circle-exclamation",
+  }[state];
+
+  listingReviewsStatus.className = `listing-reviews-status ${state}`;
+  listingReviewsStatus.replaceChildren();
+
+  const icon = document.createElement("i");
+  icon.className = iconClass;
+
+  const text = document.createElement("span");
+  text.textContent = message;
+
+  listingReviewsStatus.append(icon, text);
+}
+
+function createListingReviewCard(review) {
+  const card = document.createElement("article");
+  card.className = "renter-review-card";
+
+  const top = document.createElement("div");
+  top.className = "renter-review-top";
+
+  const author = document.createElement("div");
+  author.className = "renter-review-author";
+
+  const avatar = document.createElement("img");
+  avatar.className = "renter-review-avatar";
+  avatar.src = getProfilePictureUrl(review.profile_picture_url);
+  avatar.alt = `${review.renter_name || "Renter"} profile picture`;
+  setProfileImageFallback(avatar);
+
+  const renterInformation = document.createElement("div");
+  renterInformation.className = "renter-review-meta";
+
+  const renterName = document.createElement("strong");
+  renterName.textContent = review.renter_name || "SilipMunti renter";
+
+  const reviewDate = document.createElement("time");
+  reviewDate.dateTime = review.created_at || "";
+  reviewDate.textContent = formatReviewDate(review.created_at);
+
+  renterInformation.append(renterName, reviewDate);
+  author.append(avatar, renterInformation);
+
+  const rating = document.createElement("span");
+  rating.className = "renter-review-rating";
+  rating.textContent = `Rating ${Number(review.rating) || 0}`;
+
+  top.append(author, rating);
+
+  const comment = document.createElement("p");
+  comment.className = "renter-review-comment";
+  comment.textContent = review.comment || "No written comment was provided.";
+
+  card.append(top, comment);
+
+  return card;
+}
+
+function getListingRatingCounts(reviews) {
+  const counts = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  };
+
+  reviews.forEach((review) => {
+    const rating = Number(review.rating);
+
+    if (counts[rating] !== undefined) {
+      counts[rating] += 1;
+    }
+  });
+
+  return counts;
+}
+
+function renderListingRatingBreakdown(reviews) {
+  if (!listingRatingBreakdown) {
+    return;
+  }
+
+  const counts = getListingRatingCounts(reviews);
+  const total = reviews.length;
+
+  listingRatingBreakdown.replaceChildren();
+
+  for (let rating = 5; rating >= 1; rating -= 1) {
+    const row = document.createElement("div");
+    row.className = "rating-breakdown-row";
+
+    const label = document.createElement("span");
+    label.className = "rating-breakdown-label";
+    label.textContent = `Rating ${rating}`;
+
+    const track = document.createElement("div");
+    track.className = "rating-breakdown-track";
+    track.setAttribute("role", "progressbar");
+    track.setAttribute("aria-label", `Rating ${rating}`);
+    track.setAttribute("aria-valuemin", "0");
+    track.setAttribute("aria-valuemax", String(total));
+    track.setAttribute("aria-valuenow", String(counts[rating]));
+
+    const fill = document.createElement("div");
+    fill.className = "rating-breakdown-fill";
+    fill.style.width = `${total > 0 ? (counts[rating] / total) * 100 : 0}%`;
+
+    const count = document.createElement("span");
+    count.className = "rating-breakdown-count";
+    count.textContent = String(counts[rating]);
+
+    track.appendChild(fill);
+    row.append(label, track, count);
+    listingRatingBreakdown.appendChild(row);
+  }
+}
+
+function updateListingRatingFilters(reviews) {
+  if (!listingRatingFilters) {
+    return;
+  }
+
+  const counts = getListingRatingCounts(reviews);
+
+  listingRatingFilters
+    .querySelectorAll(".rating-filter-button")
+    .forEach((button) => {
+      const rating = button.dataset.rating;
+      const count = rating === "all" ? reviews.length : counts[rating] || 0;
+      const countElement = button.querySelector("span");
+
+      if (countElement) {
+        countElement.textContent = String(count);
+      }
+
+      const isActive = rating === selectedReviewRating;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+}
+
+function getFilteredListingReviews() {
+  return selectedReviewRating === "all"
+    ? allListingReviews
+    : allListingReviews.filter(
+        (review) => Number(review.rating) === Number(selectedReviewRating),
+      );
+}
+
+function updateListingReviewToggle(totalFilteredReviews, visibleReviews) {
+  if (
+    !listingReviewsActions ||
+    !toggleListingReviewsButton ||
+    !listingReviewsVisibleCount
+  ) {
+    return;
+  }
+
+  const hasMoreReviews = totalFilteredReviews > INITIAL_LISTING_REVIEWS_LIMIT;
+
+  listingReviewsActions.classList.toggle("hidden", !hasMoreReviews);
+
+  if (!hasMoreReviews) {
+    toggleListingReviewsButton.setAttribute("aria-expanded", "false");
+    return;
+  }
+
+  listingReviewsVisibleCount.textContent = `Showing ${visibleReviews} of ${totalFilteredReviews} reviews`;
+
+  const label = toggleListingReviewsButton.querySelector("span");
+
+  if (label) {
+    label.textContent = showAllListingReviews
+      ? "Show latest 5"
+      : "See all reviews";
+  }
+
+  toggleListingReviewsButton.setAttribute(
+    "aria-expanded",
+    String(showAllListingReviews),
+  );
+}
+
+function renderFilteredListingReviews() {
+  if (!listingReviewsList) {
+    return;
+  }
+
+  const filteredReviews = getFilteredListingReviews();
+
+  listingReviewsList.replaceChildren();
+
+  if (filteredReviews.length === 0) {
+    listingReviewsList.classList.add("hidden");
+    showListingReviewsStatus(
+      selectedReviewRating === "all"
+        ? "No renter reviews yet. Be the first to share your experience."
+        : `No published reviews with rating ${selectedReviewRating}.`,
+      "empty",
+    );
+    listingReviewsActions?.classList.add("hidden");
+    return;
+  }
+
+  const visibleReviews = showAllListingReviews
+    ? filteredReviews
+    : filteredReviews.slice(0, INITIAL_LISTING_REVIEWS_LIMIT);
+
+  visibleReviews.forEach((review) => {
+    listingReviewsList.appendChild(createListingReviewCard(review));
+  });
+
+  updateListingReviewToggle(filteredReviews.length, visibleReviews.length);
+
+  listingReviewsStatus?.classList.add("hidden");
+  listingReviewsList.classList.remove("hidden");
+}
+
+function renderListingReviews(reviewData) {
+  const reviews = Array.isArray(reviewData?.reviews) ? reviewData.reviews : [];
+  const totalReviews = Number(reviewData?.summary?.total_reviews) || 0;
+  const averageRating = Number(reviewData?.summary?.average_rating) || 0;
+
+  if (listingReviewAverage) {
+    listingReviewAverage.textContent = averageRating.toFixed(1);
+  }
+
+  if (listingReviewTotal) {
+    listingReviewTotal.textContent =
+      totalReviews === 0
+        ? "No reviews yet"
+        : `${totalReviews} ${totalReviews === 1 ? "review" : "reviews"}`;
+  }
+
+  allListingReviews = [...reviews].sort((firstReview, secondReview) => {
+    const firstDate = new Date(
+      String(firstReview.created_at || "").replace(" ", "T"),
+    ).getTime();
+    const secondDate = new Date(
+      String(secondReview.created_at || "").replace(" ", "T"),
+    ).getTime();
+
+    if (Number.isFinite(firstDate) && Number.isFinite(secondDate)) {
+      return secondDate - firstDate;
+    }
+
+    return Number(secondReview.id || 0) - Number(firstReview.id || 0);
+  });
+  selectedReviewRating = "all";
+  showAllListingReviews = false;
+
+  renderListingRatingBreakdown(reviews);
+  updateListingRatingFilters(reviews);
+  renderFilteredListingReviews();
+}
+
+async function loadListingReviews(currentListingId) {
+  if (!currentListingId) {
+    return;
+  }
+
+  listingReviewsList?.classList.add("hidden");
+  showListingReviewsStatus("Loading renter reviews...", "loading");
+
+  try {
+    const response = await fetch(
+      `${GET_LISTING_REVIEWS_API}?listing_id=${encodeURIComponent(currentListingId)}`,
+      {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Unable to retrieve renter reviews.");
+    }
+
+    renderListingReviews(result.data);
+  } catch (error) {
+    console.error(error);
+
+    if (listingReviewAverage) {
+      listingReviewAverage.textContent = "0.0";
+    }
+
+    if (listingReviewTotal) {
+      listingReviewTotal.textContent = "Reviews unavailable";
+    }
+
+    showListingReviewsStatus(
+      error.message || "Unable to load renter reviews right now.",
+      "error",
+    );
+  }
 }
 
 async function loadListing() {
@@ -680,6 +1105,7 @@ async function loadListing() {
     }
 
     renderListing(result.data.listing);
+    await loadListingReviews(result.data.listing.id);
   } catch (error) {
     console.error(error);
 
@@ -720,12 +1146,11 @@ function getInquiryId(result) {
 
 function openInquiryModal() {
   if (!currentUser) {
-    sessionStorage.setItem(
-      "silip_munti_redirect",
-      window.location.pathname + window.location.search,
-    );
-
-    window.location.href = "../auth/login.html";
+    window.SilipMuntiSession?.showLoginPrompt({
+      title: "Message the landlord",
+      message:
+        "Sign in using a renter account to ask about availability, schedules, or rental terms.",
+    });
 
     return;
   }
@@ -799,19 +1224,38 @@ async function submitInquiry(event) {
   }
 
   try {
-    const response = await fetch(CREATE_INQUIRY_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    if (!window.SilipMuntiSession?.secureFetch) {
+      throw new Error(
+        "Request security is unavailable. Refresh the page and try again.",
+      );
+    }
+
+    const response = await window.SilipMuntiSession.secureFetch(
+      CREATE_INQUIRY_API,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          listing_id: Number(currentListing.id),
+          message_text: messageText,
+        }),
       },
-      credentials: "include",
-      body: JSON.stringify({
-        listing_id: Number(currentListing.id),
-        message_text: messageText,
-      }),
-    });
+    );
 
     const result = await response.json();
+
+    if (response.status === 401) {
+      currentUser = null;
+      closeInquiryModal();
+      window.SilipMuntiSession?.showLoginPrompt({
+        title: "Your session has ended",
+        message: "Sign in again to message the landlord.",
+      });
+      return;
+    }
 
     if (!response.ok || !result.success) {
       throw new Error(result.message || "Unable to send inquiry.");
@@ -843,6 +1287,31 @@ async function submitInquiry(event) {
   }
 }
 
+function openListingReviewPage() {
+  if (!currentListing) {
+    return;
+  }
+
+  const reviewUrl = `${REVIEWS_PAGE_URL}?type=listing&listing_id=${encodeURIComponent(currentListing.id)}`;
+
+  if (!currentUser) {
+    window.SilipMuntiSession?.showLoginPrompt({
+      title: "Write a property review",
+      message:
+        "Sign in using a renter account before sharing your experience with this property.",
+      returnUrl: reviewUrl,
+    });
+    return;
+  }
+
+  if (currentUser.role !== "renter") {
+    alert("Only renter accounts can submit property reviews.");
+    return;
+  }
+
+  window.location.href = reviewUrl;
+}
+
 favoriteButton?.addEventListener("click", toggleFavorite);
 
 viewImagesButton?.addEventListener("click", () => {
@@ -864,6 +1333,37 @@ imageLightbox?.addEventListener("click", (event) => {
 setPropertyImageFallback(lightboxImage);
 
 openInquiryButton?.addEventListener("click", openInquiryModal);
+
+writeReviewButton?.addEventListener("click", openListingReviewPage);
+
+listingRatingFilters?.addEventListener("click", (event) => {
+  const button = event.target.closest(".rating-filter-button");
+
+  if (!button || !listingRatingFilters.contains(button)) {
+    return;
+  }
+
+  selectedReviewRating = button.dataset.rating || "all";
+  showAllListingReviews = false;
+  updateListingRatingFilters(allListingReviews);
+  renderFilteredListingReviews();
+});
+
+toggleListingReviewsButton?.addEventListener("click", () => {
+  showAllListingReviews = !showAllListingReviews;
+  renderFilteredListingReviews();
+
+  if (!showAllListingReviews) {
+    const reduceMotion = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    document.querySelector("#listing-reviews-title")?.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  }
+});
 
 closeInquiryButton?.addEventListener("click", closeInquiryModal);
 

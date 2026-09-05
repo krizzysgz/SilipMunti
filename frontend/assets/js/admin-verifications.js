@@ -11,9 +11,13 @@
   const refreshButton = document.querySelector("#refresh-button");
   const statusFilter = document.querySelector("#status-filter");
   const topbarSearch = document.querySelector("#topbar-search");
+  const pagination = document.querySelector("#verifications-pagination");
+
+  const PAGE_SIZE = 10;
 
   let documents = [];
   let searchTimer = null;
+  let currentPage = 1;
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -176,10 +180,83 @@
     window.SilipMuntiAdminShell?.setPendingCount(pending);
   }
 
+  function getPaginationPages(totalPages) {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    const pages = [1];
+    let start = Math.max(2, currentPage - 1);
+    let end = Math.min(totalPages - 1, currentPage + 1);
+
+    if (currentPage <= 4) end = 5;
+    if (currentPage >= totalPages - 3) start = totalPages - 4;
+    if (start > 2) pages.push("ellipsis-start");
+    for (let page = start; page <= end; page += 1) pages.push(page);
+    if (end < totalPages - 1) pages.push("ellipsis-end");
+    pages.push(totalPages);
+    return pages;
+  }
+
+  function renderPagination(totalItems) {
+    if (!pagination) return;
+
+    if (totalItems < 1) {
+      pagination.classList.add("hidden");
+      pagination.innerHTML = "";
+      return;
+    }
+
+    const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+    const start = (currentPage - 1) * PAGE_SIZE + 1;
+    const end = Math.min(currentPage * PAGE_SIZE, totalItems);
+    const pageButtons = getPaginationPages(totalPages)
+      .map((page) => {
+        if (typeof page !== "number") {
+          return '<span class="admin-page-ellipsis" aria-hidden="true">…</span>';
+        }
+
+        const active = page === currentPage;
+        return `
+          <button type="button" class="admin-page-button${active ? " active" : ""}"
+            data-page="${page}" aria-label="Go to page ${page}"
+            ${active ? 'aria-current="page"' : ""}>${page}</button>
+        `;
+      })
+      .join("");
+
+    pagination.innerHTML = `
+      <span class="admin-pagination-info">
+        Showing <strong>${start}–${end}</strong> of
+        <strong>${totalItems}</strong> ${totalItems === 1 ? "landlord" : "landlords"}
+      </span>
+      <div class="admin-pagination-controls">
+        <button type="button" class="admin-page-button previous"
+          data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+          <span>Previous</span>
+        </button>
+        ${pageButtons}
+        <button type="button" class="admin-page-button next"
+          data-page="${currentPage + 1}" ${currentPage === totalPages ? "disabled" : ""}>
+          <span>Next</span>
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
+    `;
+    pagination.classList.remove("hidden");
+  }
+
   function renderLandlords() {
     updateSummary();
 
     const groups = applyStatusFilter(getLandlordGroups());
+    const totalPages = Math.max(1, Math.ceil(groups.length / PAGE_SIZE));
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const pageGroups = groups.slice(startIndex, startIndex + PAGE_SIZE);
+    renderPagination(groups.length);
 
     setText(
       "#result-text",
@@ -206,7 +283,7 @@
             </tr>
           </thead>
           <tbody>
-            ${groups
+            ${pageGroups
               .map((group) => {
                 const meta = getGroupMeta(group);
                 const initial = String(group.landlord_name || "L").charAt(0);
@@ -265,6 +342,7 @@
   async function loadDocuments() {
     hideMessage();
     refreshButton.disabled = true;
+    pagination?.classList.add("hidden");
     landlordList.innerHTML = `
       <div class="admin-card-message">Loading landlord verification queue...</div>
     `;
@@ -292,6 +370,7 @@
       renderLandlords();
     } catch (error) {
       documents = [];
+      pagination?.classList.add("hidden");
       updateSummary();
       landlordList.innerHTML = `
         <div class="admin-card-message">Unable to load verification records.</div>
@@ -315,27 +394,35 @@
       return null;
     }
 
-    const fullName = `${user.first_name ?? ""} ${user.last_name ?? ""}`.trim();
-    const displayName = fullName || "Admin";
-    const profileUrl = user.profile_picture
-      ? user.profile_picture.startsWith("/")
-        ? user.profile_picture
-        : `${API_ROOT}/${user.profile_picture}`
-      : `${FRONTEND_ROOT}/assets/images/default-profile.png`;
-
-    document.querySelector("#admin-name").textContent = displayName;
-    document.querySelector("#admin-profile-picture").src = profileUrl;
+    window.SilipMuntiAdminShell?.setAdminProfile(user);
 
     return user;
   }
 
   function setupEvents() {
     refreshButton.addEventListener("click", loadDocuments);
-    statusFilter.addEventListener("change", renderLandlords);
+    statusFilter.addEventListener("change", () => {
+      currentPage = 1;
+      renderLandlords();
+    });
 
     topbarSearch.addEventListener("input", () => {
       window.clearTimeout(searchTimer);
+      currentPage = 1;
       searchTimer = window.setTimeout(loadDocuments, 350);
+    });
+
+    pagination?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-page]");
+      if (!button || button.disabled) return;
+
+      const requestedPage = Number(button.dataset.page);
+      const totalItems = applyStatusFilter(getLandlordGroups()).length;
+      const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+      if (!Number.isInteger(requestedPage)) return;
+
+      currentPage = Math.min(Math.max(1, requestedPage), totalPages);
+      renderLandlords();
     });
 
     landlordList.addEventListener("click", (event) => {

@@ -7,12 +7,10 @@ require_once __DIR__ . '/../config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
-
     echo json_encode([
         'success' => false,
         'message' => 'Method not allowed.'
     ]);
-
     exit;
 }
 
@@ -22,6 +20,7 @@ $rentalTypeId = $_GET['rental_type_id'] ?? '';
 $minPrice = $_GET['min_price'] ?? '';
 $maxPrice = $_GET['max_price'] ?? '';
 $bedroomNo = $_GET['bedroom_no'] ?? '';
+$landlordId = $_GET['landlord_id'] ?? '';
 $sort = trim($_GET['sort'] ?? 'newest');
 $page = $_GET['page'] ?? '1';
 $limit = $_GET['limit'] ?? '12';
@@ -34,34 +33,28 @@ $allowedSorts = [
 
 if (mb_strlen($search) > 100) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Search must not exceed 100 characters.'
     ]);
-
     exit;
 }
 
 if (mb_strlen($barangay) > 100) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Barangay must not exceed 100 characters.'
     ]);
-
     exit;
 }
 
 if (!in_array($sort, $allowedSorts, true)) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Invalid sorting option.'
     ]);
-
     exit;
 }
 
@@ -73,12 +66,10 @@ if (
     )
 ) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Invalid rental type.'
     ]);
-
     exit;
 }
 
@@ -90,12 +81,10 @@ if (
     )
 ) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Invalid minimum price.'
     ]);
-
     exit;
 }
 
@@ -107,12 +96,10 @@ if (
     )
 ) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Invalid maximum price.'
     ]);
-
     exit;
 }
 
@@ -122,12 +109,10 @@ if (
     && (float) $minPrice > (float) $maxPrice
 ) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Minimum price cannot be greater than maximum price.'
     ]);
-
     exit;
 }
 
@@ -139,12 +124,25 @@ if (
     )
 ) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Invalid number of bedrooms.'
     ]);
+    exit;
+}
 
+if (
+    $landlordId !== ''
+    && (
+        !ctype_digit((string) $landlordId)
+        || (int) $landlordId < 1
+    )
+) {
+    http_response_code(422);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid landlord.'
+    ]);
     exit;
 }
 
@@ -153,12 +151,10 @@ if (
     || (int) $page < 1
 ) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Invalid page number.'
     ]);
-
     exit;
 }
 
@@ -168,12 +164,10 @@ if (
     || (int) $limit > 48
 ) {
     http_response_code(422);
-
     echo json_encode([
         'success' => false,
         'message' => 'Limit must be between 1 and 48.'
     ]);
-
     exit;
 }
 
@@ -200,7 +194,6 @@ if ($search !== '') {
         OR l.barangay LIKE :search
         OR rt.name LIKE :search
     )';
-
     $params['search'] = '%' . $search . '%';
 }
 
@@ -210,11 +203,8 @@ if ($barangay !== '') {
 }
 
 if ($rentalTypeId !== '') {
-    $whereConditions[] =
-        'l.rental_type_id = :rental_type_id';
-
-    $params['rental_type_id'] =
-        (int) $rentalTypeId;
+    $whereConditions[] = 'l.rental_type_id = :rental_type_id';
+    $params['rental_type_id'] = (int) $rentalTypeId;
 }
 
 if ($minPrice !== '') {
@@ -228,10 +218,13 @@ if ($maxPrice !== '') {
 }
 
 if ($bedroomNo !== '') {
-    $whereConditions[] =
-        'l.bedroom_no = :bedroom_no';
-
+    $whereConditions[] = 'l.bedroom_no = :bedroom_no';
     $params['bedroom_no'] = (int) $bedroomNo;
+}
+
+if ($landlordId !== '') {
+    $whereConditions[] = 'l.landlord_id = :landlord_id';
+    $params['landlord_id'] = (int) $landlordId;
 }
 
 $whereSql = implode(' AND ', $whereConditions);
@@ -249,8 +242,8 @@ try {
 
     $countStmt = $pdo->prepare($countSql);
     $countStmt->execute($params);
-
     $total = (int) $countStmt->fetchColumn();
+
     $totalPages = $total > 0
         ? (int) ceil($total / $limit)
         : 0;
@@ -288,7 +281,8 @@ try {
                 u.first_name,
                 ' ',
                 u.last_name
-            ) AS landlord_name
+            ) AS landlord_name,
+            u.profile_picture AS landlord_profile_picture
         FROM listings l
         INNER JOIN users u
             ON u.id = l.landlord_id
@@ -302,7 +296,6 @@ try {
 
     $listingStmt = $pdo->prepare($listingSql);
     $listingStmt->execute($params);
-
     $listings = $listingStmt->fetchAll();
 
     $imageStmt = $pdo->prepare("
@@ -312,38 +305,61 @@ try {
             uploaded_at
         FROM listing_images
         WHERE listing_id = :listing_id
-            AND deleted_at IS NULL
+          AND deleted_at IS NULL
         ORDER BY id ASC
     ");
 
     foreach ($listings as &$listing) {
         $listing['id'] = (int) $listing['id'];
-        $listing['landlord_id'] =
-            (int) $listing['landlord_id'];
-        $listing['rental_type_id'] =
-            (int) $listing['rental_type_id'];
-        $listing['price'] =
-            (float) $listing['price'];
+        $listing['landlord_id'] = (int) $listing['landlord_id'];
+        $listing['rental_type_id'] = (int) $listing['rental_type_id'];
+        $listing['price'] = (float) $listing['price'];
+
         $listing['bedroom_no'] =
             $listing['bedroom_no'] !== null
                 ? (int) $listing['bedroom_no']
                 : null;
+
         $listing['listing_size'] =
             $listing['listing_size'] !== null
                 ? (float) $listing['listing_size']
                 : null;
+
         $listing['occupancy_limit'] =
             $listing['occupancy_limit'] !== null
                 ? (int) $listing['occupancy_limit']
                 : null;
+
         $listing['latitude'] =
             $listing['latitude'] !== null
                 ? (float) $listing['latitude']
                 : null;
+
         $listing['longitude'] =
             $listing['longitude'] !== null
                 ? (float) $listing['longitude']
                 : null;
+
+        $profilePicture =
+            $listing['landlord_profile_picture'] ?? null;
+
+        if (!empty($profilePicture)) {
+            if (
+                preg_match('/^https?:\/\//i', $profilePicture)
+                || str_starts_with($profilePicture, '/')
+            ) {
+                $listing['landlord_profile_picture_url'] =
+                    $profilePicture;
+            } else {
+                $listing['landlord_profile_picture_url'] =
+                    '/SilipMunti/backend/'
+                    . ltrim($profilePicture, '/');
+            }
+        } else {
+            $listing['landlord_profile_picture_url'] = null;
+        }
+
+        unset($listing['landlord_profile_picture']);
 
         $imageStmt->execute([
             'listing_id' => $listing['id']
@@ -353,20 +369,27 @@ try {
 
         foreach ($images as &$image) {
             $image['id'] = (int) $image['id'];
-            $image['image_url'] =
-                '/SilipMunti/backend/'
-                . $image['image_path'];
+            $imagePath = $image['image_path'];
+
+            if (
+                preg_match('/^https?:\/\//i', $imagePath)
+                || str_starts_with($imagePath, '/')
+            ) {
+                $image['image_url'] = $imagePath;
+            } else {
+                $image['image_url'] =
+                    '/SilipMunti/backend/'
+                    . ltrim($imagePath, '/');
+            }
 
             unset($image['image_path']);
         }
-
         unset($image);
 
         $listing['images'] = $images;
         $listing['primary_image'] =
             $images[0]['image_url'] ?? null;
     }
-
     unset($listing);
 
     echo json_encode([
@@ -389,9 +412,7 @@ try {
     ]);
 } catch (PDOException $exception) {
     error_log($exception->getMessage());
-
     http_response_code(500);
-
     echo json_encode([
         'success' => false,
         'message' => 'Unable to retrieve listings.'

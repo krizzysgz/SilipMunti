@@ -2,8 +2,10 @@
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
+header('X-Content-Type-Options: nosniff');
 
 require_once __DIR__ . '/../config/session.php';
+require_once __DIR__ . '/../security/csrf.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -27,6 +29,9 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+require_csrf_token();
+csrf_clear_token();
+
 $_SESSION = [];
 
 if (ini_get('session.use_cookies')) {
@@ -41,7 +46,7 @@ if (ini_get('session.use_cookies')) {
             'domain' => $cookie['domain'],
             'secure' => $cookie['secure'],
             'httponly' => $cookie['httponly'],
-            'samesite' => $cookie['samesite']
+            'samesite' => $cookie['samesite'] ?? 'Lax'
         ]
     );
 }

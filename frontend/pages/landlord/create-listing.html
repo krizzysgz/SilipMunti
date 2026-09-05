@@ -12,7 +12,11 @@
     />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/landlord.css"
+      href="/SilipMunti/frontend/assets/css/landlord.css?v=3"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/map-provider.css?v=2"
     />
   </head>
 
@@ -28,6 +32,8 @@
               class="sidebar-toggle"
               id="sidebar-toggle"
               aria-label="Open sidebar"
+              aria-controls="dashboard-sidebar"
+              aria-expanded="false"
             >
               <i class="fa-solid fa-bars"></i>
             </button>
@@ -69,11 +75,16 @@
                 aria-label="Open profile menu"
                 aria-expanded="false"
               >
-                <img
-                  id="landlord-profile-picture"
-                  src="/SilipMunti/frontend/assets/images/default-profile.png"
-                  alt="Landlord profile picture"
-                />
+                <span
+                  class="landlord-profile-avatar"
+                  id="topbar-landlord-avatar"
+                  aria-label="Landlord profile picture"
+                >
+                  <img id="landlord-profile-picture" alt="" hidden />
+                  <span id="landlord-profile-initials" aria-hidden="true"
+                    >L</span
+                  >
+                </span>
 
                 <div class="topbar-profile-info">
                   <strong id="landlord-topbar-name">Landlord</strong>
@@ -88,11 +99,16 @@
                 id="topbar-profile-dropdown"
               >
                 <div class="dropdown-user">
-                  <img
-                    id="dropdown-landlord-picture"
-                    src="/SilipMunti/frontend/assets/images/default-profile.png"
-                    alt="Landlord"
-                  />
+                  <span
+                    class="dropdown-profile-avatar"
+                    id="dropdown-landlord-avatar"
+                    aria-label="Landlord profile picture"
+                  >
+                    <img id="dropdown-landlord-picture" alt="" hidden />
+                    <span id="dropdown-landlord-initials" aria-hidden="true"
+                      >L</span
+                    >
+                  </span>
                   <div>
                     <strong id="dropdown-landlord-name">Landlord</strong>
                     <span>Landlord</span>
@@ -275,6 +291,7 @@
                 <label class="create-field full">
                   <span>Complete address</span>
                   <input
+                    id="address"
                     type="text"
                     name="address"
                     placeholder="House no., street, subdivision, landmark"
@@ -285,12 +302,18 @@
 
                 <label class="create-field">
                   <span>City</span>
-                  <input type="text" name="city" value="Muntinlupa" required />
+                  <input
+                    id="city"
+                    type="text"
+                    name="city"
+                    value="Muntinlupa"
+                    required
+                  />
                 </label>
 
                 <label class="create-field">
                   <span>Barangay</span>
-                  <select name="barangay" required>
+                  <select id="barangay" name="barangay" required>
                     <option value="">Select barangay</option>
                     <option>Alabang</option>
                     <option>Ayala Alabang</option>
@@ -308,6 +331,7 @@
                 <label class="create-field">
                   <span>Latitude</span>
                   <input
+                    id="latitude"
                     type="number"
                     name="latitude"
                     step="0.00000001"
@@ -319,6 +343,7 @@
                 <label class="create-field">
                   <span>Longitude</span>
                   <input
+                    id="longitude"
                     type="number"
                     name="longitude"
                     step="0.00000001"
@@ -326,6 +351,67 @@
                     required
                   />
                 </label>
+
+                <div class="sm-map-picker">
+                  <div class="sm-map-picker-heading">
+                    <div>
+                      <strong>Place the property pin</strong>
+                      <p>
+                        Click the map or drag the marker to the exact location.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      class="sm-map-locate-button"
+                      id="create-map-locate"
+                    >
+                      <i class="fa-solid fa-location-crosshairs"></i>
+                      Use my current location
+                    </button>
+                  </div>
+                  <div class="sm-map-search">
+                    <label for="create-map-search">Search map location</label>
+                    <div class="sm-map-search-control">
+                      <i
+                        class="fa-solid fa-magnifying-glass"
+                        aria-hidden="true"
+                      ></i>
+                      <input
+                        id="create-map-search"
+                        type="search"
+                        maxlength="160"
+                        autocomplete="off"
+                        placeholder="Street, subdivision, or landmark in Muntinlupa"
+                      />
+                      <button
+                        class="sm-map-search-button"
+                        id="create-map-search-button"
+                        type="button"
+                      >
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Search map</span>
+                      </button>
+                    </div>
+                    <p>
+                      Search for the general location, then drag the pin to the
+                      property's exact position.
+                    </p>
+                  </div>
+                  <div class="sm-map-shell">
+                    <div
+                      class="sm-map-canvas is-loading"
+                      id="create-property-map"
+                      aria-label="Select property location on map"
+                    ></div>
+                  </div>
+                  <p
+                    class="sm-map-picker-status"
+                    id="create-map-status"
+                    aria-live="polite"
+                  >
+                    Loading map…
+                  </p>
+                </div>
               </div>
             </section>
 
@@ -461,8 +547,10 @@
       </div>
     </div>
 
-    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/landlord-sidebar.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/landlord-create-listing.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord-sidebar.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/map-config.js?v=1"></script>
+    <script src="/SilipMunti/frontend/assets/js/map-provider.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord-create-listing.js?v=6"></script>
   </body>
 </html>

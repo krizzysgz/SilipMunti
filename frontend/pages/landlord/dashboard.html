@@ -13,113 +13,13 @@
 
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/landlord.css"
+      href="/SilipMunti/frontend/assets/css/landlord.css?v=4"
     />
   </head>
 
   <body>
     <div class="dashboard-layout">
-      <aside class="dashboard-sidebar" id="dashboard-sidebar">
-        <div class="sidebar-header">
-          <a href="/SilipMunti/frontend/index.html" class="dashboard-logo">
-            <img
-              src="/SilipMunti/frontend/assets/images/SilipMunti.png"
-              alt="SilipMunti logo"
-            />
-          </a>
-
-          <button
-            type="button"
-            class="sidebar-close"
-            id="sidebar-close"
-            aria-label="Close sidebar"
-          >
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <nav class="sidebar-navigation">
-          <span class="sidebar-label">GENERAL</span>
-
-          <a
-            href="/SilipMunti/frontend/pages/landlord/dashboard.html"
-            class="sidebar-link active"
-          >
-            <i class="fa-solid fa-table-columns"></i>
-            <span>Dashboard</span>
-          </a>
-
-          <a
-            href="/SilipMunti/frontend/pages/landlord/listings.html"
-            class="sidebar-link"
-          >
-            <i class="fa-solid fa-building"></i>
-            <span>My Properties</span>
-            <span class="sidebar-count" id="sidebar-listing-count">0</span>
-          </a>
-
-          <a
-            href="/SilipMunti/frontend/pages/landlord/create-listing.html"
-            class="sidebar-link"
-          >
-            <i class="fa-solid fa-square-plus"></i>
-            <span>Add Property</span>
-          </a>
-
-          <a
-            href="/SilipMunti/frontend/pages/landlord/verification.html"
-            class="sidebar-link"
-          >
-            <i class="fa-solid fa-file-shield"></i>
-            <span>Verification</span>
-          </a>
-
-          <a
-            href="/SilipMunti/frontend/pages/messages/index.html"
-            class="sidebar-link"
-          >
-            <i class="fa-solid fa-message"></i>
-            <span>Messages</span>
-            <span class="sidebar-count hidden" id="sidebar-message-count">
-              0
-            </span>
-          </a>
-
-          <a
-            href="/SilipMunti/frontend/pages/landlord/inquiries.html"
-            class="sidebar-link"
-          >
-            <i class="fa-solid fa-clipboard-question"></i>
-            <span>Inquiries</span>
-          </a>
-
-          <span class="sidebar-label account-label">ACCOUNT</span>
-
-          <a
-            href="/SilipMunti/frontend/pages/profile/index.html"
-            class="sidebar-link"
-          >
-            <i class="fa-solid fa-user"></i>
-            <span>Profile</span>
-          </a>
-
-          <button
-            type="button"
-            class="sidebar-link logout-link"
-            id="logout-button"
-          >
-            <i class="fa-solid fa-right-from-bracket"></i>
-            <span>Logout</span>
-          </button>
-        </nav>
-
-        <div class="sidebar-footer">
-          <a href="/SilipMunti/frontend/index.html">
-            <i class="fa-solid fa-arrow-left"></i>
-            <span>Back to Website</span>
-          </a>
-        </div>
-      </aside>
+      <landlord-sidebar active-page="dashboard"></landlord-sidebar>
 
       <div class="dashboard-content">
         <header class="dashboard-topbar">
@@ -129,6 +29,8 @@
               class="sidebar-toggle"
               id="sidebar-toggle"
               aria-label="Open sidebar"
+              aria-controls="dashboard-sidebar"
+              aria-expanded="false"
             >
               <i class="fa-solid fa-bars"></i>
             </button>
@@ -170,11 +72,16 @@
                 aria-label="Open profile menu"
                 aria-expanded="false"
               >
-                <img
-                  src="/SilipMunti/frontend/assets/images/default-profile.png"
-                  alt="Landlord profile"
-                  id="landlord-profile-picture"
-                />
+                <span
+                  class="landlord-profile-avatar"
+                  id="topbar-landlord-avatar"
+                  aria-label="Landlord profile picture"
+                >
+                  <img id="landlord-profile-picture" alt="" hidden />
+                  <span id="landlord-profile-initials" aria-hidden="true"
+                    >L</span
+                  >
+                </span>
 
                 <div class="topbar-profile-info">
                   <strong id="landlord-topbar-name">Landlord</strong>
@@ -189,11 +96,16 @@
                 id="topbar-profile-dropdown"
               >
                 <div class="dropdown-user">
-                  <img
-                    src="/SilipMunti/frontend/assets/images/default-profile.png"
-                    alt="Landlord profile"
-                    id="dropdown-landlord-picture"
-                  />
+                  <span
+                    class="dropdown-profile-avatar"
+                    id="dropdown-landlord-avatar"
+                    aria-label="Landlord profile picture"
+                  >
+                    <img id="dropdown-landlord-picture" alt="" hidden />
+                    <span id="dropdown-landlord-initials" aria-hidden="true"
+                      >L</span
+                    >
+                  </span>
 
                   <div>
                     <strong id="dropdown-landlord-name">Landlord</strong>
@@ -545,7 +457,10 @@
                   <p>Latest messages from renters</p>
                 </div>
 
-                <a href="inquiries.html" class="panel-link">
+                <a
+                  href="/SilipMunti/frontend/pages/messages/index.html"
+                  class="panel-link"
+                >
                   View all
                   <i class="fa-solid fa-arrow-right"></i>
                 </a>
@@ -565,7 +480,8 @@
       </div>
     </div>
 
-    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
-    <script src="../../assets/js/landlord/dashboard.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord-sidebar.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord/dashboard.js?v=3"></script>
   </body>
 </html>

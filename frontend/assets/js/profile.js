@@ -8,7 +8,7 @@ const UPLOAD_PICTURE_API = "/SilipMunti/backend/profile/upload-picture.php";
 
 const REMOVE_PICTURE_API = "/SilipMunti/backend/profile/remove-picture.php";
 
-const DEFAULT_PROFILE_PICTURE = "../../assets/images/default-profile.png";
+const DEFAULT_PROFILE_PICTURE = "../../assets/images/default-profile.svg";
 
 const profileLoading = document.querySelector("#profile-loading");
 
@@ -313,14 +313,17 @@ async function updateProfile(event) {
   buttonText.textContent = "Saving...";
 
   try {
-    const response = await fetch(UPDATE_PROFILE_API, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await window.SilipMuntiSession.secureFetch(
+      UPDATE_PROFILE_API,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(profileData),
       },
-      credentials: "include",
-      body: JSON.stringify(profileData),
-    });
+    );
 
     const result = await parseResponse(response);
 
@@ -400,11 +403,14 @@ async function uploadProfilePicture() {
   `;
 
   try {
-    const response = await fetch(UPLOAD_PICTURE_API, {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
+    const response = await window.SilipMuntiSession.secureFetch(
+      UPLOAD_PICTURE_API,
+      {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      },
+    );
 
     const result = await parseResponse(response);
 
@@ -461,10 +467,13 @@ async function removeProfilePicture() {
   `;
 
   try {
-    const response = await fetch(REMOVE_PICTURE_API, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    const response = await window.SilipMuntiSession.secureFetch(
+      REMOVE_PICTURE_API,
+      {
+        method: "DELETE",
+        credentials: "include",
+      },
+    );
 
     const result = await parseResponse(response);
 
@@ -571,14 +580,17 @@ async function changePassword(event) {
   buttonText.textContent = "Updating...";
 
   try {
-    const response = await fetch(CHANGE_PASSWORD_API, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await window.SilipMuntiSession.secureFetch(
+      CHANGE_PASSWORD_API,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(passwordData),
       },
-      credentials: "include",
-      body: JSON.stringify(passwordData),
-    });
+    );
 
     const result = await parseResponse(response);
 

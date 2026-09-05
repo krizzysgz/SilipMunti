@@ -13,6 +13,7 @@
   const endpoints = {
     listings: `${API_BASE}/listings/get-all.php`,
     rentalTypes: `${API_BASE}/rental-types/get-all.php`,
+    verifiedLandlords: `${API_BASE}/landlord/get-verified.php?limit=4`,
     addFavorite: `${API_BASE}/renter/add-favorite.php`,
     getFavorites: `${API_BASE}/renter/get-favorites.php`,
     removeFavorite: `${API_BASE}/renter/remove-favorite.php`,
@@ -30,16 +31,14 @@
   const reviewCarousel = document.querySelector("#review-carousel");
   const newlyPreviousButton = document.querySelector("#newly-prev");
   const newlyNextButton = document.querySelector("#newly-next");
-  const reviewsPreviousButton = document.querySelector("#reviews-prev");
-  const reviewsNextButton = document.querySelector("#reviews-next");
 
   const favoriteListingIds = new Set();
   let currentUser = null;
   let allListings = [];
   let newlyAddedIndex = 0;
   let activeLocation = "";
-  let reviewIndex = 0;
   let reviews = [];
+  let verifiedLandlordList = [];
 
   const barangays = [
     "Alabang",
@@ -57,28 +56,7 @@
   // Add more paths here if you have additional generic/stock property photos —
   // they will cycle across the empty cards.
   const placeholderLocationImages = [
-    `${FRONTEND_BASE}/assets/images/property-placeholder.jpg`,
-  ];
-
-  const fallbackReviews = [
-    {
-      rating: 5,
-      comment:
-        "Malinis yung unit and mabilis kausap yung landlord. Helpful din yung photos before viewing.",
-      renter_name: "Alyssa Reyes",
-    },
-    {
-      rating: 5,
-      comment:
-        "Mas madali maghanap kasi verified yung listings and clear yung location details.",
-      renter_name: "Marco Santos",
-    },
-    {
-      rating: 4,
-      comment:
-        "Convenient gamitin, especially yung inquiry feature kasi diretso conversation agad.",
-      renter_name: "Nica Mendoza",
-    },
+    `${FRONTEND_BASE}/assets/images/property-placeholder.svg`,
   ];
 
   function escapeHtml(value) {
@@ -118,8 +96,23 @@
       listing.primary_image ||
       listing.image_url ||
       listing.images?.[0]?.image_url ||
-      `${FRONTEND_BASE}/assets/images/property-placeholder.jpg`
+      `${FRONTEND_BASE}/assets/images/property-placeholder.svg`
     );
+  }
+
+  function getProfilePictureUrl(profilePicture) {
+    if (!profilePicture) {
+      return `${FRONTEND_BASE}/assets/images/default-profile.svg`;
+    }
+
+    if (
+      /^https?:\/\//i.test(profilePicture) ||
+      String(profilePicture).startsWith("/")
+    ) {
+      return profilePicture;
+    }
+
+    return `${API_BASE}/${String(profilePicture).replace(/^\/+/, "")}`;
   }
 
   function getListingDate(listing) {
@@ -205,8 +198,11 @@
 
   async function toggleFavorite(listingId, button) {
     if (!currentUser) {
-      sessionStorage.setItem("silip_munti_redirect", window.location.pathname);
-      window.location.href = `${FRONTEND_BASE}/pages/auth/login.html`;
+      window.SilipMuntiSession?.showLoginPrompt({
+        title: "Save this property",
+        message:
+          "Sign in using a renter account to add this rental to your favorites.",
+      });
       return;
     }
 
@@ -221,7 +217,13 @@
     button.disabled = true;
 
     try {
-      const response = await fetch(
+      if (!window.SilipMuntiSession?.secureFetch) {
+        throw new Error(
+          "Request security is unavailable. Refresh the page and try again.",
+        );
+      }
+
+      const response = await window.SilipMuntiSession.secureFetch(
         isFavorite ? endpoints.removeFavorite : endpoints.addFavorite,
         {
           method: isFavorite ? "DELETE" : "POST",
@@ -231,6 +233,15 @@
         },
       );
       const result = await response.json();
+
+      if (response.status === 401) {
+        currentUser = null;
+        window.SilipMuntiSession?.showLoginPrompt({
+          title: "Your session has ended",
+          message: "Sign in again to update your saved properties.",
+        });
+        return;
+      }
 
       if (!response.ok || !result.success) {
         throw new Error(result.message || "Unable to update favorite.");
@@ -279,7 +290,7 @@
     image.loading = "lazy";
 
     image.addEventListener("error", () => {
-      image.src = `${FRONTEND_BASE}/assets/images/property-placeholder.jpg`;
+      image.src = `${FRONTEND_BASE}/assets/images/property-placeholder.svg`;
     });
 
     const typeBadge = document.createElement("span");
@@ -639,76 +650,145 @@
   function renderVerifiedLandlords() {
     if (!verifiedLandlords) return;
 
-    const landlords = new Map();
-
-    allListings.forEach((listing) => {
-      const landlordId =
-        listing.landlord_id || listing.user_id || listing.landlord_name;
-      if (!landlordId || landlords.has(landlordId)) return;
-
-      landlords.set(landlordId, {
-        id: landlordId,
-        name:
-          listing.landlord_name ||
-          `${listing.first_name || ""} ${listing.last_name || ""}`.trim() ||
-          "Verified Landlord",
-        profile_picture_url:
-          listing.landlord_profile_picture_url ||
-          listing.profile_picture_url ||
-          `${FRONTEND_BASE}/assets/images/default-profile.png`,
-      });
-    });
-
-    const landlordList = [...landlords.values()].slice(0, 4);
-
-    if (landlordList.length === 0) {
-      verifiedLandlords.innerHTML = "";
+    if (verifiedLandlordList.length === 0) {
+      verifiedLandlords.innerHTML = `
+        <div class="landlord-empty-state">
+          <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
+          <strong>No verified landlords to display yet</strong>
+          <span>Approved property owners will appear here.</span>
+        </div>
+      `;
       return;
     }
 
-    verifiedLandlords.innerHTML = landlordList
-      .map(
-        (landlord) => `
-        <article class="home-landlord-card">
-          <img
-            src="${escapeHtml(landlord.profile_picture_url)}"
-            alt="${escapeHtml(landlord.name)}"
-            onerror="this.src='${FRONTEND_BASE}/assets/images/default-profile.png'"
-          >
-          <div>
-            <strong>${escapeHtml(landlord.name)}</strong>
-            <span>Verified Landlord</span>
+    verifiedLandlords.innerHTML = verifiedLandlordList
+      .map((landlord) => {
+        const activeCount = Number(landlord.active_listing_count) || 0;
+        const listingLabel = activeCount === 1 ? "property" : "properties";
+        const availableAreas = landlord.available_areas
+          ? `Available in ${landlord.available_areas}`
+          : "No available properties right now";
+        const profileUrl = `${FRONTEND_BASE}/pages/landlord/details.html?id=${encodeURIComponent(landlord.id)}`;
+
+        return `
+        <a
+          class="home-landlord-card"
+          href="${profileUrl}"
+          aria-label="View ${escapeHtml(landlord.name)}'s verified landlord profile"
+        >
+          <div class="home-landlord-photo">
+            <img
+              src="${escapeHtml(getProfilePictureUrl(landlord.profile_picture_url))}"
+              alt="${escapeHtml(landlord.name)}"
+            >
+            <span class="home-landlord-badge">
+              <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+              Verified
+            </span>
           </div>
-        </article>
-      `,
-      )
+          <div class="home-landlord-info">
+            <strong>${escapeHtml(landlord.name || "Verified Landlord")}</strong>
+            <p>${activeCount} active ${listingLabel}</p>
+            <span class="home-landlord-areas">${escapeHtml(availableAreas)}</span>
+            <span class="home-landlord-link">
+              View profile
+              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+            </span>
+          </div>
+        </a>
+      `;
+      })
       .join("");
+
+    verifiedLandlords
+      .querySelectorAll(".home-landlord-photo img")
+      .forEach((image) => {
+        image.addEventListener(
+          "error",
+          () => {
+            image.src = `${FRONTEND_BASE}/assets/images/default-profile.svg`;
+          },
+          { once: true },
+        );
+      });
+  }
+
+  function renderReviewCard(review) {
+    const renterName =
+      review.renter_name || review.user_name || "SilipMunti Renter";
+
+    return `
+      <article class="review-card">
+        <div class="review-top">
+          <span>Rating <strong>${escapeHtml(review.rating || 5)}</strong></span>
+          <i class="fa-solid fa-quote-right" aria-hidden="true"></i>
+        </div>
+        <p>${escapeHtml(review.comment || "Great rental experience.")}</p>
+        <div class="review-author">
+          <span>${escapeHtml(String(renterName).charAt(0))}</span>
+          <strong>${escapeHtml(renterName)}</strong>
+        </div>
+      </article>
+    `;
+  }
+
+  function buildReviewSet(reviewList, isDuplicate = false) {
+    return `
+      <div class="review-set"${isDuplicate ? ' aria-hidden="true"' : ""}>
+        ${reviewList.map(renderReviewCard).join("")}
+      </div>
+    `;
+  }
+
+  function getLoopingReviews() {
+    const sourceReviews = reviews;
+
+    if (!sourceReviews.length) return [];
+
+    const loopingReviews = [...sourceReviews];
+
+    while (loopingReviews.length < 6) {
+      loopingReviews.push(...sourceReviews);
+    }
+
+    return loopingReviews.slice(0, Math.max(6, sourceReviews.length));
   }
 
   function renderReviews() {
     if (!reviewCarousel) return;
 
-    const visibleReviews = reviews
-      .slice(reviewIndex, reviewIndex + 3)
-      .concat(reviews.slice(0, Math.max(0, reviewIndex + 3 - reviews.length)));
+    if (!reviews.length) {
+      reviewCarousel.innerHTML = `
+        <div class="review-empty">
+          <i class="fa-regular fa-comments" aria-hidden="true"></i>
+          <strong>No renter reviews yet</strong>
+          <span>Verified renter experiences will appear here.</span>
+        </div>
+      `;
+      return;
+    }
 
-    reviewCarousel.innerHTML = visibleReviews
-      .map(
-        (review) => `
-        <article class="review-card">
-          <div class="review-top">
-            <span>Rating <strong>${escapeHtml(review.rating || 5)}</strong></span>
-            <i class="fa-solid fa-quote-right"></i>
-          </div>
-          <p>${escapeHtml(review.comment || "Great rental experience.")}</p>
-          <div class="review-author">
-            <span>${escapeHtml(String(review.renter_name || review.user_name || "Renter").charAt(0))}</span>
-            <strong>${escapeHtml(review.renter_name || review.user_name || "SilipMunti Renter")}</strong>
-          </div>
-        </article>
-      `,
-      )
-      .join("");
+    const firstRowReviews = getLoopingReviews();
+    const splitIndex = Math.ceil(firstRowReviews.length / 2);
+    const secondRowReviews = [
+      ...firstRowReviews.slice(splitIndex),
+      ...firstRowReviews.slice(0, splitIndex),
+    ];
+
+    reviewCarousel.innerHTML = `
+      <div class="review-row">
+        <div class="review-track review-track-left">
+          ${buildReviewSet(firstRowReviews)}
+          ${buildReviewSet(firstRowReviews, true)}
+        </div>
+      </div>
+      <div class="review-row">
+        <div class="review-track review-track-right">
+          ${buildReviewSet(secondRowReviews)}
+          ${buildReviewSet(secondRowReviews, true)}
+        </div>
+      </div>
+    `;
   }
 
   async function loadRentalTypes() {
@@ -780,7 +860,7 @@
   }
 
   async function loadReviews() {
-    reviews = fallbackReviews;
+    reviews = [];
 
     try {
       const response = await fetch(endpoints.reviews, {
@@ -788,18 +868,45 @@
         cache: "no-store",
       });
       const result = await response.json();
-      const fetchedReviews = result.data?.reviews ?? result.data ?? [];
+      const fetchedReviews =
+        result.data?.reviews ?? result.reviews ?? result.data ?? [];
 
-      if (
-        response.ok &&
-        result.success &&
-        Array.isArray(fetchedReviews) &&
-        fetchedReviews.length
-      ) {
-        reviews = fetchedReviews;
+      if (!response.ok || result.success === false) {
+        throw new Error(result.message || "Unable to load renter reviews.");
       }
+
+      if (!Array.isArray(fetchedReviews)) {
+        throw new Error("Invalid reviews response format.");
+      }
+
+      reviews = fetchedReviews.filter(
+        (review) => review && review.rating && review.comment,
+      );
     } catch (error) {
-      reviews = fallbackReviews;
+      reviews = [];
+      console.error("Unable to load homepage reviews:", error);
+    }
+  }
+
+  async function loadVerifiedLandlords() {
+    verifiedLandlordList = [];
+
+    try {
+      const response = await fetch(endpoints.verifiedLandlords, {
+        credentials: "include",
+        cache: "no-store",
+      });
+      const result = await response.json();
+      const landlords = result.data?.verified_landlords ?? [];
+
+      if (!response.ok || !result.success || !Array.isArray(landlords)) {
+        throw new Error(result.message || "Unable to load verified landlords.");
+      }
+
+      verifiedLandlordList = landlords;
+    } catch (error) {
+      verifiedLandlordList = [];
+      console.error("Unable to load verified landlords:", error);
     }
   }
 
@@ -849,22 +956,17 @@
         setActiveLocationCard(selectedLocation);
       }
     });
-
-    reviewsPreviousButton?.addEventListener("click", () => {
-      reviewIndex = (reviewIndex - 1 + reviews.length) % reviews.length;
-      renderReviews();
-    });
-
-    reviewsNextButton?.addEventListener("click", () => {
-      reviewIndex = (reviewIndex + 1) % reviews.length;
-      renderReviews();
-    });
   }
 
   async function initializeHomepage() {
     bindEvents();
     await initializeCurrentUser();
-    await Promise.all([loadRentalTypes(), loadListings(), loadReviews()]);
+    await Promise.all([
+      loadRentalTypes(),
+      loadListings(),
+      loadReviews(),
+      loadVerifiedLandlords(),
+    ]);
 
     if (currentUser?.role === "renter") {
       await loadFavoriteListingIds();

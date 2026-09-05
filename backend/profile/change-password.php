@@ -111,6 +111,10 @@ $updateStmt->execute([
     'user_id' => $user['id']
 ]);
 
+session_regenerate_id(true);
+$_SESSION['last_regeneration'] = time();
+csrf_rotate_token();
+
 echo json_encode([
     'success' => true,
     'message' => 'Password changed successfully.'

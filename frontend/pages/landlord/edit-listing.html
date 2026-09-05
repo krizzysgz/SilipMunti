@@ -10,87 +10,20 @@
     />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/landlord.css"
+      href="/SilipMunti/frontend/assets/css/landlord.css?v=4"
     />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/landlord-form.css"
+      href="/SilipMunti/frontend/assets/css/landlord-form.css?v=3"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/map-provider.css?v=2"
     />
   </head>
   <body>
     <div class="dashboard-layout">
-      <aside class="dashboard-sidebar" id="dashboard-sidebar">
-        <div class="sidebar-header">
-          <a
-            class="dashboard-logo"
-            href="/SilipMunti/frontend/pages/landlord/dashboard.html"
-          >
-            <img
-              src="/SilipMunti/frontend/assets/images/SilipMunti.png"
-              alt="SilipMunti"
-            />
-          </a>
-          <button
-            class="sidebar-close"
-            id="sidebar-close"
-            type="button"
-            aria-label="Close sidebar"
-          >
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-        <nav class="sidebar-navigation">
-          <p class="sidebar-label">GENERAL</p>
-          <a
-            class="sidebar-link"
-            href="/SilipMunti/frontend/pages/landlord/dashboard.html"
-            ><i class="fa-solid fa-table-cells-large"></i
-            ><span>Dashboard</span></a
-          >
-          <a
-            class="sidebar-link active"
-            href="/SilipMunti/frontend/pages/landlord/listings.html"
-            ><i class="fa-solid fa-building"></i><span>My Properties</span></a
-          >
-          <a
-            class="sidebar-link"
-            href="/SilipMunti/frontend/pages/landlord/add-listing.html"
-            ><i class="fa-solid fa-square-plus"></i><span>Add Property</span></a
-          >
-          <a
-            class="sidebar-link"
-            href="/SilipMunti/frontend/pages/landlord/verification.html"
-            ><i class="fa-solid fa-file-shield"></i><span>Verification</span></a
-          >
-          <a class="sidebar-link" href="/SilipMunti/frontend/messages.html"
-            ><i class="fa-solid fa-message"></i><span>Messages</span></a
-          >
-          <a
-            class="sidebar-link"
-            href="/SilipMunti/frontend/pages/landlord/inquiries.html"
-            ><i class="fa-solid fa-clipboard-question"></i
-            ><span>Inquiries</span></a
-          >
-          <p class="sidebar-label account-label">ACCOUNT</p>
-          <a
-            class="sidebar-link"
-            href="/SilipMunti/frontend/pages/profile/index.html"
-            ><i class="fa-solid fa-user"></i><span>Profile</span></a
-          >
-          <button
-            class="sidebar-link logout-link"
-            id="sidebar-logout"
-            type="button"
-          >
-            <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
-          </button>
-        </nav>
-        <div class="sidebar-footer">
-          <a href="/SilipMunti/frontend/index.html"
-            ><i class="fa-solid fa-arrow-left"></i>Back to Website</a
-          >
-        </div>
-      </aside>
+      <landlord-sidebar active-page="listings"></landlord-sidebar>
 
       <div class="dashboard-content">
         <header class="dashboard-topbar">
@@ -100,6 +33,8 @@
               id="sidebar-toggle"
               type="button"
               aria-label="Open sidebar"
+              aria-controls="dashboard-sidebar"
+              aria-expanded="false"
             >
               <i class="fa-solid fa-bars"></i>
             </button>
@@ -130,11 +65,7 @@
                 type="button"
                 aria-expanded="false"
               >
-                <img
-                  id="topbar-profile-picture"
-                  src="/SilipMunti/frontend/assets/images/default-profile.png"
-                  alt="Profile"
-                />
+                <img id="topbar-profile-picture" alt="Profile" />
                 <span
                   ><strong id="topbar-user-name">Landlord</strong
                   ><small>Property Owner</small></span
@@ -154,7 +85,7 @@
                 <a href="/SilipMunti/frontend/pages/landlord/listings.html"
                   ><i class="fa-solid fa-building"></i>My Listings</a
                 >
-                <button id="dropdown-logout" type="button">
+                <button id="topbar-logout-button" type="button">
                   <i class="fa-solid fa-right-from-bracket"></i>Logout
                 </button>
               </div>
@@ -242,6 +173,37 @@
 
             <section class="form-card">
               <div class="form-card-heading">
+                <span><i class="fa-solid fa-house-circle-check"></i></span>
+                <div>
+                  <h2>Listing availability</h2>
+                  <p>Control whether renters can find and inquire about this property.</p>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group form-group-wide">
+                  <label for="availability-status">Availability status</label>
+                  <select
+                    id="availability-status"
+                    name="availability_status"
+                    required
+                  >
+                    <option value="available">Available</option>
+                    <option value="occupied">Occupied</option>
+                  </select>
+                  <small class="field-help">
+                    Occupied properties stay in your dashboard but are hidden
+                    from public property results and recommendations.
+                  </small>
+                  <small
+                    class="field-error"
+                    data-error-for="availability_status"
+                  ></small>
+                </div>
+              </div>
+            </section>
+
+            <section class="form-card">
+              <div class="form-card-heading">
                 <span><i class="fa-solid fa-location-dot"></i></span>
                 <div>
                   <h2>Location</h2>
@@ -267,6 +229,7 @@
                     <option>Bayanan</option>
                     <option>Buli</option>
                     <option>Cupang</option>
+                    <option>New Alabang Village</option>
                     <option>Poblacion</option>
                     <option>Putatan</option>
                     <option>Sucat</option>
@@ -305,6 +268,67 @@
                     class="field-error"
                     data-error-for="longitude"
                   ></small>
+                </div>
+                <div class="sm-map-picker">
+                  <div class="sm-map-picker-heading">
+                    <div>
+                      <strong>Update the property pin</strong>
+                      <p>
+                        Click the map or drag the marker to correct the
+                        location.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      class="sm-map-locate-button"
+                      id="edit-map-locate"
+                    >
+                      <i class="fa-solid fa-location-crosshairs"></i>
+                      Use my current location
+                    </button>
+                  </div>
+                  <div class="sm-map-search">
+                    <label for="edit-map-search">Search map location</label>
+                    <div class="sm-map-search-control">
+                      <i
+                        class="fa-solid fa-magnifying-glass"
+                        aria-hidden="true"
+                      ></i>
+                      <input
+                        id="edit-map-search"
+                        type="search"
+                        maxlength="160"
+                        autocomplete="off"
+                        placeholder="Street, subdivision, or landmark in Muntinlupa"
+                      />
+                      <button
+                        class="sm-map-search-button"
+                        id="edit-map-search-button"
+                        type="button"
+                      >
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Search map</span>
+                      </button>
+                    </div>
+                    <p>
+                      Search for the general location, then drag the pin to the
+                      property's exact position.
+                    </p>
+                  </div>
+                  <div class="sm-map-shell">
+                    <div
+                      class="sm-map-canvas is-loading"
+                      id="edit-property-map"
+                      aria-label="Update property location on map"
+                    ></div>
+                  </div>
+                  <p
+                    class="sm-map-picker-status"
+                    id="edit-map-status"
+                    aria-live="polite"
+                  >
+                    Loading map…
+                  </p>
                 </div>
               </div>
             </section>
@@ -428,7 +452,10 @@
         </main>
       </div>
     </div>
-    <script src="/SilipMunti/frontend/assets/js/session.js"></script>
-    <script src="/SilipMunti/frontend/assets/js/landlord/edit-listing.js"></script>
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord-sidebar.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/map-config.js?v=1"></script>
+    <script src="/SilipMunti/frontend/assets/js/map-provider.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord/edit-listing.js?v=6"></script>
   </body>
 </html>

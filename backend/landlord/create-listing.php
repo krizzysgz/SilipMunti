@@ -52,6 +52,9 @@ $longitude = filter_var(
 $bedroomValue = $data['bedroom_no'] ?? null;
 $listingSizeValue = $data['listing_size'] ?? null;
 $occupancyValue = $data['occupancy_limit'] ?? null;
+$availabilityStatus = strtolower(trim(
+    $data['availability_status'] ?? 'available'
+));
 
 $bedroomNumber = (
     $bedroomValue === null || $bedroomValue === ''
@@ -145,6 +148,15 @@ if (
 ) {
     $errors['occupancy_limit'] =
         'Occupancy limit must be at least one.';
+}
+
+if (!in_array(
+    $availabilityStatus,
+    ['available', 'occupied'],
+    true
+)) {
+    $errors['availability_status'] =
+        'Select a valid availability status.';
 }
 
 if (!is_array($nearbyEstablishments)) {
@@ -255,7 +267,7 @@ try {
             :bedroom_no,
             :listing_size,
             :occupancy_limit,
-            'available',
+            :availability_status,
             'verified',
             :nearby_establishments,
             :transport_routes,
@@ -276,6 +288,7 @@ try {
         'bedroom_no' => $bedroomNumber,
         'listing_size' => $listingSize,
         'occupancy_limit' => $occupancyLimit,
+        'availability_status' => $availabilityStatus,
         'nearby_establishments' => $nearbyEstablishmentsJson,
         'transport_routes' => $transportRoutesJson,
         'amenities' => $amenitiesJson
@@ -294,7 +307,7 @@ try {
             'price' => (float) $price,
             'city' => 'Muntinlupa',
             'barangay' => $barangay,
-            'availability_status' => 'available',
+            'availability_status' => $availabilityStatus,
             'verification_status' => 'verified'
         ]
     ]);

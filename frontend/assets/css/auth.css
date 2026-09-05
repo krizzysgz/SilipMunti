@@ -606,4 +606,270 @@
   min-height: 100%;
 }
 
+#register-form.hidden,
+.otp-panel.hidden {
+  display: none;
+}
+
+.otp-panel {
+  padding: 12px 4px 4px;
+  text-align: center;
+}
+
+.otp-icon {
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  border-radius: 20px;
+  color: var(--primary-blue);
+  background: #f0f2ff;
+  font-size: 29px;
+}
+
+.otp-heading h2 {
+  margin: 0;
+  color: var(--primary-blue);
+  font-size: 27px;
+}
+
+.otp-heading p {
+  margin: 9px auto 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.otp-heading strong {
+  color: var(--text-dark);
+}
+
+.otp-field {
+  max-width: 340px;
+  margin: 0 auto 14px;
+  text-align: left;
+}
+
+.otp-field input {
+  width: 100%;
+  height: 58px;
+  border: 1px solid #d9def5;
+  border-radius: 10px;
+  color: var(--primary-blue);
+  background: #ffffff;
+  outline: none;
+  text-align: center;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: 10px;
+}
+
+.otp-field input:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(16, 39, 181, 0.1);
+}
+
+.otp-field input.invalid {
+  border-color: var(--error);
+}
+
+.otp-actions {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.otp-actions button {
+  border: 0;
+  color: var(--primary-blue);
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.otp-actions button:disabled {
+  cursor: not-allowed;
+  color: var(--text-muted);
+}
+
+.otp-note {
+  margin: 22px 0 0;
+  padding: 12px;
+  border-radius: 8px;
+  color: #725c00;
+  background: #fff8d6;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
 /* REGISTER END */
+
+.forgot-password-card {
+  width: 100%;
+  max-width: 440px;
+}
+
+.forgot-password-card .auth-logo {
+  width: 150px;
+  margin-bottom: 15px;
+}
+
+.forgot-password-card .auth-logo img {
+  height: 95px;
+}
+
+.forgot-password-card .auth-heading {
+  margin-bottom: 22px;
+}
+
+.forgot-password-panel.hidden,
+.password-success-panel.hidden,
+#signin-link.hidden {
+  display: none;
+}
+
+.forgot-password-panel {
+  width: 100%;
+}
+
+#email-panel .otp-note {
+  margin-top: 20px;
+}
+
+#reset-panel {
+  padding-top: 0;
+}
+
+#reset-panel .otp-icon {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 13px;
+  font-size: 24px;
+}
+
+#reset-panel .otp-heading h2 {
+  font-size: 24px;
+}
+
+#reset-panel .otp-heading p {
+  margin-bottom: 18px;
+}
+
+#reset-panel .form-field {
+  margin-bottom: 11px;
+  text-align: left;
+}
+
+#reset-panel .input-group input {
+  height: 48px;
+}
+
+#reset-panel .otp-field {
+  max-width: 100%;
+}
+
+#reset-panel .otp-field input {
+  height: 55px;
+  text-align: center;
+  font-size: 23px;
+  letter-spacing: 10px;
+}
+
+#reset-panel .otp-actions {
+  margin-top: 15px;
+}
+
+#reset-panel .otp-note {
+  margin-top: 16px;
+}
+
+.password-success-panel {
+  padding: 15px 0 5px;
+  text-align: center;
+}
+
+.password-success-icon {
+  width: 78px;
+  height: 78px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  color: #138a47;
+  background: #e7f8ee;
+  font-size: 36px;
+}
+
+.password-success-panel h2 {
+  margin: 0;
+  color: var(--primary-blue);
+  font-size: 27px;
+}
+
+.password-success-panel p {
+  margin: 12px 0 25px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.password-success-panel .login-button {
+  text-decoration: none;
+}
+
+@media (max-width: 900px) {
+  .forgot-password-card {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 560px) {
+  .forgot-password-card .auth-logo {
+    width: 125px;
+  }
+
+  .forgot-password-card .auth-logo img {
+    height: 80px;
+  }
+
+  #reset-panel .otp-heading h2 {
+    font-size: 22px;
+  }
+
+  #reset-panel .otp-field input {
+    font-size: 21px;
+    letter-spacing: 8px;
+  }
+
+  .password-success-icon {
+    width: 68px;
+    height: 68px;
+    font-size: 31px;
+  }
+}
+
+.turnstile-section {
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  margin: 0 0 18px;
+}
+
+.turnstile-section[hidden] {
+  display: none;
+}
+
+#turnstile-widget {
+  width: 100%;
+  min-height: 65px;
+}
+
+.turnstile-error {
+  width: 100%;
+  min-height: 17px;
+  text-align: center;
+}

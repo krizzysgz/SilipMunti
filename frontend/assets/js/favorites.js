@@ -2,7 +2,7 @@ const GET_FAVORITES_API = "/SilipMunti/backend/renter/get-favorites.php";
 
 const REMOVE_FAVORITE_API = "/SilipMunti/backend/renter/remove-favorite.php";
 
-const DEFAULT_PROPERTY_IMAGE = "../../assets/images/property-placeholder.jpg";
+const DEFAULT_PROPERTY_IMAGE = "../../assets/images/property-placeholder.svg";
 
 const favoritesLoading = document.querySelector("#favorites-loading");
 
@@ -85,7 +85,9 @@ async function requireRenterUser() {
   }
 
   if (!currentUser) {
-    window.location.href = "../auth/login.html";
+    window.SilipMuntiSession?.redirectToLogin(
+      window.location.pathname + window.location.search,
+    );
     return false;
   }
 
@@ -248,7 +250,9 @@ async function loadFavorites() {
     const result = await response.json();
 
     if (response.status === 401) {
-      window.location.href = "../auth/login.html";
+      window.SilipMuntiSession?.redirectToLogin(
+        window.location.pathname + window.location.search,
+      );
       return;
     }
 
@@ -295,22 +299,33 @@ async function removeFavorite() {
   confirmRemoveButton.textContent = "Removing...";
 
   try {
-    const response = await fetch(REMOVE_FAVORITE_API, {
-      method: "DELETE",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
+    if (!window.SilipMuntiSession?.secureFetch) {
+      throw new Error(
+        "Request security is unavailable. Refresh the page and try again.",
+      );
+    }
+
+    const response = await window.SilipMuntiSession.secureFetch(
+      REMOVE_FAVORITE_API,
+      {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          listing_id: selectedListingId,
+        }),
       },
-      body: JSON.stringify({
-        listing_id: selectedListingId,
-      }),
-    });
+    );
 
     const result = await response.json();
 
     if (response.status === 401) {
-      window.location.href = "../auth/login.html";
+      window.SilipMuntiSession?.redirectToLogin(
+        window.location.pathname + window.location.search,
+      );
       return;
     }
 

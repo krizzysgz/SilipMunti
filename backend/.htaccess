@@ -1,0 +1,27 @@
+Options -Indexes
+
+<FilesMatch "(^\.|composer\.(json|lock)$|\.example$)">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
+    Header always unset X-Powered-By
+    Header always set Content-Security-Policy "default-src 'none'; base-uri 'none'; object-src 'none'; frame-ancestors 'self'; form-action 'none'"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^config(?:/|$) - [F,L,NC]
+    RewriteRule ^middleware(?:/|$) - [F,L,NC]
+    RewriteRule ^setup(?:/|$) - [F,L,NC]
+    RewriteRule ^vendor(?:/|$) - [F,L,NC]
+    RewriteRule ^auth/make-admin\.php$ - [F,L,NC]
+    RewriteRule ^ai/(?:config|gemini-client|test-gemini)\.php$ - [F,L,NC]
+    RewriteRule ^storage/verification-documents(?:/|$) - [F,L,NC]
+    RewriteRule ^storage/.*\.(?:php[0-9]*|phtml|phar|cgi|pl|py|sh)$ - [F,L,NC]
+</IfModule>

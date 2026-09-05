@@ -4,6 +4,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/registration-validation.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -24,66 +25,19 @@ if (!is_array($data)) {
     $data = $_POST;
 }
 
-$firstName = trim($data['first_name'] ?? '');
-$lastName = trim($data['last_name'] ?? '');
-$email = strtolower(trim($data['email'] ?? ''));
-$phoneNumber = trim($data['phone_number'] ?? '');
-$password = $data['password'] ?? '';
-$confirmPassword = $data['confirm_password'] ?? '';
-$role = trim($data['role'] ?? '');
+$validation = validate_registration_data($data);
+$values = $validation['values'];
+$errors = $validation['errors'];
 
-$errors = [];
+$otp = preg_replace(
+    '/\s+/',
+    '',
+    (string) ($data['otp'] ?? '')
+);
 
-if ($firstName === '') {
-    $errors['first_name'] = 'First name is required.';
-} elseif (mb_strlen($firstName) > 100) {
-    $errors['first_name'] =
-        'First name must not exceed 100 characters.';
-}
-
-if ($lastName === '') {
-    $errors['last_name'] = 'Last name is required.';
-} elseif (mb_strlen($lastName) > 100) {
-    $errors['last_name'] =
-        'Last name must not exceed 100 characters.';
-}
-
-if ($email === '') {
-    $errors['email'] = 'Email is required.';
-} elseif (strlen($email) > 254) {
-    $errors['email'] = 'Email address is too long.';
-} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors['email'] = 'Email address is invalid.';
-}
-
-if (
-    $phoneNumber !== ''
-    && mb_strlen($phoneNumber) > 30
-) {
-    $errors['phone_number'] =
-        'Phone number must not exceed 30 characters.';
-}
-
-if ($password === '') {
-    $errors['password'] = 'Password is required.';
-} elseif (strlen($password) < 8) {
-    $errors['password'] =
-        'Password must contain at least 8 characters.';
-} elseif (strlen($password) > 255) {
-    $errors['password'] = 'Password is too long.';
-}
-
-if ($confirmPassword === '') {
-    $errors['confirm_password'] =
-        'Password confirmation is required.';
-} elseif ($password !== $confirmPassword) {
-    $errors['confirm_password'] =
-        'Passwords do not match.';
-}
-
-if (!in_array($role, ['renter', 'landlord'], true)) {
-    $errors['role'] =
-        'Role must be renter or landlord.';
+if (!preg_match('/^\d{6}$/', $otp)) {
+    $errors['otp'] =
+        'Enter the 6-digit verification code.';
 }
 
 if ($errors !== []) {
@@ -105,10 +59,11 @@ try {
         FROM users
         WHERE email = :email
         LIMIT 1
+        FOR UPDATE
     ");
 
     $checkUser->execute([
-        'email' => $email
+        'email' => $values['email']
     ]);
 
     if ($checkUser->fetch()) {
@@ -119,15 +74,151 @@ try {
         echo json_encode([
             'success' => false,
             'message' =>
-                'Email address is already registered.'
+                'Email address is already registered.',
+            'errors' => [
+                'email' =>
+                    'Email address is already registered.'
+            ]
+        ]);
+        exit;
+    }
+
+    $getOtp = $pdo->prepare("
+        SELECT
+            id,
+            otp_hash,
+            attempts,
+            expires_at <= NOW() AS is_expired
+        FROM registration_otps
+        WHERE email = :email
+        LIMIT 1
+        FOR UPDATE
+    ");
+
+    $getOtp->execute([
+        'email' => $values['email']
+    ]);
+
+    $otpRecord = $getOtp->fetch();
+
+    if (!$otpRecord) {
+        $pdo->rollBack();
+
+        http_response_code(422);
+
+        echo json_encode([
+            'success' => false,
+            'message' =>
+                'Request a verification code before creating your account.',
+            'errors' => [
+                'otp' =>
+                    'Request a new verification code.'
+            ]
+        ]);
+        exit;
+    }
+
+    if ((bool) $otpRecord['is_expired']) {
+        $deleteExpiredOtp = $pdo->prepare("
+            DELETE FROM registration_otps
+            WHERE id = :id
+        ");
+
+        $deleteExpiredOtp->execute([
+            'id' => $otpRecord['id']
+        ]);
+
+        $pdo->commit();
+
+        http_response_code(410);
+
+        echo json_encode([
+            'success' => false,
+            'message' =>
+                'The verification code has expired. ' .
+                'Request a new code.',
+            'errors' => [
+                'otp' => 'Verification code expired.'
+            ]
+        ]);
+        exit;
+    }
+
+    if (!password_verify(
+        $otp,
+        $otpRecord['otp_hash']
+    )) {
+        $newAttemptCount =
+            (int) $otpRecord['attempts'] + 1;
+
+        if ($newAttemptCount >= 5) {
+            $deleteFailedOtp = $pdo->prepare("
+                DELETE FROM registration_otps
+                WHERE id = :id
+            ");
+
+            $deleteFailedOtp->execute([
+                'id' => $otpRecord['id']
+            ]);
+
+            $pdo->commit();
+
+            http_response_code(429);
+
+            echo json_encode([
+                'success' => false,
+                'message' =>
+                    'Too many incorrect attempts. ' .
+                    'Request a new code.',
+                'errors' => [
+                    'otp' =>
+                        'Request a new verification code.'
+                ]
+            ]);
+            exit;
+        }
+
+        $updateAttempts = $pdo->prepare("
+            UPDATE registration_otps
+            SET attempts = :attempts
+            WHERE id = :id
+        ");
+
+        $updateAttempts->execute([
+            'attempts' => $newAttemptCount,
+            'id' => $otpRecord['id']
+        ]);
+
+        $pdo->commit();
+
+        http_response_code(422);
+
+        echo json_encode([
+            'success' => false,
+            'message' =>
+                'The verification code is incorrect.',
+            'errors' => [
+                'otp' =>
+                    'Incorrect verification code.'
+            ],
+            'data' => [
+                'attempts_remaining' =>
+                    5 - $newAttemptCount
+            ]
         ]);
         exit;
     }
 
     $hashedPassword = password_hash(
-        $password,
+        $values['password'],
         PASSWORD_DEFAULT
     );
+
+    if ($hashedPassword === false) {
+        throw new RuntimeException(
+            'Unable to secure the password.'
+        );
+    }
 
     $insertUser = $pdo->prepare("
         INSERT INTO users (
@@ -149,20 +240,20 @@ try {
     ");
 
     $insertUser->execute([
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'email' => $email,
+        'first_name' => $values['first_name'],
+        'last_name' => $values['last_name'],
+        'email' => $values['email'],
         'password' => $hashedPassword,
         'phone_number' =>
-            $phoneNumber !== ''
-                ? $phoneNumber
+            $values['phone_number'] !== ''
+                ? $values['phone_number']
                 : null,
-        'role' => $role
+        'role' => $values['role']
     ]);
 
     $userId = (int) $pdo->lastInsertId();
 
-    if ($role === 'landlord') {
+    if ($values['role'] === 'landlord') {
         $insertNotification = $pdo->prepare("
             INSERT INTO notifications (
                 user_id,
@@ -185,12 +276,21 @@ try {
         $insertNotification->execute([
             'user_id' => $userId,
             'message' =>
-                'Complete your landlord verification. '
-                . 'Upload your valid ID, barangay '
-                . 'clearance, and land title before '
-                . 'adding a property.'
+                'Complete your landlord verification. ' .
+                'Upload your valid ID, barangay ' .
+                'clearance, and land title before ' .
+                'adding a property.'
         ]);
     }
+
+    $deleteUsedOtp = $pdo->prepare("
+        DELETE FROM registration_otps
+        WHERE id = :id
+    ");
+
+    $deleteUsedOtp->execute([
+        'id' => $otpRecord['id']
+    ]);
 
     $pdo->commit();
 
@@ -199,23 +299,23 @@ try {
     echo json_encode([
         'success' => true,
         'message' =>
-            $role === 'landlord'
-                ? 'Account created successfully. '
-                    . 'Complete your landlord verification '
-                    . 'before adding a property.'
-                : 'Account created successfully.',
+            $values['role'] === 'landlord'
+                ? 'Email verified and account created successfully. ' .
+                    'Complete your landlord verification ' .
+                    'before adding a property.'
+                : 'Email verified and account created successfully.',
         'data' => [
             'user_id' => $userId,
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-            'email' => $email,
+            'first_name' => $values['first_name'],
+            'last_name' => $values['last_name'],
+            'email' => $values['email'],
             'phone_number' =>
-                $phoneNumber !== ''
-                    ? $phoneNumber
+                $values['phone_number'] !== ''
+                    ? $values['phone_number']
                     : null,
-            'role' => $role,
+            'role' => $values['role'],
             'verification_required' =>
-                $role === 'landlord'
+                $values['role'] === 'landlord'
         ]
     ]);
 } catch (Throwable $exception) {
@@ -229,6 +329,7 @@ try {
 
     echo json_encode([
         'success' => false,
-        'message' => 'Unable to create account.'
+        'message' =>
+            'Unable to create account.'
     ]);
 }
