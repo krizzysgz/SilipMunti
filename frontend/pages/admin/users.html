@@ -127,6 +127,17 @@
                   <option value="all">All records</option>
                 </select>
               </label>
+
+              <label>
+                <span>Landlord approval</span>
+                <select id="landlord-approval-filter">
+                  <option value="all">All approval statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="suspended">Suspended</option>
+                </select>
+              </label>
             </div>
 
             <div class="admin-table-wrapper">
@@ -137,13 +148,14 @@
                     <th>Role</th>
                     <th>Phone</th>
                     <th>Joined</th>
-                    <th>Status</th>
+                    <th>Account status</th>
+                    <th>Verification</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="users-table-body">
                   <tr>
-                    <td colspan="6" class="admin-table-message">
+                    <td colspan="7" class="admin-table-message">
                       Loading users...
                     </td>
                   </tr>
@@ -183,6 +195,6 @@
 
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=3"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-users.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-users.js?v=5"></script>
   </body>
 </html>

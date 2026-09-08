@@ -41,7 +41,17 @@ try {
         'success' => true,
         'message' => 'Verification documents retrieved successfully.',
         'data' => [
-            'documents' => $documents
+            'documents' => $documents,
+            'account_status' =>
+                $user['account_status'] ?? 'pending',
+            'verification_level' =>
+                $user['verification_level'] ?? 'unverified',
+            'approved_document_count' =>
+                $user['approved_document_count'] ?? 0,
+            'is_fully_verified' =>
+                $user['is_fully_verified'] ?? false,
+            'rejection_reason' =>
+                $user['landlord_rejection_reason'] ?? null
         ]
     ]);
 } catch (PDOException $exception) {

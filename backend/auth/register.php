@@ -227,7 +227,8 @@ try {
             email,
             password,
             phone_number,
-            role
+            role,
+            landlord_status
         )
         VALUES (
             :first_name,
@@ -235,7 +236,8 @@ try {
             :email,
             :password,
             :phone_number,
-            :role
+            :role,
+            :landlord_status
         )
     ");
 
@@ -248,7 +250,11 @@ try {
             $values['phone_number'] !== ''
                 ? $values['phone_number']
                 : null,
-        'role' => $values['role']
+        'role' => $values['role'],
+        'landlord_status' =>
+            $values['role'] === 'landlord'
+                ? 'pending'
+                : null
     ]);
 
     $userId = (int) $pdo->lastInsertId();
@@ -276,10 +282,8 @@ try {
         $insertNotification->execute([
             'user_id' => $userId,
             'message' =>
-                'Complete your landlord verification. ' .
-                'Upload your valid ID, barangay ' .
-                'clearance, and land title before ' .
-                'adding a property.'
+                'Your landlord account is awaiting admin approval. ' .
+                'You may upload verification documents while waiting.'
         ]);
     }
 
@@ -301,8 +305,7 @@ try {
         'message' =>
             $values['role'] === 'landlord'
                 ? 'Email verified and account created successfully. ' .
-                    'Complete your landlord verification ' .
-                    'before adding a property.'
+                    'Your landlord account is now awaiting admin approval.'
                 : 'Email verified and account created successfully.',
         'data' => [
             'user_id' => $userId,
@@ -314,8 +317,12 @@ try {
                     ? $values['phone_number']
                     : null,
             'role' => $values['role'],
-            'verification_required' =>
+            'admin_approval_required' =>
+                $values['role'] === 'landlord',
+            'landlord_status' =>
                 $values['role'] === 'landlord'
+                    ? 'pending'
+                    : null
         ]
     ]);
 } catch (Throwable $exception) {

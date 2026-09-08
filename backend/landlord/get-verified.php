@@ -81,8 +81,10 @@ $limit = (int) $limit;
 $offset = ($page - 1) * $limit;
 
 $verificationJoin = "
-    INNER JOIN (
-        SELECT landlord_id
+    LEFT JOIN (
+        SELECT
+            landlord_id,
+            COUNT(DISTINCT document_type) AS approved_document_count
         FROM verification_documents
         WHERE verification_status = 'approved'
           AND deleted_at IS NULL
@@ -90,15 +92,15 @@ $verificationJoin = "
               'valid_id',
               'barangay_clearance',
               'land_title'
-          )
+        )
         GROUP BY landlord_id
-        HAVING COUNT(DISTINCT document_type) = 3
-    ) verified
-        ON verified.landlord_id = u.id
+    ) verification
+        ON verification.landlord_id = u.id
 ";
 
 $whereConditions = [
     "u.role = 'landlord'",
+    "u.landlord_status = 'approved'",
     'u.deleted_at IS NULL'
 ];
 $params = [];
@@ -182,6 +184,10 @@ try {
             CONCAT(u.first_name, ' ', u.last_name) AS name,
             u.profile_picture,
             u.created_at AS member_since,
+            COALESCE(
+                verification.approved_document_count,
+                0
+            ) AS approved_document_count,
             COUNT(DISTINCT l.id) AS active_listing_count,
             GROUP_CONCAT(
                 DISTINCT l.barangay
@@ -223,6 +229,7 @@ try {
             u.last_name,
             u.profile_picture,
             u.created_at,
+            verification.approved_document_count,
             ratings.average_rating,
             ratings.total_reviews
         ORDER BY {$orderBy}
@@ -241,6 +248,12 @@ try {
             (float) $landlord['average_rating'];
         $landlord['total_reviews'] =
             (int) $landlord['total_reviews'];
+        $landlord['approved_document_count'] =
+            (int) $landlord['approved_document_count'];
+        $landlord['verification_level'] =
+            $landlord['approved_document_count'] === 3
+                ? 'fully_verified'
+                : 'verified';
 
         $profilePicture = $landlord['profile_picture'] ?? null;
 

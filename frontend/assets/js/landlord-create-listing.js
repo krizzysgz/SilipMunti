@@ -4,13 +4,10 @@
 
   const endpoints = {
     createListing: `${API_ROOT}/landlord/create-listing.php`,
-    getDocuments: `${API_ROOT}/landlord/get-documents.php`,
     getRentalTypes: `${API_ROOT}/rental-types/get-all.php`,
     getNotifications: `${API_ROOT}/notifications/get-all.php?status=unread`,
     uploadImage: `${API_ROOT}/landlord/upload-listing-image.php`,
   };
-
-  const requiredDocuments = ["valid_id", "barangay_clearance", "land_title"];
 
   const form = document.querySelector("#create-listing-form");
   const messageBox = document.querySelector("#create-listing-message");
@@ -104,44 +101,35 @@
     }
   }
 
-  async function checkVerification() {
-    const response = await fetch(endpoints.getDocuments, {
-      credentials: "include",
-      cache: "no-store",
-    });
-    const result = await response.json();
+  async function checkLandlordApproval(user = null) {
+    const landlord =
+      user || (await window.SilipMuntiSession?.getCurrentUser(true));
+    const accountStatus =
+      landlord?.account_status || landlord?.landlord_status || "pending";
+    const isApproved = accountStatus === "approved";
 
-    if (!response.ok || !result.success) {
-      throw new Error(
-        result.message || "Unable to check your verification status.",
-      );
-    }
+    verificationGuard?.classList.toggle("hidden", isApproved);
+    form?.classList.toggle("hidden", !isApproved);
 
-    const documents = Array.isArray(result.data?.documents)
-      ? result.data.documents
-      : [];
+    if (!isApproved) {
+      const messages = {
+        pending:
+          "Your landlord account is awaiting admin approval. You can create listings after approval.",
+        rejected: landlord?.landlord_rejection_reason
+          ? `Your landlord account was not approved: ${landlord.landlord_rejection_reason}`
+          : "Your landlord account was not approved. Contact the administrator for assistance.",
+        suspended:
+          "Your landlord account is currently suspended. Contact the administrator for assistance.",
+      };
 
-    const approvedCount = requiredDocuments.filter((documentType) =>
-      documents.some(
-        (document) =>
-          document.document_type === documentType &&
-          document.verification_status === "approved",
-      ),
-    ).length;
-
-    const isVerified = approvedCount === requiredDocuments.length;
-
-    verificationGuard?.classList.toggle("hidden", isVerified);
-    form?.classList.toggle("hidden", !isVerified);
-
-    if (!isVerified) {
       showMessage(
-        `Your account has ${approvedCount} of 3 approved documents. Complete verification before creating a listing.`,
+        messages[accountStatus] ||
+          "Admin approval is required before creating a listing.",
         "error",
       );
     }
 
-    return isVerified;
+    return isApproved;
   }
 
   async function loadRentalTypes() {
@@ -397,9 +385,9 @@
       setSubmitting(true, "Checking...");
 
       try {
-        const isVerified = await checkVerification();
+        const isApproved = await checkLandlordApproval();
 
-        if (!isVerified) {
+        if (!isApproved) {
           setSubmitting(false);
           return;
         }
@@ -434,9 +422,9 @@
 
     await Promise.all([loadNotificationCount(), loadRentalTypes()]);
 
-    const isVerified = await checkVerification();
+    const isApproved = await checkLandlordApproval(user);
 
-    if (isVerified) {
+    if (isApproved) {
       await setupMapPicker();
     }
   }

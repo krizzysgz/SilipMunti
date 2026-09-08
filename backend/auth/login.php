@@ -122,6 +122,9 @@ try {
             password,
             phone_number,
             role,
+            landlord_status,
+            landlord_reviewed_at,
+            landlord_rejection_reason,
             profile_picture
         FROM users
         WHERE email = :email
@@ -237,6 +240,19 @@ try {
     $_SESSION['last_regeneration'] = time();
 
     $user['id'] = (int) $user['id'];
+
+    if ($user['role'] === 'landlord') {
+        require_once __DIR__ . '/../config/landlord-verification.php';
+
+        $user = array_merge(
+            $user,
+            get_landlord_verification_summary(
+                $pdo,
+                $user['id'],
+                $user['landlord_status']
+            )
+        );
+    }
 
     unset($user['password']);
 

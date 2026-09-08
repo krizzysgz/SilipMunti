@@ -52,12 +52,16 @@ if (!ctype_digit((string) $listingId) || (int) $listingId < 1) {
 }
 
 $listingStmt = $pdo->prepare('
-    SELECT id
-    FROM listings
-    WHERE id = :listing_id
-        AND verification_status = \'verified\'
-        AND availability_status = \'available\'
-        AND deleted_at IS NULL
+    SELECT l.id
+    FROM listings l
+    INNER JOIN users u
+        ON u.id = l.landlord_id
+    WHERE l.id = :listing_id
+        AND l.verification_status = \'verified\'
+        AND l.availability_status = \'available\'
+        AND l.deleted_at IS NULL
+        AND u.deleted_at IS NULL
+        AND u.landlord_status = \'approved\'
     LIMIT 1
 ');
 

@@ -4,6 +4,7 @@
 
   const endpoints = {
     getUsers: `${API_ROOT}/admin/get-users.php`,
+    reviewLandlord: `${API_ROOT}/admin/review-landlord.php`,
     deleteUser: `${API_ROOT}/admin/delete-user.php`,
     restoreUser: `${API_ROOT}/admin/restore-user.php`,
   };
@@ -14,6 +15,9 @@
   const topbarSearch = document.querySelector("#topbar-search");
   const roleFilter = document.querySelector("#role-filter");
   const recordStatusFilter = document.querySelector("#record-status-filter");
+  const landlordApprovalFilter = document.querySelector(
+    "#landlord-approval-filter",
+  );
   const deleteModal = document.querySelector("#delete-modal");
   const deleteModalTitle = document.querySelector("#delete-modal-title");
   const deleteConfirm = document.querySelector("#delete-confirm");
@@ -79,6 +83,9 @@
       profilePicture: user.profile_picture || "",
       createdAt: user.created_at || "",
       deletedAt: user.deleted_at || null,
+      landlordStatus: user.landlord_status || "pending",
+      approvedDocumentCount: Number(user.approved_document_count) || 0,
+      verificationLevel: user.verification_level || null,
     };
   }
 
@@ -191,7 +198,7 @@
     if (users.length < 1) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="6" class="admin-table-message">No users found.</td>
+          <td colspan="7" class="admin-table-message">No users found.</td>
         </tr>
       `;
       return;
@@ -200,6 +207,32 @@
     tableBody.innerHTML = pageUsers
       .map((user) => {
         const isDeleted = Boolean(user.deletedAt);
+        const accountStatus = isDeleted
+          ? "deleted"
+          : user.role === "landlord"
+            ? user.landlordStatus
+            : "active";
+        const accountStatusClass = ["active", "approved"].includes(
+          accountStatus,
+        )
+          ? "approved"
+          : ["deleted", "rejected", "suspended"].includes(accountStatus)
+            ? "rejected"
+            : "pending";
+        const verificationText =
+          user.role !== "landlord"
+            ? "—"
+            : user.verificationLevel === "fully_verified"
+              ? "Fully verified"
+              : user.landlordStatus === "approved"
+                ? `Verified · ${user.approvedDocumentCount}/3 docs`
+                : "Not verified";
+        const verificationClass =
+          user.verificationLevel === "fully_verified"
+            ? "approved"
+            : user.landlordStatus === "approved"
+              ? "pending"
+              : "rejected";
 
         return `
           <tr class="${isDeleted ? "admin-row-muted" : ""}">
@@ -220,9 +253,16 @@
               <strong class="admin-date-cell">${escapeHtml(formatDate(user.createdAt))}</strong>
             </td>
             <td>
-              <span class="admin-status ${isDeleted ? "rejected" : "approved"}">
-                ${isDeleted ? "Deleted" : "Active"}
+              <span class="admin-status ${accountStatusClass}">
+                ${escapeHtml(accountStatus)}
               </span>
+            </td>
+            <td>
+              ${
+                user.role === "landlord"
+                  ? `<span class="admin-status ${verificationClass}">${escapeHtml(verificationText)}</span>`
+                  : '<span class="admin-muted">Not applicable</span>'
+              }
             </td>
             <td>
               <div class="admin-row-actions">
@@ -236,7 +276,35 @@
                       >
                         <i class="fa-solid fa-rotate-left"></i>
                       </button>`
-                    : `<button
+                    : `${
+                        user.role === "landlord" &&
+                        user.landlordStatus !== "approved"
+                          ? `<button
+                              type="button"
+                              class="admin-icon-button review-landlord-button approve-button"
+                              data-user-id="${escapeHtml(user.id)}"
+                              data-action="approved"
+                              title="Approve landlord"
+                            >
+                              <i class="fa-solid fa-user-check"></i>
+                            </button>`
+                          : ""
+                      }
+                      ${
+                        user.role === "landlord" &&
+                        user.landlordStatus !== "rejected"
+                          ? `<button
+                              type="button"
+                              class="admin-icon-button review-landlord-button reject-button"
+                              data-user-id="${escapeHtml(user.id)}"
+                              data-action="rejected"
+                              title="Reject landlord"
+                            >
+                              <i class="fa-solid fa-user-xmark"></i>
+                            </button>`
+                          : ""
+                      }
+                      <button
                         type="button"
                         class="admin-icon-button delete-user-button reject-button"
                         data-user-id="${escapeHtml(user.id)}"
@@ -261,7 +329,11 @@
     }
 
     if (recordStatusFilter.value) {
-      params.set("record_status", recordStatusFilter.value);
+      params.set("status", recordStatusFilter.value);
+    }
+
+    if (landlordApprovalFilter?.value) {
+      params.set("landlord_status", landlordApprovalFilter.value);
     }
 
     if (topbarSearch.value.trim()) {
@@ -278,7 +350,7 @@
     pagination?.classList.add("hidden");
     tableBody.innerHTML = `
       <tr>
-        <td colspan="6" class="admin-table-message">Loading users...</td>
+        <td colspan="7" class="admin-table-message">Loading users...</td>
       </tr>
     `;
 
@@ -308,7 +380,7 @@
       updateSummary();
       tableBody.innerHTML = `
         <tr>
-          <td colspan="6" class="admin-table-message">Unable to load users.</td>
+          <td colspan="7" class="admin-table-message">Unable to load users.</td>
         </tr>
       `;
       showMessage(error.message || "Unable to connect to the server.", "error");
@@ -334,6 +406,32 @@
 
     if (!response.ok || !result.success) {
       throw new Error(result.message || "Unable to update user.");
+    }
+
+    return result;
+  }
+
+  async function reviewLandlord(userId, action, rejectionReason = "") {
+    const response = await window.SilipMuntiSession.secureFetch(
+      endpoints.reviewLandlord,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          landlord_id: Number(userId),
+          action,
+          rejection_reason: rejectionReason,
+        }),
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Unable to review landlord account.");
     }
 
     return result;
@@ -380,6 +478,10 @@
       currentPage = 1;
       loadUsers();
     });
+    landlordApprovalFilter?.addEventListener("change", () => {
+      currentPage = 1;
+      loadUsers();
+    });
 
     topbarSearch.addEventListener("input", () => {
       window.clearTimeout(searchTimer);
@@ -402,6 +504,7 @@
     document.addEventListener("click", async (event) => {
       const deleteButton = event.target.closest(".delete-user-button");
       const restoreButton = event.target.closest(".restore-user-button");
+      const reviewButton = event.target.closest(".review-landlord-button");
       const modalClose = event.target.closest(
         "#delete-modal-close, #delete-cancel",
       );
@@ -424,6 +527,45 @@
         } catch (error) {
           showMessage(error.message, "error");
           restoreButton.disabled = false;
+        }
+        return;
+      }
+
+      if (reviewButton) {
+        const action = reviewButton.dataset.action;
+        let rejectionReason = "";
+
+        if (action === "approved") {
+          const confirmed = window.confirm(
+            "Approve this landlord account and allow listing management?",
+          );
+          if (!confirmed) return;
+        } else {
+          rejectionReason = window.prompt(
+            "Enter the reason for rejecting this landlord account:",
+          );
+          if (rejectionReason === null) return;
+          rejectionReason = rejectionReason.trim();
+
+          if (!rejectionReason) {
+            showMessage("A rejection reason is required.", "error");
+            return;
+          }
+        }
+
+        reviewButton.disabled = true;
+
+        try {
+          const result = await reviewLandlord(
+            reviewButton.dataset.userId,
+            action,
+            rejectionReason,
+          );
+          showMessage(result.message, "success");
+          await loadUsers();
+        } catch (error) {
+          showMessage(error.message, "error");
+          reviewButton.disabled = false;
         }
         return;
       }

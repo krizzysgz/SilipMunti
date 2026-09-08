@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$landlord = require_role($pdo, ['landlord']);
+$landlord = require_approved_landlord($pdo);
 
 $listingId = filter_var(
     $_POST['listing_id'] ?? null,

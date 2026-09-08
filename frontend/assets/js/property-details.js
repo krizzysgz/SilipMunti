@@ -61,6 +61,10 @@ const propertyMap = document.querySelector("#property-map");
 
 const landlordName = document.querySelector("#landlord-name");
 
+const landlordVerificationBadge = document.querySelector(
+  "#landlord-verification-badge",
+);
+
 const galleryGrid = document.querySelector("#gallery-grid");
 
 const viewImagesButton = document.querySelector("#view-images-button");
@@ -705,6 +709,13 @@ function renderListing(listing) {
 
   if (landlordName) {
     landlordName.textContent = listing.landlord_name || "Verified landlord";
+  }
+
+  if (landlordVerificationBadge) {
+    landlordVerificationBadge.innerHTML =
+      listing.landlord_verification_level === "fully_verified"
+        ? '<i class="fa-solid fa-shield-halved"></i> Fully verified landlord'
+        : '<i class="fa-solid fa-circle-check"></i> Verified landlord';
   }
 
   if (mapLocationTitle) {

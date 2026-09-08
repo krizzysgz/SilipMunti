@@ -114,6 +114,7 @@
     const label = count === 1 ? "available property" : "available properties";
     const totalReviews = Number(ratingSummary.total_reviews) || 0;
     const averageRating = Number(ratingSummary.average_rating) || 0;
+    const isFullyVerified = landlord.verification_level === "fully_verified";
 
     profileCard.innerHTML = "";
 
@@ -133,16 +134,18 @@
     content.className = "landlord-profile-content";
 
     const badge = document.createElement("span");
-    badge.className = "landlord-verified-badge";
-    badge.innerHTML =
-      '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Verified landlord';
+    badge.className = `landlord-verified-badge${isFullyVerified ? " fully-verified" : ""}`;
+    badge.innerHTML = isFullyVerified
+      ? '<i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Fully verified landlord'
+      : '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Verified landlord';
 
     const name = document.createElement("h1");
     name.textContent = landlord.name || "Verified Landlord";
 
     const description = document.createElement("p");
-    description.textContent =
-      "This property owner completed SilipMunti's required landlord verification process.";
+    description.textContent = isFullyVerified
+      ? "This property owner is admin-approved and has all three required documents verified by SilipMunti."
+      : "This property owner has been reviewed and approved by the SilipMunti administrator.";
 
     const stats = document.createElement("div");
     stats.className = "landlord-profile-stats";

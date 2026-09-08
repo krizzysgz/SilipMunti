@@ -50,7 +50,19 @@ $stmt = $pdo->prepare("
         l.amenities,
         l.created_at,
         l.updated_at,
-        CONCAT(u.first_name, ' ', u.last_name) AS landlord_name
+        CONCAT(u.first_name, ' ', u.last_name) AS landlord_name,
+        (
+            SELECT COUNT(DISTINCT vd.document_type)
+            FROM verification_documents vd
+            WHERE vd.landlord_id = u.id
+              AND vd.verification_status = 'approved'
+              AND vd.deleted_at IS NULL
+              AND vd.document_type IN (
+                  'valid_id',
+                  'barangay_clearance',
+                  'land_title'
+              )
+        ) AS landlord_approved_document_count
     FROM listings l
     INNER JOIN users u
         ON u.id = l.landlord_id
@@ -59,6 +71,7 @@ $stmt = $pdo->prepare("
     WHERE l.id = :listing_id
         AND l.deleted_at IS NULL
         AND u.deleted_at IS NULL
+        AND u.landlord_status = 'approved'
         AND rt.deleted_at IS NULL
         AND l.verification_status = 'verified'
         AND l.availability_status = 'available'
@@ -119,6 +132,12 @@ unset($image);
 
 $listing['images'] = $images;
 $listing['primary_image'] = $images[0]['image_url'] ?? null;
+$listing['landlord_approved_document_count'] =
+    (int) $listing['landlord_approved_document_count'];
+$listing['landlord_verification_level'] =
+    $listing['landlord_approved_document_count'] === 3
+        ? 'fully_verified'
+        : 'verified';
 
 echo json_encode([
     'success' => true,

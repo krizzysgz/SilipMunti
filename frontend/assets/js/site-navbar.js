@@ -1,5 +1,7 @@
 class SiteNavbar extends HTMLElement {
   connectedCallback() {
+    this.loadNavbarFont();
+
     const activePage = this.getAttribute("active-page") || "";
     const isActive = (page) =>
       activePage === page ? ' class="active" aria-current="page"' : "";
@@ -197,6 +199,16 @@ class SiteNavbar extends HTMLElement {
     `;
 
     window.SilipMuntiSiteNavbar?.initialize();
+  }
+
+  loadNavbarFont() {
+    if (document.querySelector('link[href*="family=Poppins"]')) return;
+
+    const fontStylesheet = document.createElement("link");
+    fontStylesheet.rel = "stylesheet";
+    fontStylesheet.href =
+      "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap";
+    document.head.appendChild(fontStylesheet);
   }
 }
 

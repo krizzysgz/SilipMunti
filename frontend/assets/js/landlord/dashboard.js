@@ -44,6 +44,7 @@ const dashboardMessage = document.querySelector("#dashboard-message");
 let landlordListings = [];
 let landlordInquiries = [];
 let landlordDocuments = [];
+let currentLandlord = null;
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -238,6 +239,8 @@ async function loadAuthenticatedLandlord() {
 
   window.SilipMuntiLandlordShell?.setLandlordProfile(user);
 
+  currentLandlord = user;
+
   return user;
 }
 
@@ -352,39 +355,67 @@ function getVerificationStatus() {
       String(document?.verification_status).toLowerCase() === "pending",
   );
 
+  const accountStatus =
+    currentLandlord?.account_status ||
+    currentLandlord?.landlord_status ||
+    "pending";
+
+  if (accountStatus === "pending") {
+    return {
+      status: "pending",
+      title: "Your landlord account is awaiting admin approval",
+      description: `${approvedCount} of ${requiredTypes.length} documents approved. You may submit documents while waiting.`,
+      label: "Pending approval",
+    };
+  }
+
+  if (accountStatus === "rejected" || accountStatus === "suspended") {
+    return {
+      status: "rejected",
+      title:
+        accountStatus === "suspended"
+          ? "Your landlord account is suspended"
+          : "Your landlord account was not approved",
+      description:
+        currentLandlord?.landlord_rejection_reason ||
+        "Contact the administrator for assistance.",
+      label: "Restricted",
+    };
+  }
+
   if (approvedCount === requiredTypes.length) {
     return {
       status: "approved",
-      title: "Your landlord account is verified",
+      title: "Your landlord account is fully verified",
       description: "All required documents have been reviewed and approved.",
-      label: "Verified",
+      label: "Fully verified",
     };
   }
 
   if (hasRejected) {
     return {
-      status: "rejected",
-      title: "A verification document was rejected",
+      status: "approved",
+      title: "Your landlord account is verified",
       description:
-        "Review the rejection reason and upload a valid replacement document.",
-      label: "Action required",
+        "You can manage listings. Resubmit the rejected document to become fully verified.",
+      label: "Verified",
     };
   }
 
   if (hasPending) {
     return {
-      status: "pending",
-      title: "Your documents are being reviewed",
-      description: `${submittedCount} of ${requiredTypes.length} required documents have been submitted.`,
-      label: "Pending",
+      status: "approved",
+      title: "Your landlord account is verified",
+      description: `${submittedCount} of ${requiredTypes.length} documents submitted. You can manage listings while review continues.`,
+      label: "Verified",
     };
   }
 
   return {
-    status: "pending",
-    title: "Complete your landlord verification",
-    description: `${submittedCount} of ${requiredTypes.length} required documents have been submitted.`,
-    label: "Incomplete",
+    status: "approved",
+    title: "Your landlord account is verified",
+    description: `${approvedCount} of ${requiredTypes.length} documents approved. Complete all three to become fully verified.`,
+    label: "Verified",
   };
 }
 

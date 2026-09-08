@@ -26,6 +26,7 @@ const NOTIFICATIONS_API =
   "/SilipMunti/backend/notifications/get-all.php?status=unread";
 
 let currentDocuments = [];
+let currentLandlord = null;
 
 function showMessage(message, type) {
   pageMessage.textContent = message;
@@ -144,81 +145,83 @@ function updateDocumentCard(documentType) {
 function updateOverallStatus() {
   const approvedDocuments = REQUIRED_DOCUMENTS.filter((documentType) => {
     const document = getLatestDocument(documentType);
-
     return document?.verification_status === "approved";
   });
-
   const pendingDocuments = REQUIRED_DOCUMENTS.filter((documentType) => {
     const document = getLatestDocument(documentType);
-
     return document?.verification_status === "pending";
   });
-
   const rejectedDocuments = REQUIRED_DOCUMENTS.filter((documentType) => {
     const document = getLatestDocument(documentType);
-
     return document?.verification_status === "rejected";
   });
-
   const approvedCount = approvedDocuments.length;
   const progressPercentage = (approvedCount / REQUIRED_DOCUMENTS.length) * 100;
+  const accountStatus =
+    currentLandlord?.account_status ||
+    currentLandlord?.landlord_status ||
+    "pending";
+  const canManageListings = accountStatus === "approved";
 
   progressBar.style.width = `${progressPercentage}%`;
   progressText.textContent = `${approvedCount} of ${REQUIRED_DOCUMENTS.length} approved`;
+  addPropertyLink?.classList.toggle("disabled", !canManageListings);
+
+  if (canManageListings) {
+    addPropertyLink?.removeAttribute("aria-disabled");
+  } else {
+    addPropertyLink?.setAttribute("aria-disabled", "true");
+  }
+
+  if (accountStatus === "pending") {
+    overallStatus.className = "overall-status pending";
+    overallStatus.innerHTML =
+      '<i class="fa-solid fa-clock"></i><span>Pending approval</span>';
+    verificationHeading.textContent = "Your account is awaiting admin approval";
+    verificationDescription.textContent =
+      "You may submit documents while waiting. Listing creation will be available after your account is approved.";
+    return;
+  }
+
+  if (accountStatus === "rejected" || accountStatus === "suspended") {
+    overallStatus.className = "overall-status rejected";
+    overallStatus.innerHTML =
+      '<i class="fa-solid fa-circle-xmark"></i><span>Account restricted</span>';
+    verificationHeading.textContent =
+      accountStatus === "suspended"
+        ? "Your landlord account is suspended"
+        : "Your landlord account was not approved";
+    verificationDescription.textContent =
+      currentLandlord?.landlord_rejection_reason ||
+      "Contact the administrator for assistance with your account.";
+    return;
+  }
 
   if (approvedCount === REQUIRED_DOCUMENTS.length) {
     overallStatus.className = "overall-status approved";
     overallStatus.innerHTML =
-      '<i class="fa-solid fa-circle-check"></i><span>Verified</span>';
-
-    verificationHeading.textContent = "Your landlord account is verified";
-
+      '<i class="fa-solid fa-shield-halved"></i><span>Fully verified</span>';
+    verificationHeading.textContent = "Your landlord account is fully verified";
     verificationDescription.textContent =
-      "You can now create, edit, and manage rental property listings.";
-
-    addPropertyLink.classList.remove("disabled");
-    addPropertyLink.removeAttribute("aria-disabled");
-
+      "Your account is approved and all three required documents are verified.";
     return;
   }
 
-  addPropertyLink.classList.add("disabled");
-  addPropertyLink.setAttribute("aria-disabled", "true");
+  overallStatus.className = "overall-status approved";
+  overallStatus.innerHTML =
+    '<i class="fa-solid fa-circle-check"></i><span>Verified</span>';
+  verificationHeading.textContent = "Your landlord account is verified";
 
   if (rejectedDocuments.length > 0) {
-    overallStatus.className = "overall-status rejected";
-    overallStatus.innerHTML =
-      '<i class="fa-solid fa-circle-xmark"></i><span>Needs action</span>';
-
-    verificationHeading.textContent = "Some documents need to be resubmitted";
-
     verificationDescription.textContent =
-      "Review the rejection reason and upload a corrected document.";
-
-    return;
-  }
-
-  if (pendingDocuments.length > 0) {
-    overallStatus.className = "overall-status pending";
-    overallStatus.innerHTML =
-      '<i class="fa-solid fa-clock"></i><span>Under review</span>';
-
-    verificationHeading.textContent = "Your documents are being reviewed";
-
+      "You can manage listings now. Resubmit rejected documents to become fully verified.";
+  } else if (pendingDocuments.length > 0) {
     verificationDescription.textContent =
-      "Property management will be available after all documents are approved.";
-
-    return;
+      "You can manage listings now. Submitted documents are being reviewed for full verification.";
+  } else {
+    verificationDescription.textContent =
+      "You can manage listings now. Complete all three documents to become fully verified.";
   }
-
-  overallStatus.className = "overall-status incomplete";
-  overallStatus.innerHTML =
-    '<i class="fa-solid fa-triangle-exclamation"></i><span>Incomplete</span>';
-
-  verificationHeading.textContent = "Complete your landlord verification";
-
-  verificationDescription.textContent =
-    "Upload all three required documents to start the review process.";
 }
 
 function renderDocuments() {
@@ -240,6 +243,8 @@ async function loadCurrentUser() {
   }
 
   window.SilipMuntiLandlordShell?.setLandlordProfile(user);
+
+  currentLandlord = user;
 
   return user;
 }
@@ -283,6 +288,16 @@ async function loadDocuments() {
     }
 
     currentDocuments = result.data?.documents ?? [];
+
+    if (currentLandlord) {
+      currentLandlord.account_status =
+        result.data?.account_status || currentLandlord.account_status;
+      currentLandlord.verification_level =
+        result.data?.verification_level || currentLandlord.verification_level;
+      currentLandlord.landlord_rejection_reason =
+        result.data?.rejection_reason ||
+        currentLandlord.landlord_rejection_reason;
+    }
 
     renderDocuments();
   } catch (error) {
@@ -398,7 +413,7 @@ addPropertyLink?.addEventListener("click", (event) => {
     event.preventDefault();
 
     showMessage(
-      "Complete your landlord verification before adding a property.",
+      "Your landlord account must be approved before adding a property.",
       "error",
     );
   }

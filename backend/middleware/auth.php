@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/session.php';
+require_once __DIR__ . '/../config/landlord-verification.php';
 require_once __DIR__ . '/../security/csrf.php';
 
 function authentication_error(string $message, int $status, array $data = []): never
@@ -68,6 +69,9 @@ function current_user(PDO $pdo): ?array
             email,
             phone_number,
             role,
+            landlord_status,
+            landlord_reviewed_at,
+            landlord_rejection_reason,
             profile_picture,
             created_at
         FROM users
@@ -88,6 +92,23 @@ function current_user(PDO $pdo): ?array
     }
 
     $user['id'] = (int) $user['id'];
+
+    if ($user['role'] === 'landlord') {
+        $verification = get_landlord_verification_summary(
+            $pdo,
+            $user['id'],
+            $user['landlord_status']
+        );
+
+        $user = array_merge($user, $verification);
+    } else {
+        $user['account_status'] = 'active';
+        $user['verification_level'] = null;
+        $user['approved_document_count'] = 0;
+        $user['approved_documents'] = [];
+        $user['missing_documents'] = [];
+        $user['is_fully_verified'] = false;
+    }
 
     return $user;
 }
@@ -122,47 +143,40 @@ function require_role(PDO $pdo, array $allowedRoles): array
     return $user;
 }
 
-function require_verified_landlord(PDO $pdo): array
+function require_approved_landlord(PDO $pdo): array
 {
     $landlord = require_role($pdo, ['landlord']);
 
-    $requiredDocuments = [
-        'valid_id',
-        'barangay_clearance',
-        'land_title'
-    ];
+    if (($landlord['account_status'] ?? 'pending') !== 'approved') {
+        $messages = [
+            'pending' =>
+                'Your landlord account is awaiting admin approval.',
+            'rejected' =>
+                'Your landlord account was not approved.',
+            'suspended' =>
+                'Your landlord account is currently suspended.'
+        ];
 
-    $documentStmt = $pdo->prepare("
-        SELECT DISTINCT document_type
-        FROM verification_documents
-        WHERE landlord_id = :landlord_id
-            AND verification_status = 'approved'
-            AND deleted_at IS NULL
-    ");
+        $accountStatus = $landlord['account_status'] ?? 'pending';
 
-    $documentStmt->execute([
-        'landlord_id' => $landlord['id']
-    ]);
-
-    $approvedDocuments = $documentStmt->fetchAll(PDO::FETCH_COLUMN);
-
-    $missingDocuments = array_values(
-        array_diff($requiredDocuments, $approvedDocuments)
-    );
-
-    if ($missingDocuments !== []) {
         authentication_error(
-            'Complete landlord verification is required before managing listings.',
+            $messages[$accountStatus]
+                ?? 'Admin approval is required before managing listings.',
             403,
             [
-                'verified' => false,
-                'approved_documents' => $approvedDocuments,
-                'missing_documents' => $missingDocuments
+                'account_status' => $accountStatus,
+                'verification_level' =>
+                    $landlord['verification_level'] ?? 'unverified',
+                'rejection_reason' =>
+                    $landlord['landlord_rejection_reason'] ?? null
             ]
         );
     }
 
-    $landlord['is_verified_landlord'] = true;
-
     return $landlord;
+}
+
+function require_verified_landlord(PDO $pdo): array
+{
+    return require_approved_landlord($pdo);
 }

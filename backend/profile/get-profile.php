@@ -25,6 +25,9 @@ $stmt = $pdo->prepare("
         email,
         phone_number,
         role,
+        landlord_status,
+        landlord_reviewed_at,
+        landlord_rejection_reason,
         profile_picture,
         created_at
     FROM users
@@ -52,6 +55,19 @@ if (!$profile) {
 $profile['profile_picture_url'] = $profile['profile_picture']
     ? '/SilipMunti/backend/' . $profile['profile_picture']
     : null;
+
+if ($profile['role'] === 'landlord') {
+    require_once __DIR__ . '/../config/landlord-verification.php';
+
+    $profile = array_merge(
+        $profile,
+        get_landlord_verification_summary(
+            $pdo,
+            (int) $profile['id'],
+            $profile['landlord_status']
+        )
+    );
+}
 
 echo json_encode([
     'success' => true,

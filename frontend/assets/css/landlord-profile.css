@@ -119,6 +119,11 @@ body {
   font-size: 13px;
 }
 
+.landlord-verified-badge.fully-verified {
+  color: #071a83;
+  background: #f8d447;
+}
+
 .landlord-profile-content h1 {
   margin: 6px 0 2px;
   color: #101828;
@@ -634,16 +639,94 @@ body {
   line-height: 1.6;
 }
 
-.public-landlord-footer {
-  padding: 23px;
-  color: #ffffff;
-  background: #071d91;
-  text-align: center;
-  font-size: 12px;
+.public-landlord-footer,
+.site-footer {
+  padding: 62px 0 20px;
+  color: #101828;
+  background: #f8d447;
 }
 
-.public-landlord-footer p {
-  margin: 0;
+.footer-container {
+  display: grid;
+  width: min(calc(100% - 64px), 1580px);
+  grid-template-columns: 1.45fr 0.7fr 0.7fr 1fr;
+  gap: clamp(36px, 6vw, 94px);
+  margin: 0 auto;
+}
+
+.footer-logo {
+  width: 168px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.footer-brand > p,
+.footer-contact p {
+  color: #242424;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.footer-brand > p {
+  max-width: 390px;
+}
+
+.footer-column h3 {
+  margin: 0 0 16px;
+  color: #071a83;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-transform: uppercase;
+}
+
+.footer-column > a {
+  display: block;
+  width: fit-content;
+  margin: 10px 0;
+  color: #101828;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.footer-column > a:hover {
+  color: #102fc6;
+}
+
+.social-links {
+  display: flex;
+  gap: 13px;
+  margin-top: 18px;
+  color: #102fc6;
+  font-size: 23px;
+}
+
+.social-links a {
+  color: inherit;
+}
+
+.public-landlord-footer,
+.public-landlord-footer *,
+.site-footer,
+.site-footer * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.public-landlord-footer .reveal-item,
+.site-footer .reveal-item {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.public-landlord-footer .copyright,
+.site-footer .copyright {
+  margin: 54px 0 0;
+  color: #333333;
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
 }
 
 @keyframes landlord-loading {
@@ -664,7 +747,19 @@ body {
   }
 }
 
+@media (max-width: 1180px) {
+  .footer-container {
+    grid-template-columns: 1.2fr repeat(3, 0.7fr);
+    gap: 42px;
+  }
+}
+
 @media (max-width: 900px) {
+  .footer-container {
+    width: min(calc(100% - 40px), 1580px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .public-property-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -675,6 +770,12 @@ body {
 }
 
 @media (max-width: 680px) {
+  .footer-container {
+    width: calc(100% - 32px);
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
   .landlord-profile-container {
     width: 100%;
   }

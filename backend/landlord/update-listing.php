@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$landlord = require_verified_landlord($pdo);
+$landlord = require_approved_landlord($pdo);
 
 $data = json_decode(file_get_contents('php://input'), true);
 

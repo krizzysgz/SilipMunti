@@ -178,6 +178,7 @@ $offset = ($page - 1) * $limit;
 $whereConditions = [
     'l.deleted_at IS NULL',
     'u.deleted_at IS NULL',
+    "u.landlord_status = 'approved'",
     'rt.deleted_at IS NULL',
     "l.verification_status = 'verified'",
     "l.availability_status = 'available'"
@@ -282,7 +283,19 @@ try {
                 ' ',
                 u.last_name
             ) AS landlord_name,
-            u.profile_picture AS landlord_profile_picture
+            u.profile_picture AS landlord_profile_picture,
+            (
+                SELECT COUNT(DISTINCT vd.document_type)
+                FROM verification_documents vd
+                WHERE vd.landlord_id = u.id
+                  AND vd.verification_status = 'approved'
+                  AND vd.deleted_at IS NULL
+                  AND vd.document_type IN (
+                      'valid_id',
+                      'barangay_clearance',
+                      'land_title'
+                  )
+            ) AS landlord_approved_document_count
         FROM listings l
         INNER JOIN users u
             ON u.id = l.landlord_id
@@ -314,6 +327,12 @@ try {
         $listing['landlord_id'] = (int) $listing['landlord_id'];
         $listing['rental_type_id'] = (int) $listing['rental_type_id'];
         $listing['price'] = (float) $listing['price'];
+        $listing['landlord_approved_document_count'] =
+            (int) $listing['landlord_approved_document_count'];
+        $listing['landlord_verification_level'] =
+            $listing['landlord_approved_document_count'] === 3
+                ? 'fully_verified'
+                : 'verified';
 
         $listing['bedroom_no'] =
             $listing['bedroom_no'] !== null

@@ -116,6 +116,7 @@
     const count = Number(landlord.active_listing_count) || 0;
     const rating = Number(landlord.average_rating) || 0;
     const reviews = Number(landlord.total_reviews) || 0;
+    const isFullyVerified = landlord.verification_level === "fully_verified";
     const card = document.createElement("a");
     card.className = "directory-landlord-card";
     card.style.setProperty("--reveal-delay", `${Math.min(index, 7) * 70}ms`);
@@ -142,9 +143,10 @@
     );
 
     const badge = document.createElement("span");
-    badge.className = "directory-verified-badge";
-    badge.innerHTML =
-      '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Verified';
+    badge.className = `directory-verified-badge${isFullyVerified ? " fully-verified" : ""}`;
+    badge.innerHTML = isFullyVerified
+      ? '<i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Fully verified'
+      : '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Verified';
 
     const content = document.createElement("div");
     content.className = "directory-card-content";

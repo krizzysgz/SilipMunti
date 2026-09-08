@@ -35,6 +35,10 @@ try {
             CONCAT(u.first_name, ' ', u.last_name) AS name,
             u.profile_picture,
             u.created_at AS member_since,
+            COALESCE(
+                verification.approved_document_count,
+                0
+            ) AS approved_document_count,
             COUNT(DISTINCT l.id) AS active_listing_count,
             GROUP_CONCAT(
                 DISTINCT l.barangay
@@ -42,8 +46,10 @@ try {
                 SEPARATOR ', '
             ) AS available_areas
         FROM users u
-        INNER JOIN (
-            SELECT landlord_id
+        LEFT JOIN (
+            SELECT
+                landlord_id,
+                COUNT(DISTINCT document_type) AS approved_document_count
             FROM verification_documents
             WHERE verification_status = 'approved'
               AND deleted_at IS NULL
@@ -51,11 +57,10 @@ try {
                   'valid_id',
                   'barangay_clearance',
                   'land_title'
-              )
+            )
             GROUP BY landlord_id
-            HAVING COUNT(DISTINCT document_type) = 3
-        ) verified
-            ON verified.landlord_id = u.id
+        ) verification
+            ON verification.landlord_id = u.id
         LEFT JOIN listings l
             ON l.landlord_id = u.id
            AND l.verification_status = 'verified'
@@ -63,13 +68,15 @@ try {
            AND l.deleted_at IS NULL
         WHERE u.id = :landlord_id
           AND u.role = 'landlord'
+          AND u.landlord_status = 'approved'
           AND u.deleted_at IS NULL
         GROUP BY
             u.id,
             u.first_name,
             u.last_name,
             u.profile_picture,
-            u.created_at
+            u.created_at,
+            verification.approved_document_count
         LIMIT 1
     ");
 
@@ -83,7 +90,7 @@ try {
         http_response_code(404);
         echo json_encode([
             'success' => false,
-            'message' => 'Verified landlord not found.'
+            'message' => 'Approved landlord not found.'
         ]);
         exit;
     }
@@ -91,6 +98,12 @@ try {
     $landlord['id'] = (int) $landlord['id'];
     $landlord['active_listing_count'] =
         (int) $landlord['active_listing_count'];
+    $landlord['approved_document_count'] =
+        (int) $landlord['approved_document_count'];
+    $landlord['verification_level'] =
+        $landlord['approved_document_count'] === 3
+            ? 'fully_verified'
+            : 'verified';
 
     $profilePicture = $landlord['profile_picture'] ?? null;
 

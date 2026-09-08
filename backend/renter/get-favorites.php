@@ -47,6 +47,7 @@ $stmt = $pdo->prepare("
     WHERE f.renter_id = :renter_id
         AND l.deleted_at IS NULL
         AND u.deleted_at IS NULL
+        AND u.landlord_status = 'approved'
         AND rt.deleted_at IS NULL
         AND l.verification_status = 'verified'
     ORDER BY f.saved_at DESC

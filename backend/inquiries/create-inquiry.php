@@ -69,13 +69,17 @@ if (mb_strlen($messageText) > 2000) {
 
 $listingStmt = $pdo->prepare("
     SELECT
-        id,
-        landlord_id,
-        title
-    FROM listings
-    WHERE id = :listing_id
-      AND verification_status = 'verified'
-      AND deleted_at IS NULL
+        l.id,
+        l.landlord_id,
+        l.title
+    FROM listings l
+    INNER JOIN users u
+        ON u.id = l.landlord_id
+    WHERE l.id = :listing_id
+      AND l.verification_status = 'verified'
+      AND l.deleted_at IS NULL
+      AND u.deleted_at IS NULL
+      AND u.landlord_status = 'approved'
     LIMIT 1
 ");
 

@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$landlord = require_role($pdo, ['landlord']);
+$landlord = require_approved_landlord($pdo);
 
 $data = json_decode(file_get_contents('php://input'), true);
 

@@ -1,6 +1,323 @@
 body {
   min-height: 100vh;
   background: #f7f8fc;
+  font-family: "Poppins", sans-serif;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background: #ffffff;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.navbar {
+  width: min(100% - 48px, 1660px);
+  min-height: 92px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-logo {
+  display: inline-flex;
+  align-items: center;
+}
+
+.navbar-logo img {
+  width: 165px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.navbar-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 180px;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 62px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navbar-links a {
+  position: relative;
+  color: #181818;
+  font-size: 17px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.navbar-links a:hover,
+.navbar-links a.active {
+  color: #112bc1;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+.navbar-links a.active::after {
+  position: absolute;
+  right: 0;
+  bottom: -12px;
+  left: 0;
+  height: 3px;
+  background: #112bc1;
+  content: "";
+}
+
+.guest-actions,
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.navbar-button {
+  min-width: 116px;
+  padding: 13px 24px;
+  border-radius: 15px;
+  color: #111111;
+  font-size: 15px;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.navbar-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 12%);
+}
+
+.sign-in-button {
+  background: #f9d84a;
+}
+
+.sign-up-button {
+  background: #112bc1;
+  color: #ffffff;
+}
+
+.notification-button {
+  position: relative;
+  color: #112bc1;
+  font-size: 28px;
+  text-decoration: none;
+}
+
+.notification-count {
+  position: absolute;
+  top: -8px;
+  right: -11px;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  background: #f9d84a;
+  color: #112bc1;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+}
+
+.profile-menu {
+  position: relative;
+}
+
+.profile-menu-button {
+  width: 47px;
+  height: 47px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid #112bc1;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.profile-menu-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 16px);
+  right: 0;
+  width: 270px;
+  overflow: hidden;
+  border: 1px solid #e3e6f2;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 18px 45px rgb(21 38 114 / 18%);
+}
+
+.profile-summary {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 20px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.profile-summary img {
+  width: 52px;
+  height: 52px;
+  border: 2px solid #112bc1;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-summary strong,
+.profile-summary span {
+  display: block;
+}
+
+.profile-summary strong {
+  max-width: 165px;
+  overflow: hidden;
+  color: #112bc1;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-summary span {
+  margin-top: 3px;
+  color: #656565;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+
+.dropdown-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px 20px;
+  border: 0;
+  border-bottom: 1px solid #eeeeee;
+  background: #ffffff;
+  color: #112bc1;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dropdown-link:hover {
+  background: #f5f7ff;
+}
+
+.dropdown-link i {
+  width: 20px;
+  text-align: center;
+}
+
+.logout-button {
+  border-bottom: 0;
+  color: #e8324a;
+}
+
+.mobile-menu-button {
+  display: none;
+  border: 0;
+  background: transparent;
+  color: #112bc1;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+  .navbar-content {
+    margin-left: 70px;
+  }
+
+  .navbar-links {
+    gap: 30px;
+  }
+}
+
+@media (max-width: 820px) {
+  .navbar {
+    position: relative;
+    width: min(100% - 32px, 1660px);
+    min-height: 76px;
+  }
+
+  .navbar-logo img {
+    width: 120px;
+    height: 52px;
+  }
+
+  .mobile-menu-button {
+    display: block;
+  }
+
+  .navbar-content {
+    position: absolute;
+    top: 76px;
+    right: 0;
+    left: 0;
+    display: none;
+    margin: 0;
+    padding: 24px;
+    border-radius: 0 0 18px 18px;
+    background: #ffffff;
+    box-shadow: 0 15px 30px rgb(0 0 0 / 12%);
+  }
+
+  .navbar-content.open {
+    display: block;
+  }
+
+  .navbar-links {
+    display: block;
+  }
+
+  .navbar-links li {
+    margin-bottom: 22px;
+  }
+
+  .navbar-links a.active::after {
+    bottom: -6px;
+  }
+
+  .guest-actions,
+  .user-actions {
+    margin-top: 25px;
+  }
+
+  .guest-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .navbar-button {
+    width: 100%;
+  }
+
+  .user-actions {
+    justify-content: flex-end;
+  }
+
+  .profile-dropdown {
+    right: 0;
+  }
 }
 
 .landlord-directory-page {
@@ -288,10 +605,9 @@ body {
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns: minmax(260px, 1.8fr) minmax(190px, 1fr) minmax(
-      190px,
-      1fr
-    ) auto auto;
+  grid-template-columns:
+    minmax(260px, 1.8fr) minmax(190px, 1fr) minmax(190px, 1fr)
+    auto auto;
   gap: 14px;
   align-items: end;
   margin-top: 0;
@@ -511,6 +827,11 @@ body {
   font-weight: 800;
 }
 
+.directory-verified-badge.fully-verified {
+  color: #071a83;
+  background: #f8d447;
+}
+
 .directory-card-content {
   min-height: 230px;
   display: flex;
@@ -644,16 +965,94 @@ body {
   opacity: 0.45;
 }
 
-.landlord-directory-footer {
-  padding: 23px;
-  color: #ffffff;
-  background: #071d91;
-  text-align: center;
-  font-size: 12px;
+.landlord-directory-footer,
+.site-footer {
+  padding: 62px 0 20px;
+  color: #101828;
+  background: #f8d447;
 }
 
-.landlord-directory-footer p {
-  margin: 0;
+.footer-container {
+  display: grid;
+  width: min(calc(100% - 64px), 1580px);
+  grid-template-columns: 1.45fr 0.7fr 0.7fr 1fr;
+  gap: clamp(36px, 6vw, 94px);
+  margin: 0 auto;
+}
+
+.footer-logo {
+  width: 168px;
+  height: 70px;
+  object-fit: contain;
+}
+
+.footer-brand > p,
+.footer-contact p {
+  color: #242424;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.footer-brand > p {
+  max-width: 390px;
+}
+
+.footer-column h3 {
+  margin: 0 0 16px;
+  color: #071a83;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-transform: uppercase;
+}
+
+.footer-column > a {
+  display: block;
+  width: fit-content;
+  margin: 10px 0;
+  color: #101828;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.footer-column > a:hover {
+  color: #102fc6;
+}
+
+.social-links {
+  display: flex;
+  gap: 13px;
+  margin-top: 18px;
+  color: #102fc6;
+  font-size: 23px;
+}
+
+.social-links a {
+  color: inherit;
+}
+
+.landlord-directory-footer,
+.landlord-directory-footer *,
+.site-footer,
+.site-footer * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.landlord-directory-footer .reveal-item,
+.site-footer .reveal-item {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.landlord-directory-footer .copyright,
+.site-footer .copyright {
+  margin: 54px 0 0;
+  color: #333333;
+  text-align: center;
+  font-size: 11px;
+  text-transform: uppercase;
 }
 
 @keyframes directory-loading {
@@ -710,6 +1109,11 @@ body {
 }
 
 @media (max-width: 1180px) {
+  .footer-container {
+    grid-template-columns: 1.2fr repeat(3, 0.7fr);
+    gap: 42px;
+  }
+
   .landlord-directory-hero-grid {
     grid-template-columns: minmax(0, 0.9fr) minmax(430px, 1.1fr);
     gap: 42px;
@@ -739,6 +1143,11 @@ body {
 }
 
 @media (max-width: 900px) {
+  .footer-container {
+    width: min(calc(100% - 40px), 1580px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .landlord-directory-container {
     width: calc(100% - 36px);
   }
@@ -791,6 +1200,12 @@ body {
 }
 
 @media (max-width: 600px) {
+  .footer-container {
+    width: calc(100% - 32px);
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
   .landlord-directory-container {
     width: calc(100% - 24px);
   }
