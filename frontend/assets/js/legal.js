@@ -2,13 +2,55 @@
   const root = document.documentElement;
   const progressBar = document.querySelector("#legal-reading-progress-bar");
   const backToTop = document.querySelector("#legal-back-to-top");
+  const pageSwitch = document.querySelector(".legal-page-switch");
+  const pageSwitchLinks = [
+    ...document.querySelectorAll(".legal-page-switch a"),
+  ];
   const sections = [...document.querySelectorAll(".legal-section[id]")];
   const navigationLinks = [...document.querySelectorAll(".legal-navigation a")];
   const reduceMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)",
   ).matches;
 
-  root.classList.add("legal-enhanced");
+  pageSwitchLinks.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (
+        link.classList.contains("active") ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      const targetPage = link.textContent.trim().toLowerCase();
+      pageSwitch.classList.add("is-switching");
+
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          pageSwitchLinks.forEach((item) => {
+            const isTarget = item === link;
+            item.classList.toggle("active", isTarget);
+
+            if (isTarget) {
+              item.setAttribute("aria-current", "page");
+            } else {
+              item.removeAttribute("aria-current");
+            }
+          });
+          pageSwitch.dataset.activePage = targetPage;
+
+          window.setTimeout(
+            () => window.location.assign(link.href),
+            reduceMotion ? 0 : 500,
+          );
+        });
+      });
+    });
+  });
 
   const updateReadingProgress = () => {
     const scrollableHeight = root.scrollHeight - window.innerHeight;
@@ -36,23 +78,6 @@
       }
     });
   };
-
-  const revealObserver = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-visible");
-        observer.unobserve(entry.target);
-      });
-    },
-    { threshold: 0.08, rootMargin: "0px 0px -70px" },
-  );
-
-  document
-    .querySelectorAll(".legal-section, .legal-notice")
-    .forEach((element) => {
-      revealObserver.observe(element);
-    });
 
   const sectionObserver = new IntersectionObserver(
     (entries) => {

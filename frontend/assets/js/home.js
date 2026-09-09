@@ -76,6 +76,17 @@
     }).format(Number(price) || 0);
   }
 
+  function formatMemberSince(value) {
+    if (!value) return "Recently joined";
+    const date = new Date(String(value).replace(" ", "T"));
+    if (Number.isNaN(date.getTime())) return "Recently joined";
+
+    return new Intl.DateTimeFormat("en-PH", {
+      month: "short",
+      year: "numeric",
+    }).format(date);
+  }
+
   function parseListData(value) {
     if (Array.isArray(value)) return value;
     if (typeof value !== "string" || value.trim() === "") return [];
@@ -664,10 +675,22 @@
     verifiedLandlords.innerHTML = verifiedLandlordList
       .map((landlord) => {
         const activeCount = Number(landlord.active_listing_count) || 0;
+        const rating = Number(landlord.average_rating) || 0;
+        const reviewCount = Number(landlord.total_reviews) || 0;
         const listingLabel = activeCount === 1 ? "property" : "properties";
         const availableAreas = landlord.available_areas
-          ? `Available in ${landlord.available_areas}`
-          : "No available properties right now";
+          ? landlord.available_areas
+          : "No available location yet";
+        const isFullyVerified =
+          landlord.verification_level === "fully_verified";
+        const verificationLabel = isFullyVerified
+          ? "Fully verified"
+          : "Verified";
+        const verificationIcon = isFullyVerified
+          ? "fa-shield-halved"
+          : "fa-circle-check";
+        const ratingDisplay = reviewCount > 0 ? rating.toFixed(1) : "—";
+        const memberSince = formatMemberSince(landlord.member_since);
         const profileUrl = `${FRONTEND_BASE}/pages/landlord/details.html?id=${encodeURIComponent(landlord.id)}`;
 
         return `
@@ -677,23 +700,56 @@
           aria-label="View ${escapeHtml(landlord.name)}'s verified landlord profile"
         >
           <div class="home-landlord-photo">
+            <span class="home-landlord-monogram" aria-hidden="true">
+              ${escapeHtml(String(landlord.name || "L").trim().charAt(0).toUpperCase())}
+            </span>
             <img
               src="${escapeHtml(getProfilePictureUrl(landlord.profile_picture_url))}"
-              alt="${escapeHtml(landlord.name)}"
+              alt=""
+              loading="lazy"
             >
-            <span class="home-landlord-badge">
-              <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
-              Verified
-            </span>
           </div>
           <div class="home-landlord-info">
-            <strong>${escapeHtml(landlord.name || "Verified Landlord")}</strong>
-            <p>${activeCount} active ${listingLabel}</p>
-            <span class="home-landlord-areas">${escapeHtml(availableAreas)}</span>
-            <span class="home-landlord-link">
-              View profile
-              <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
-            </span>
+            <div class="home-landlord-name-row">
+              <strong>${escapeHtml(landlord.name || "Verified Landlord")}</strong>
+              <span
+                class="home-landlord-badge${isFullyVerified ? " is-fully-verified" : ""}"
+                title="${verificationLabel} landlord"
+                aria-label="${verificationLabel} landlord"
+              >
+                <i class="fa-solid ${verificationIcon}" aria-hidden="true"></i>
+              </span>
+            </div>
+            <div class="home-landlord-details">
+              <span>
+                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                ${escapeHtml(availableAreas)}
+              </span>
+              <span>
+                <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+                Member since ${escapeHtml(memberSince)}
+              </span>
+            </div>
+            <div class="home-landlord-stats">
+              <span>
+                <strong><i class="fa-solid fa-star" aria-hidden="true"></i>${ratingDisplay}</strong>
+                <small>Rating</small>
+              </span>
+              <span>
+                <strong><i class="fa-solid fa-building" aria-hidden="true"></i>${activeCount}</strong>
+                <small>${listingLabel}</small>
+              </span>
+              <span>
+                <strong><i class="fa-solid fa-comment-dots" aria-hidden="true"></i>${reviewCount}</strong>
+                <small>${reviewCount === 1 ? "Review" : "Reviews"}</small>
+              </span>
+            </div>
+            <div class="home-landlord-actions">
+              <span class="home-landlord-link">
+                View profile
+                <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </span>
+            </div>
           </div>
         </a>
       `;
@@ -703,13 +759,17 @@
     verifiedLandlords
       .querySelectorAll(".home-landlord-photo img")
       .forEach((image) => {
-        image.addEventListener(
-          "error",
-          () => {
-            image.src = `${FRONTEND_BASE}/assets/images/default-profile.svg`;
-          },
-          { once: true },
-        );
+        const useFallback = () => {
+          const fallback = `${FRONTEND_BASE}/assets/images/default-profile.svg`;
+          if (image.src.endsWith("/assets/images/default-profile.svg")) return;
+          image.src = fallback;
+        };
+
+        image.addEventListener("error", useFallback, { once: true });
+
+        if (image.complete && image.naturalWidth === 0) {
+          useFallback();
+        }
       });
   }
 

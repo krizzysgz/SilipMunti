@@ -18,7 +18,7 @@
     />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/home.css?v=49"
+      href="/SilipMunti/frontend/assets/css/home.css?v=52"
     />
     <link
       rel="stylesheet"
@@ -27,6 +27,10 @@
     <link
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/chat-bubble.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/responsive.css?v=1"
     />
   </head>
   <body>
@@ -47,7 +51,12 @@
             </p>
           </div>
 
-          <form class="search-panel" id="property-search-form">
+          <form
+            class="search-panel"
+            id="property-search-form"
+            action="/SilipMunti/frontend/pages/properties/index.html"
+            method="get"
+          >
             <div class="search-field">
               <label for="search-location">Location</label>
               <div class="select-wrapper">
@@ -176,12 +185,16 @@
         </div>
       </section>
 
-      <section class="home-section" id="landlords">
+      <section class="home-section landlord-showcase-section" id="landlords">
         <div class="section-container">
           <div class="section-heading">
             <div>
-              <h2>Muntinlupa Verified <span>Landlords</span></h2>
-              <p>Property owners with completed verification documents.</p>
+              <span class="section-eyebrow">Trusted property owners</span>
+              <h2>Meet Muntinlupa's <span>Verified Landlords</span></h2>
+              <p>
+                Browse admin-approved landlords and their active rental
+                listings.
+              </p>
             </div>
             <a href="/SilipMunti/frontend/pages/landlord/index.html">
               View all landlords
@@ -258,11 +271,12 @@
       </div>
       <p class="copyright">© 2026 SilipMunti. All rights reserved.</p>
     </footer>
-
+    <silip-back-to-top></silip-back-to-top>
+    <script src="/SilipMunti/frontend/assets/js/back-to-top.js?v=1"></script>
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/site-navbar.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/notifications.js?v=2"></script>
-    <script src="/SilipMunti/frontend/assets/js/home.js?v=51"></script>
+    <script src="/SilipMunti/frontend/assets/js/home.js?v=54"></script>
     <script src="/SilipMunti/frontend/assets/js/home-animations.js?v=2"></script>
     <script src="/SilipMunti/frontend/assets/js/ai-reco.js?v=3"></script>
     <script src="/SilipMunti/frontend/assets/js/chat-bubble.js?v=2"></script>

@@ -22,11 +22,15 @@
     <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/global.css" />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/legal.css?v=2"
+      href="/SilipMunti/frontend/assets/css/legal.css?v=4"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/responsive.css?v=1"
     />
   </head>
 
-  <body>
+  <body class="legal-privacy-page">
     <div class="legal-reading-progress" aria-hidden="true">
       <span id="legal-reading-progress-bar"></span>
     </div>
@@ -37,13 +41,18 @@
           <div class="legal-hero-top">
             <a class="legal-brand" href="/SilipMunti/frontend/index.html">
               <img
-                src="/SilipMunti/frontend/assets/images/SilipMuntiWhite.png"
+                src="/SilipMunti/frontend/assets/images/SilipMunti.png"
                 alt="SilipMunti"
               />
             </a>
-            <div class="legal-page-switch" aria-label="Legal pages">
+            <div
+              class="legal-page-switch"
+              data-active-page="privacy"
+              aria-label="Legal pages"
+            >
               <a
                 class="active"
+                aria-current="page"
                 href="/SilipMunti/frontend/pages/legal/privacy-policy.html"
                 >Privacy</a
               >
@@ -435,6 +444,6 @@
       <i class="fa-solid fa-arrow-up"></i>
     </button>
 
-    <script src="/SilipMunti/frontend/assets/js/legal.js?v=1"></script>
+    <script src="/SilipMunti/frontend/assets/js/legal.js?v=3"></script>
   </body>
 </html>

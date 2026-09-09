@@ -135,11 +135,38 @@
 }
 
 .notification-list {
-  max-height: min(510px, calc(100vh - 190px));
+  max-height: calc(100vh - 190px);
   min-height: 145px;
   padding: 4px 8px 9px;
   overflow-y: auto;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
+  scrollbar-color: #bcc6f3 transparent;
+}
+
+.notification-list.is-scrollable {
+  max-height: min(
+    var(--notification-list-max-height, 420px),
+    calc(100vh - 190px)
+  );
+}
+
+.notification-list::-webkit-scrollbar {
+  width: 7px;
+}
+
+.notification-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.notification-list::-webkit-scrollbar-thumb {
+  background: #bcc6f3;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+}
+
+.notification-list::-webkit-scrollbar-thumb:hover {
+  background: #8e9ee6;
 }
 
 .notification-item {

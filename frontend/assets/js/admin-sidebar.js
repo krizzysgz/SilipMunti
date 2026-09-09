@@ -68,6 +68,14 @@ class AdminSidebar extends HTMLElement {
             <span>Rental Types</span>
           </a>
 
+          <a
+            href="/SilipMunti/frontend/pages/admin/reports.html"
+            class="admin-nav-link${isActive("reports")}"
+          >
+            <i class="fa-solid fa-chart-column"></i>
+            <span>Reports</span>
+          </a>
+
           <span class="admin-nav-label account-label">ACCOUNT</span>
 
           <a
@@ -113,6 +121,9 @@ if (!customElements.get("admin-sidebar")) {
 
 const SilipMuntiAdminShell = (() => {
   let initialized = false;
+  let pendingCountRequest = null;
+  const pendingCountEndpoint =
+    "/SilipMunti/backend/admin/get-pending-verification-count.php";
 
   function getToggleButton() {
     return document.querySelector("#admin-sidebar-toggle");
@@ -174,6 +185,7 @@ const SilipMuntiAdminShell = (() => {
 
     ensureBackdrop();
     updateAccessibility(false);
+    refreshPendingCount();
 
     document.addEventListener("click", (event) => {
       const target = event.target;
@@ -248,6 +260,32 @@ const SilipMuntiAdminShell = (() => {
     element.classList.toggle("hidden", count < 1);
   }
 
+  async function refreshPendingCount() {
+    if (!document.querySelector("#pending-count")) return;
+    if (pendingCountRequest) return pendingCountRequest;
+
+    pendingCountRequest = fetch(pendingCountEndpoint, {
+      credentials: "include",
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+      .then(async (response) => {
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          setPendingCount(result.data?.pending);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        pendingCountRequest = null;
+      });
+
+    return pendingCountRequest;
+  }
+
   function getInitials(firstName, lastName) {
     const initials = `${String(firstName ?? "").charAt(0)}${String(
       lastName ?? "",
@@ -308,6 +346,7 @@ const SilipMuntiAdminShell = (() => {
     closeSidebar,
     setAdminProfile,
     setPendingCount,
+    refreshPendingCount,
   };
 })();
 

@@ -16,6 +16,7 @@
   let activeFilter = "all";
   let loading = false;
   let refreshInterval = null;
+  const visibleNotificationLimit = 6;
 
   const panel = document.createElement("section");
   panel.id = "notification-dropdown";
@@ -125,6 +126,53 @@
     button.classList.toggle("has-unread", total > 0);
   }
 
+  function getNotificationTimestamp(value) {
+    if (!value) {
+      return 0;
+    }
+
+    const timestamp = new Date(String(value).replace(" ", "T")).getTime();
+    return Number.isNaN(timestamp) ? 0 : timestamp;
+  }
+
+  function sortNotifications(items) {
+    return [...items].sort((first, second) => {
+      const dateDifference =
+        getNotificationTimestamp(second.created_at) -
+        getNotificationTimestamp(first.created_at);
+
+      if (dateDifference !== 0) {
+        return dateDifference;
+      }
+
+      return Number(second.id) - Number(first.id);
+    });
+  }
+
+  function updateListViewport() {
+    const items = [...list.querySelectorAll(".notification-item")];
+    const shouldScroll = items.length > visibleNotificationLimit;
+
+    list.classList.toggle("is-scrollable", shouldScroll);
+    list.style.removeProperty("--notification-list-max-height");
+
+    if (!shouldScroll) {
+      return;
+    }
+
+    const listStyles = window.getComputedStyle(list);
+    const paddingTop = Number.parseFloat(listStyles.paddingTop) || 0;
+    const paddingBottom = Number.parseFloat(listStyles.paddingBottom) || 0;
+    const visibleItemsHeight = items
+      .slice(0, visibleNotificationLimit)
+      .reduce((total, item) => total + item.getBoundingClientRect().height, 0);
+
+    list.style.setProperty(
+      "--notification-list-max-height",
+      `${Math.ceil(visibleItemsHeight + paddingTop + paddingBottom)}px`,
+    );
+  }
+
   function renderNotifications() {
     const filtered = notifications.filter((notification) => {
       return activeFilter === "all" || !notification.is_read;
@@ -138,6 +186,7 @@
           <p>Your latest account updates will appear here.</p>
         </div>
       `;
+      updateListViewport();
       return;
     }
 
@@ -161,6 +210,8 @@
         `,
       )
       .join("");
+
+    window.requestAnimationFrame(updateListViewport);
   }
 
   async function loadNotifications(silent = false) {
@@ -181,7 +232,7 @@
 
     try {
       const result = await apiRequest(`${endpoints.getAll}?status=all`);
-      notifications = result.data.notifications || [];
+      notifications = sortNotifications(result.data.notifications || []);
       updateCount(result.data.unread_count);
       renderNotifications();
     } catch (error) {

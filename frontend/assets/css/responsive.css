@@ -1,0 +1,861 @@
+:root {
+  --sm-responsive-gutter: clamp(16px, 3vw, 48px);
+  --sm-responsive-radius: clamp(14px, 2vw, 20px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+img,
+picture,
+video,
+canvas,
+svg,
+iframe {
+  max-width: 100%;
+}
+
+main,
+section,
+article,
+aside,
+form,
+fieldset,
+table,
+.navbar-content,
+.dashboard-content,
+.admin-content,
+.messages-layout,
+.profile-layout,
+.property-layout,
+.review-layout,
+.legal-layout {
+  min-width: 0;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+site-navbar .mobile-navbar-logout {
+  display: none;
+}
+
+.section-container,
+.hero-container,
+.properties-container,
+.property-container,
+.about-container,
+.landlord-directory-container,
+.landlord-profile-container,
+.favorites-container,
+.review-container,
+.legal-container,
+.profile-container,
+.footer-container {
+  width: min(calc(100% - (var(--sm-responsive-gutter) * 2)), 1660px);
+}
+
+.admin-table-wrapper,
+.table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.notification-message,
+.property-title,
+.property-description,
+.landlord-profile-summary p,
+.legal-section p,
+.legal-section li,
+.review-card p {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1180px) {
+  .hero-content {
+    max-width: min(56vw, 620px);
+  }
+
+  .property-grid,
+  .properties-grid {
+    gap: 20px;
+  }
+
+  .landlord-directory-hero-grid,
+  .landlord-profile-hero-grid,
+  .story-layout,
+  .process-layout,
+  .community-grid {
+    gap: clamp(28px, 5vw, 64px);
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-content {
+    max-width: 680px;
+  }
+
+  .footer-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px 48px;
+  }
+
+  .property-sidebar,
+  .review-sidebar,
+  .legal-sidebar {
+    position: static;
+  }
+
+  .auth-shell,
+  .register-shell {
+    width: min(calc(100% - 32px), 720px);
+  }
+
+  .auth-form-section,
+  .register-form-section {
+    min-width: 0;
+  }
+
+  .auth-visual,
+  .register-visual {
+    display: none;
+  }
+}
+
+@media (max-width: 850px) {
+  site-navbar .site-header,
+  site-navbar .navbar {
+    min-height: 72px;
+  }
+
+  site-navbar .navbar {
+    padding-inline: 16px;
+  }
+
+  site-navbar .navbar-logo {
+    flex-basis: 116px;
+  }
+
+  site-navbar .navbar-logo img {
+    width: 116px;
+    height: 48px;
+  }
+
+  site-navbar .mobile-menu-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  site-navbar .navbar-content {
+    top: calc(100% + 8px);
+    right: 12px;
+    left: 12px;
+    max-height: calc(100dvh - 92px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  site-navbar .navbar-content.open > .user-actions {
+    flex-wrap: wrap;
+  }
+
+  site-navbar .mobile-navbar-logout {
+    order: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex: 0 0 100%;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 2px;
+    padding: 10px 16px;
+    border: 1px solid #dbe2ff;
+    border-radius: 12px;
+    color: #112bc1;
+    background: #f5f7ff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  site-navbar .mobile-navbar-logout:hover,
+  site-navbar .mobile-navbar-logout:focus-visible {
+    border-color: #112bc1;
+    color: #ffffff;
+    background: #112bc1;
+    outline: none;
+  }
+
+  site-navbar .profile-dropdown {
+    position: fixed;
+    top: calc(84px + env(safe-area-inset-top));
+    right: clamp(16px, 7vw, 32px);
+    left: clamp(16px, 7vw, 32px);
+    z-index: 1400;
+    width: auto;
+    max-height: calc(100dvh - 100px - env(safe-area-inset-top));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .notification-dropdown {
+    position: fixed;
+    top: 80px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    max-height: calc(100dvh - 92px);
+  }
+
+  .notification-list {
+    max-height: calc(100dvh - 220px);
+  }
+}
+
+@media (max-width: 850px) and (max-height: 650px) {
+  site-navbar .profile-summary {
+    padding: 14px 16px;
+  }
+
+  site-navbar .profile-summary img {
+    width: 44px;
+    height: 44px;
+  }
+
+  site-navbar .dropdown-link {
+    min-height: 42px;
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --sm-responsive-gutter: 16px;
+  }
+
+  .hero {
+    min-height: auto;
+    background-position: 66% center;
+  }
+
+  .hero-overlay {
+    background: linear-gradient(
+      180deg,
+      rgb(248 249 252 / 98%) 0%,
+      rgb(248 249 252 / 93%) 48%,
+      rgb(248 249 252 / 76%) 100%
+    );
+  }
+
+  .hero-container {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+    padding-block: clamp(36px, 9vw, 58px) 24px;
+  }
+
+  .hero-content {
+    order: 1;
+    max-width: 100%;
+  }
+
+  .hero-content h1 {
+    max-width: 580px;
+    font-size: clamp(32px, 10vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -1px;
+  }
+
+  .hero-content p {
+    max-width: 520px;
+    font-size: clamp(15px, 4.4vw, 18px);
+  }
+
+  .sm-ai-home-trigger {
+    order: 2;
+    align-self: flex-start;
+    margin-top: 20px;
+  }
+
+  .search-panel {
+    position: relative;
+    inset: auto;
+    order: 3;
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 13px;
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid #e5e9f6;
+    border-radius: 16px;
+    box-shadow: 0 14px 32px rgb(17 43 193 / 14%);
+  }
+
+  .search-field label {
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+
+  .select-wrapper select,
+  .search-button {
+    min-height: 48px;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .home-section,
+  .home-section.landlord-showcase-section {
+    padding-block: 38px 48px;
+  }
+
+  .hero + .home-section,
+  .home-section + .home-section {
+    padding-top: 38px;
+  }
+
+  .home-section .section-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .home-section .section-heading h2 {
+    font-size: clamp(23px, 7vw, 30px);
+    line-height: 1.15;
+  }
+
+  .home-section .section-heading > div p {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .home-section .section-actions {
+    display: grid;
+    width: 100%;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    justify-content: initial;
+    gap: 10px;
+  }
+
+  .home-section .section-actions > a {
+    align-self: center;
+    justify-self: end;
+    text-align: right;
+  }
+
+  .home-section .carousel-button {
+    width: 42px;
+    height: 42px;
+  }
+
+  .home-section .property-grid {
+    display: grid;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: min(84vw, 335px);
+    gap: 14px;
+    margin-inline: calc(var(--sm-responsive-gutter) * -1);
+    padding: 4px var(--sm-responsive-gutter) 18px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-padding-inline: var(--sm-responsive-gutter);
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .home-section .property-grid::-webkit-scrollbar,
+  .landlord-showcase-section .landlord-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .home-section .property-card,
+  .home-section .property-skeleton {
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .home-section .property-image-wrapper {
+    height: clamp(190px, 56vw, 225px);
+  }
+
+  .home-section .property-card-content {
+    padding: 14px;
+  }
+
+  .home-section .property-price {
+    margin-bottom: 6px;
+    font-size: 17px;
+  }
+
+  .home-section .property-title {
+    margin-bottom: 7px;
+    font-size: 16px;
+  }
+
+  .home-section .property-location,
+  .home-section .property-information {
+    font-size: 12px;
+  }
+
+  .home-section .property-description,
+  .home-section .property-divider,
+  .home-section .property-amenities {
+    display: none;
+  }
+
+  .home-section .property-information {
+    margin-bottom: 0;
+  }
+
+  .location-rail {
+    margin-inline: calc(var(--sm-responsive-gutter) * -1);
+    padding-inline: var(--sm-responsive-gutter);
+  }
+
+  .location-card {
+    height: 320px;
+    min-height: 320px;
+  }
+
+  .location-card.active {
+    flex-basis: min(82vw, 360px);
+    width: min(82vw, 360px);
+  }
+
+  .landlord-showcase-section .landlord-grid {
+    display: grid;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: min(84vw, 340px);
+    justify-content: initial;
+    gap: 14px;
+    margin-inline: calc(var(--sm-responsive-gutter) * -1);
+    padding: 4px var(--sm-responsive-gutter) 18px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-padding-inline: var(--sm-responsive-gutter);
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .home-landlord-card {
+    min-width: 0;
+    min-height: 465px;
+    grid-template-rows: 235px 1fr;
+    scroll-snap-align: start;
+  }
+
+  .review-set {
+    grid-auto-columns: min(84vw, 330px);
+  }
+
+  .review-card {
+    width: min(84vw, 330px);
+  }
+
+  .properties-banner,
+  .favorites-hero,
+  .review-hero {
+    padding-top: 42px;
+  }
+
+  .properties-filters,
+  .landlord-directory-filters,
+  .review-form-grid,
+  .create-form-grid,
+  .form-grid,
+  .form-grid-three {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .filter-search,
+  .filter-actions,
+  .directory-search-field,
+  .form-field.full-width,
+  .form-group.full-width {
+    grid-column: auto;
+  }
+
+  .properties-grid,
+  .favorites-grid,
+  .public-property-grid,
+  .landlord-directory-grid,
+  .documents-grid,
+  .difference-grid,
+  .community-grid,
+  .legal-status-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .property-heading,
+  .properties-toolbar,
+  .favorites-toolbar,
+  .review-page-heading,
+  .page-heading,
+  .form-page-heading,
+  .listings-page-header,
+  .admin-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .property-price-wrapper,
+  .sort-wrapper,
+  .filter-actions,
+  .form-actions,
+  .create-form-actions,
+  .page-heading-actions,
+  .listings-header-actions {
+    width: 100%;
+  }
+
+  .sort-wrapper select {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .gallery-grid,
+  .gallery-grid.two-images {
+    height: clamp(270px, 82vw, 340px);
+  }
+
+  .property-sidebar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .property-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .landlord-directory-hero-grid,
+  .landlord-profile-hero-grid,
+  .story-layout,
+  .process-layout,
+  .review-layout,
+  .legal-layout,
+  .profile-layout,
+  .dashboard-overview-grid,
+  .dashboard-bottom-grid,
+  .admin-dashboard-grid,
+  .admin-detail-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .landlord-directory-visual,
+  .about-hero-visual {
+    width: 100%;
+  }
+
+  .landlord-directory-intro h1,
+  .landlord-profile-title h1,
+  .banner-content h1,
+  .about-hero h1,
+  .review-hero h1,
+  .favorites-hero h1,
+  .legal-hero h1,
+  .profile-heading h1 {
+    font-size: clamp(30px, 9vw, 44px);
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+
+  .landlord-trust-strip,
+  .trust-grid,
+  .statistics-grid,
+  .listing-summary-grid,
+  .admin-summary-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .landlord-trust-item,
+  .trust-item {
+    min-height: 78px;
+  }
+
+  .profile-picture-card,
+  .profile-information-card,
+  .security-card,
+  .create-form-card,
+  .form-card,
+  .documents-section,
+  .verification-overview,
+  .admin-panel,
+  .notifications-shell {
+    border-radius: var(--sm-responsive-radius);
+  }
+
+  .legal-topbar {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 14px;
+  }
+
+  .legal-brand,
+  .legal-back-link {
+    justify-self: center;
+  }
+
+  .legal-document {
+    padding-inline: clamp(18px, 5vw, 34px);
+  }
+
+  .messages-page {
+    height: calc(100dvh - 72px);
+  }
+
+  .admin-main,
+  .dashboard-main,
+  .landlord-form-page {
+    width: calc(100% - 24px);
+  }
+
+  .admin-topbar,
+  .dashboard-topbar {
+    padding-inline: 14px;
+  }
+
+  .modal-card,
+  .password-modal-card,
+  .review-modal-card {
+    width: min(calc(100% - 24px), 560px);
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+  }
+
+  .silip-chat-widget {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .silip-chat-bubble {
+    width: 50px;
+    height: 50px;
+    font-size: 19px;
+  }
+
+  silip-back-to-top {
+    --silip-back-top-size: 42px;
+    --silip-back-top-right: 16px;
+    --silip-back-top-bottom: 16px;
+    --silip-back-top-chat-bottom: 72px;
+  }
+}
+
+@media (max-width: 560px) {
+  .footer-container {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .site-footer {
+    padding-top: 42px;
+  }
+
+  .footer-logo {
+    width: 145px;
+    height: auto;
+  }
+
+  .copyright {
+    margin-top: 36px;
+    padding-inline: 16px;
+    line-height: 1.5;
+  }
+
+  .sm-ai-home-trigger,
+  .search-button,
+  .directory-filter-button,
+  .directory-reset-button,
+  .apply-filter-button,
+  .reset-filter-button,
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .section-heading > a {
+    align-self: flex-start;
+  }
+
+  .property-price-wrapper,
+  .form-actions,
+  .create-form-actions,
+  .page-heading-actions,
+  .listings-header-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .property-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .property-fact,
+  .property-fact:nth-child(n) {
+    border-right: 0;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .property-fact:last-child {
+    border-bottom: 0;
+  }
+
+  .profile-picture-wrapper {
+    width: min(165px, 56vw);
+    height: min(165px, 56vw);
+  }
+
+  .auth-shell,
+  .register-shell {
+    width: calc(100% - 20px);
+  }
+
+  .auth-form-section,
+  .register-form-section {
+    padding-inline: 18px;
+  }
+
+  .notification-dropdown {
+    top: 76px;
+    right: 8px;
+    left: 8px;
+  }
+
+  .notification-dropdown-header {
+    padding-inline: 14px;
+  }
+
+  .notification-item {
+    padding-inline: 8px;
+  }
+
+  .notification-icon {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .admin-modal-actions,
+  .modal-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --sm-responsive-gutter: 13px;
+  }
+
+  site-navbar .navbar {
+    padding-inline: 12px;
+  }
+
+  site-navbar .navbar-logo {
+    flex-basis: 104px;
+  }
+
+  site-navbar .navbar-logo img {
+    width: 104px;
+  }
+
+  .hero-content h1 {
+    font-size: 31px;
+  }
+
+  .home-section .section-actions {
+    grid-template-columns: auto auto;
+  }
+
+  .home-section .section-actions > a {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .home-section .property-grid,
+  .landlord-showcase-section .landlord-grid {
+    grid-auto-columns: min(88vw, 320px);
+  }
+
+  .gallery-grid,
+  .gallery-grid.two-images {
+    height: 255px;
+  }
+
+  .legal-document,
+  .profile-picture-card,
+  .profile-information-card,
+  .security-card,
+  .create-form-card,
+  .form-card,
+  .admin-panel {
+    padding-inline: 14px;
+  }
+}
+
+@media (max-width: 767px) and (orientation: landscape) {
+  .hero-container {
+    padding-top: 28px;
+  }
+
+  .silip-chat-popup,
+  .silip-mini-chat-window {
+    height: 100dvh;
+  }
+}
+
+@media (hover: none) {
+  .property-card:hover,
+  .home-landlord-card:hover,
+  .location-card:hover,
+  .review-card:hover,
+  .carousel-button:hover,
+  .navbar-button:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-section .property-grid,
+  .landlord-showcase-section .landlord-grid,
+  .location-rail {
+    scroll-behavior: auto;
+  }
+}

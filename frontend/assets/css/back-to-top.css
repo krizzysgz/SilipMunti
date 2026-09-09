@@ -1,0 +1,86 @@
+:host {
+  --silip-back-top-size: 48px;
+  --silip-back-top-right: 24px;
+  --silip-back-top-bottom: 24px;
+  --silip-back-top-chat-bottom: 92px;
+}
+
+button {
+  position: fixed;
+  right: var(--silip-back-top-right);
+  bottom: var(--silip-back-top-bottom);
+  z-index: 900;
+  width: var(--silip-back-top-size);
+  height: var(--silip-back-top-size);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 50%;
+  color: #ffffff;
+  background: #112bc1;
+  box-shadow: 0 12px 28px rgb(17 43 193 / 28%);
+  opacity: 0;
+  transform: translateY(14px) scale(0.92);
+  visibility: hidden;
+  pointer-events: none;
+  cursor: pointer;
+  transition:
+    opacity 0.24s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0.24s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    bottom 0.25s ease;
+}
+
+:host([data-with-chat]) button {
+  bottom: var(--silip-back-top-chat-bottom);
+}
+
+button.visible {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+button:hover {
+  background: #071d91;
+  box-shadow: 0 16px 32px rgb(17 43 193 / 36%);
+  transform: translateY(-3px);
+}
+
+button:active {
+  transform: translateY(0) scale(0.95);
+}
+
+button:focus-visible {
+  outline: 3px solid #f9d84a;
+  outline-offset: 3px;
+}
+
+svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 640px) {
+  :host {
+    --silip-back-top-size: 44px;
+    --silip-back-top-right: 16px;
+    --silip-back-top-bottom: 16px;
+    --silip-back-top-chat-bottom: 78px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: none;
+  }
+}

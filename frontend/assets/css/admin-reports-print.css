@@ -1,0 +1,304 @@
+@page {
+  size: A4 landscape;
+  margin: 12mm;
+}
+
+html,
+body {
+  color: #111827 !important;
+  background: #ffffff !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 9pt;
+}
+
+body {
+  overflow: visible !important;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.report-screen-only,
+admin-sidebar,
+.admin-sidebar,
+.admin-sidebar-backdrop {
+  display: none !important;
+}
+
+.admin-content {
+  margin: 0 !important;
+}
+
+.admin-main.admin-reports-main {
+  display: block;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.report-print-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.9fr);
+  align-items: start;
+  gap: 20px;
+  margin-bottom: 8mm;
+  padding-bottom: 5mm;
+  border-bottom: 2px solid #1734c7;
+}
+
+.report-print-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.report-print-brand img {
+  width: 45mm;
+  height: 18mm;
+  object-fit: contain;
+}
+
+.report-print-brand span {
+  display: block;
+  color: #1734c7;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.report-print-brand h1 {
+  margin: 2mm 0 0;
+  font-size: 17pt;
+  line-height: 1.1;
+}
+
+.report-print-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3mm 7mm;
+  margin: 0;
+}
+
+.report-print-meta dt {
+  color: #6b7280;
+  font-size: 6.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.report-print-meta dd {
+  margin: 1mm 0 0;
+  font-size: 8pt;
+  font-weight: 700;
+}
+
+.report-period-banner {
+  min-height: auto;
+  margin-bottom: 5mm !important;
+  padding: 5mm 6mm;
+  border: 1px solid #c8d0f5;
+  box-shadow: none;
+  break-inside: avoid;
+}
+
+.report-period-banner h2 {
+  font-size: 16pt;
+}
+
+.report-generated-pill {
+  color: #ffffff;
+}
+
+.report-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 3mm;
+  margin-bottom: 5mm;
+  break-inside: avoid;
+}
+
+.report-kpi {
+  min-height: 26mm;
+  padding: 4mm;
+  border: 1px solid #dfe3ec;
+  box-shadow: none;
+}
+
+.report-kpi strong {
+  font-size: 16pt;
+}
+
+.report-kpi span {
+  font-size: 7pt;
+}
+
+.report-kpi small {
+  font-size: 6pt;
+}
+
+.admin-panel,
+.report-two-column {
+  margin-bottom: 5mm !important;
+  box-shadow: none !important;
+}
+
+.admin-panel {
+  border: 1px solid #dfe3ec !important;
+  border-radius: 3mm !important;
+  break-inside: auto;
+}
+
+.report-insights-section,
+.report-chart-panel,
+.report-metric-panel,
+.report-review-summary {
+  break-inside: avoid;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tfoot {
+  display: table-footer-group;
+}
+
+.admin-panel-header {
+  min-height: auto;
+  padding: 4mm 5mm;
+}
+
+.admin-panel-header h2 {
+  font-size: 10pt;
+}
+
+.admin-panel-header p {
+  font-size: 6.5pt;
+}
+
+.report-insights-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3mm;
+  padding: 4mm;
+}
+
+.report-insight-card {
+  min-height: 30mm;
+  padding: 3mm;
+}
+
+.report-insight-card h3 {
+  font-size: 8pt;
+}
+
+.report-insight-card p,
+.report-insight-action {
+  font-size: 6.2pt;
+}
+
+.report-two-column {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4mm;
+  break-inside: avoid;
+}
+
+.report-trend-chart {
+  min-height: 58mm;
+  padding: 3mm 5mm 5mm;
+}
+
+.report-trend-chart svg {
+  height: 52mm;
+}
+
+.listing-health-layout {
+  min-height: 63mm;
+  padding: 4mm;
+}
+
+.report-donut {
+  width: 35mm;
+  height: 35mm;
+}
+
+.report-donut::before {
+  width: 25mm;
+  height: 25mm;
+}
+
+.demand-visual {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5mm 6mm;
+  padding: 4mm 5mm;
+}
+
+.admin-table-wrapper,
+.report-table-wrapper {
+  overflow: visible !important;
+}
+
+.admin-table,
+.report-table,
+.report-table.wide,
+.review-table {
+  width: 100% !important;
+  min-width: 0 !important;
+  table-layout: fixed;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 2.2mm 2.5mm;
+  overflow-wrap: anywhere;
+}
+
+.admin-table th {
+  color: #4b5563;
+  font-size: 5.6pt;
+}
+
+.admin-table td,
+.report-table .report-table-primary {
+  font-size: 6.4pt;
+}
+
+.report-table .report-table-secondary {
+  font-size: 5.5pt;
+}
+
+.report-table tbody tr,
+.review-table tbody tr {
+  break-inside: avoid;
+}
+
+.review-insight-layout {
+  grid-template-columns: 1fr 0.72fr 0.9fr;
+  gap: 3mm;
+  padding: 4mm;
+}
+
+.review-rating-panel,
+.review-sentiment-panel,
+.review-theme-panel {
+  padding: 3mm;
+}
+
+.review-rating-summary strong {
+  font-size: 22pt;
+}
+
+.report-print-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 7mm;
+  padding-top: 3mm;
+  border-top: 1px solid #cdd3df;
+  color: #6b7280;
+  font-size: 6.5pt;
+}
+
+.report-section.search-hidden {
+  display: block !important;
+}

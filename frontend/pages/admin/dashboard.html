@@ -12,6 +12,10 @@
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/admin.css?v=4"
     />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/responsive.css?v=2"
+    />
   </head>
 
   <body>
@@ -71,6 +75,13 @@
           >
             <i class="fa-solid fa-tags"></i>
             <span>Rental Types</span>
+          </a>
+          <a
+            href="/SilipMunti/frontend/pages/admin/reports.html"
+            class="admin-nav-link"
+          >
+            <i class="fa-solid fa-chart-column"></i>
+            <span>Reports</span>
           </a>
 
           <span class="admin-nav-label account-label">ACCOUNT</span>
@@ -243,6 +254,21 @@
                   </span>
                   <i class="fa-solid fa-arrow-right"></i>
                 </a>
+
+                <a
+                  href="/SilipMunti/frontend/pages/admin/reports.html"
+                  class="admin-action-card"
+                  data-search-text="reports analytics insights performance print pdf csv"
+                >
+                  <span class="admin-action-icon blue">
+                    <i class="fa-solid fa-chart-column"></i>
+                  </span>
+                  <span class="admin-action-copy">
+                    <strong>View Reports</strong>
+                    <p>Review performance, customer insights, and action items.</p>
+                  </span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </a>
               </div>
               <p class="admin-action-empty hidden" id="admin-action-empty">
                 No admin modules match your search.
@@ -294,7 +320,7 @@
     </div>
 
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=5"></script>
     <script src="/SilipMunti/frontend/assets/js/admin-dashboard.js?v=3"></script>
   </body>
 </html>
