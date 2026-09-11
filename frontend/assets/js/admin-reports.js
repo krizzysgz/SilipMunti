@@ -7,10 +7,56 @@
   const API_ROOT = "/SilipMunti/backend";
   const FRONTEND_ROOT = "/SilipMunti/frontend";
   const REPORT_ENDPOINT = `${API_ROOT}/admin/reports.php`;
+  const DEFAULT_DOCUMENT_TITLE = document.title;
+  const DEFAULT_PRINT_TITLE = "SilipMunti Performance Report";
+  const PDF_REPORT_SCOPES = {
+    full: {
+      title: DEFAULT_PRINT_TITLE,
+      filename: "Full-Performance-Report",
+      selectors: [],
+    },
+    executive: {
+      title: "SilipMunti Executive Summary Report",
+      filename: "Executive-Summary",
+      selectors: [".report-print-summary", ".report-insights-section"],
+    },
+    activity: {
+      title: "Platform Activity and Listing Health Report",
+      filename: "Activity-and-Listing-Health",
+      selectors: [".report-trend-health-section"],
+    },
+    demand: {
+      title: "Rental Demand and Supply Report",
+      filename: "Rental-Demand-and-Supply",
+      selectors: [".report-demand-section"],
+    },
+    listings: {
+      title: "Listing Performance Report",
+      filename: "Listing-Performance",
+      selectors: [".report-listing-section"],
+    },
+    operations: {
+      title: "Inquiry and Verification Operations Report",
+      filename: "Inquiry-and-Verification-Operations",
+      selectors: [".report-operations-section"],
+    },
+    landlords: {
+      title: "Landlord Performance Report",
+      filename: "Landlord-Performance",
+      selectors: [".report-landlord-section"],
+    },
+    reviews: {
+      title: "Customer Reviews and Experience Report",
+      filename: "Customer-Reviews-and-Experience",
+      selectors: [".report-review-section"],
+    },
+  };
   const state = {
     admin: null,
     data: null,
     loading: false,
+    abortController: null,
+    filterTimer: null,
   };
 
   const elements = {
@@ -21,9 +67,12 @@
     rentalType: document.querySelector("#report-rental-type"),
     message: document.querySelector("#report-message"),
     refresh: document.querySelector("#refresh-report"),
-    exportCsv: document.querySelector("#export-csv"),
+    exportExcel: document.querySelector("#export-excel"),
+    exportWord: document.querySelector("#download-word-report"),
     print: document.querySelector("#print-report"),
+    pdfScope: document.querySelector("#report-pdf-scope"),
     search: document.querySelector("#topbar-search"),
+    autoUpdate: document.querySelector("#report-auto-update"),
   };
 
   function escapeHtml(value) {
@@ -111,12 +160,21 @@
   function setLoading(isLoading) {
     state.loading = isLoading;
 
-    [elements.refresh, elements.exportCsv, elements.print].forEach((button) => {
+    [elements.refresh, elements.exportExcel, elements.exportWord, elements.print].forEach((button) => {
       if (button) button.disabled = isLoading;
     });
 
+    if (elements.pdfScope) elements.pdfScope.disabled = isLoading;
+
     if (elements.refresh) {
       elements.refresh.classList.toggle("loading", isLoading);
+    }
+
+    if (elements.autoUpdate) {
+      elements.autoUpdate.textContent = isLoading
+        ? "Updating report…"
+        : "Updated automatically";
+      elements.autoUpdate.classList.toggle("loading", isLoading);
     }
   }
 
@@ -159,10 +217,11 @@
     return user;
   }
 
-  async function fetchJson(url) {
+  async function fetchJson(url, signal) {
     const response = await fetch(url, {
       credentials: "include",
       cache: "no-store",
+      signal,
     });
     let result;
 
@@ -223,42 +282,43 @@
         .join("")}
     `;
 
-    if (
-      [...elements.rentalType.options].some(
-        (option) => option.value === selected,
-      )
-    ) {
+    if ([...elements.rentalType.options].some((option) => option.value === selected)) {
       elements.rentalType.value = selected;
     }
   }
 
   function selectedRentalTypeName() {
-    return (
-      elements.rentalType?.selectedOptions?.[0]?.textContent ||
-      "All rental types"
-    );
+    return elements.rentalType?.selectedOptions?.[0]?.textContent ||
+      "All rental types";
+  }
+
+  function reportContext(data) {
+    const start = formatDate(data.filters.start_date);
+    const end = formatDate(data.filters.end_date);
+    const periodLabel = start === end ? start : `${start} – ${end}`;
+    const scopeLabel = [
+      data.filters.barangay || "All barangays",
+      selectedRentalTypeName(),
+    ].join(" • ");
+
+    return {
+      periodLabel,
+      scopeLabel,
+      generatedLabel: formatDateTime(data.generated_at),
+      adminName: data.generated_by || "Administrator",
+    };
   }
 
   function renderReportMeta(data) {
-    const start = formatDate(data.filters.start_date);
-    const end = formatDate(data.filters.end_date);
-    const dateLabel = start === end ? start : `${start} – ${end}`;
-    const scopes = [
-      data.filters.barangay || "All barangays",
-      selectedRentalTypeName(),
-    ];
-    const scopeLabel = scopes.join(" • ");
+    const context = reportContext(data);
 
-    setText("#report-period-title", dateLabel);
-    setText("#report-scope-text", scopeLabel);
-    setText(
-      "#report-generated-pill",
-      `Generated ${formatDateTime(data.generated_at)}`,
-    );
-    setText("#print-period", dateLabel);
-    setText("#print-scope", scopeLabel);
-    setText("#print-admin", data.generated_by || "Administrator");
-    setText("#print-generated-at", formatDateTime(data.generated_at));
+    setText("#report-period-title", context.periodLabel);
+    setText("#report-scope-text", context.scopeLabel);
+    setText("#report-generated-pill", `Generated ${context.generatedLabel}`);
+    setText("#print-period", context.periodLabel);
+    setText("#print-scope", context.scopeLabel);
+    setText("#print-admin", context.adminName);
+    setText("#print-generated-at", context.generatedLabel);
   }
 
   function trendText(value, label) {
@@ -292,15 +352,59 @@
     setText("#kpi-favorites", number(overview.favorites));
     setText("#kpi-response-rate", percent(overview.landlord_response_rate));
     setText("#kpi-average-rating", rating(overview.average_rating));
-    setText(
-      "#kpi-pending-verifications",
-      number(overview.pending_verifications),
-    );
+    setText("#kpi-pending-verifications", number(overview.pending_verifications));
     setText("#kpi-total-reviews", number(overview.total_reviews));
 
     applyTrend("#trend-new-users", overview.trends.new_users, "users");
     applyTrend("#trend-inquiries", overview.trends.inquiries, "inquiries");
     applyTrend("#trend-reviews", overview.trends.reviews, "reviews");
+  }
+
+  function renderPrintSummary(data) {
+    const overview = data.overview;
+    const listings = data.listing_summary;
+    const inquiries = data.inquiries;
+    const reviews = data.reviews;
+    const verification = data.verification;
+    const strongestDemand = data.demand_by_barangay?.[0];
+    const unanswered = Number(inquiries.unanswered_over_48_hours) || 0;
+    const delayedDocuments = Number(verification.pending_over_48_hours) || 0;
+    const summary = [
+      `The selected period recorded ${number(overview.new_users)} new users and ${number(overview.inquiries)} renter inquiries across ${number(overview.active_listings)} active listings.`,
+      `Landlords responded to ${percent(overview.landlord_response_rate)} of inquiries, while published customer feedback averaged ${rating(overview.average_rating)}.`,
+      strongestDemand
+        ? `${strongestDemand.barangay} recorded the strongest demand signal in the selected scope.`
+        : "No barangay-level demand signal was recorded for the selected scope.",
+    ].join(" ");
+
+    setText("#print-summary-title", "Platform performance and management priorities");
+    setText("#print-executive-summary", summary);
+
+    const tableBody = document.querySelector("#print-kpi-table-body");
+    if (!tableBody) return;
+
+    const rows = [
+      ["New users", number(overview.new_users), trendText(overview.trends.new_users, "users")],
+      ["Active listings", number(overview.active_listings), `${number(listings.available)} available and ${number(listings.occupied)} occupied listings are currently recorded.`],
+      ["Renter inquiries", number(overview.inquiries), trendText(overview.trends.inquiries, "inquiries")],
+      ["Saved listings", number(overview.favorites), "Favorites represent renter interest recorded within the selected period."],
+      ["Landlord response rate", percent(overview.landlord_response_rate), `${number(unanswered)} ${unanswered === 1 ? "inquiry remained" : "inquiries remained"} unanswered for more than 48 hours.`],
+      ["Average customer rating", rating(overview.average_rating), `${number(reviews.total)} published reviews were included in the selected period.`],
+      ["Pending verification", number(overview.pending_verifications), `${number(delayedDocuments)} ${delayedDocuments === 1 ? "document has" : "documents have"} remained pending for more than 48 hours.`],
+      ["Reviews requiring attention", number(reviews.negative), "Ratings of 1 or 2 stars are included for administrative follow-up."],
+    ];
+
+    tableBody.innerHTML = rows
+      .map(
+        ([label, result, interpretation]) => `
+          <tr>
+            <td>${escapeHtml(label)}</td>
+            <td>${escapeHtml(result)}</td>
+            <td>${escapeHtml(interpretation)}</td>
+          </tr>
+        `,
+      )
+      .join("");
   }
 
   function buildInsights(data) {
@@ -315,10 +419,8 @@
       insights.push({
         type: "critical",
         title: `${number(inquiries.unanswered_over_48_hours)} inquiries need attention`,
-        finding:
-          "These inquiries have no landlord response after more than 48 hours.",
-        action:
-          "Notify the affected landlords and monitor their response performance.",
+        finding: "These inquiries have no landlord response after more than 48 hours.",
+        action: "Notify the affected landlords and monitor their response performance.",
       });
     }
 
@@ -326,10 +428,8 @@
       insights.push({
         type: "warning",
         title: `Response rate is ${percent(inquiries.response_rate)}`,
-        finding:
-          "A significant share of renters did not receive a landlord reply in the selected period.",
-        action:
-          "Introduce response reminders and a suggested 24-hour reply standard.",
+        finding: "A significant share of renters did not receive a landlord reply in the selected period.",
+        action: "Introduce response reminders and a suggested 24-hour reply standard.",
       });
     }
 
@@ -337,10 +437,8 @@
       insights.push({
         type: "warning",
         title: `${number(verification.pending_over_48_hours)} verification documents are delayed`,
-        finding:
-          "These submissions have remained pending for longer than 48 hours.",
-        action:
-          "Prioritize the oldest verification requests in the admin queue.",
+        finding: "These submissions have remained pending for longer than 48 hours.",
+        action: "Prioritize the oldest verification requests in the admin queue.",
       });
     }
 
@@ -349,47 +447,39 @@
         type: "warning",
         title: "Listing quality requires review",
         finding: `${number(listings.without_images)} listings have no image and ${number(listings.stale)} have not been updated for at least 60 days.`,
-        action:
-          "Prompt landlords to improve incomplete listings and confirm current availability.",
+        action: "Prompt landlords to improve incomplete listings and confirm current availability.",
       });
     }
 
     if (strongestDemand && strongestDemand.demand_score > 0) {
-      const supplyText =
-        strongestDemand.available_listings > 0
-          ? `${number(strongestDemand.available_listings)} available listings`
-          : "no available listing";
+      const supplyText = strongestDemand.available_listings > 0
+        ? `${number(strongestDemand.available_listings)} available listings`
+        : "no available listing";
 
       insights.push({
         type: strongestDemand.available_listings === 0 ? "critical" : "success",
         title: `${strongestDemand.barangay} has the strongest demand signal`,
         finding: `${number(strongestDemand.demand_score)} demand points compared with ${supplyText}.`,
-        action:
-          "Use this demand signal when encouraging landlords to add or update rental supply.",
+        action: "Use this demand signal when encouraging landlords to add or update rental supply.",
       });
     }
 
     if (reviews.negative > 0) {
-      const topTheme = reviews.themes?.find(
-        (theme) => theme.negative_mentions > 0,
-      );
+      const topTheme = reviews.themes?.find((theme) => theme.negative_mentions > 0);
       insights.push({
         type: "critical",
         title: `${number(reviews.negative)} negative customer reviews`,
         finding: topTheme
           ? `${topTheme.theme} is the most visible related feedback theme.`
           : "Review the comments to identify recurring renter concerns.",
-        action:
-          "Open the customer feedback section and address repeated service issues.",
+        action: "Open the customer feedback section and address repeated service issues.",
       });
     } else if (reviews.total > 0 && reviews.average_rating >= 4) {
       insights.push({
         type: "success",
         title: `Customer rating is ${reviews.average_rating.toFixed(1)} out of 5`,
-        finding:
-          "Published customer feedback is generally positive for the selected period.",
-        action:
-          "Maintain the current service quality and continue monitoring emerging themes.",
+        finding: "Published customer feedback is generally positive for the selected period.",
+        action: "Maintain the current service quality and continue monitoring emerging themes.",
       });
     }
 
@@ -397,8 +487,7 @@
       insights.push({
         type: "success",
         title: "No urgent operational issue detected",
-        finding:
-          "The available report data does not show a critical threshold for this period.",
+        finding: "The available report data does not show a critical threshold for this period.",
         action: "Continue monitoring activity and customer feedback regularly.",
       });
     }
@@ -412,12 +501,8 @@
     if (!container || !status) return;
 
     const insights = buildInsights(data);
-    const criticalCount = insights.filter(
-      (item) => item.type === "critical",
-    ).length;
-    const warningCount = insights.filter(
-      (item) => item.type === "warning",
-    ).length;
+    const criticalCount = insights.filter((item) => item.type === "critical").length;
+    const warningCount = insights.filter((item) => item.type === "warning").length;
 
     status.className = "report-status-pill";
     if (criticalCount > 0) {
@@ -474,9 +559,7 @@
     ];
     const maximum = Math.max(
       1,
-      ...points.flatMap((point) =>
-        metrics.map((metric) => Number(point[metric.key]) || 0),
-      ),
+      ...points.flatMap((point) => metrics.map((metric) => Number(point[metric.key]) || 0)),
     );
     const xAt = (index) =>
       points.length === 1
@@ -528,8 +611,9 @@
   function renderListingHealth(data) {
     const summary = data.listing_summary;
     const total = Number(summary.total) || 0;
-    const availableShare =
-      total > 0 ? Math.min(100, (Number(summary.available) / total) * 100) : 0;
+    const availableShare = total > 0
+      ? Math.min(100, (Number(summary.available) / total) * 100)
+      : 0;
     const donut = document.querySelector("#listing-health-donut");
 
     if (donut) {
@@ -556,10 +640,7 @@
       return;
     }
 
-    const maximum = Math.max(
-      1,
-      ...rows.map((row) => Number(row.demand_score) || 0),
-    );
+    const maximum = Math.max(1, ...rows.map((row) => Number(row.demand_score) || 0));
     visual.innerHTML = rows
       .slice(0, 8)
       .map(
@@ -577,10 +658,9 @@
 
     body.innerHTML = rows
       .map((row) => {
-        const ratio =
-          row.demand_per_available_listing === null
-            ? "No available supply"
-            : Number(row.demand_per_available_listing).toFixed(2);
+        const ratio = row.demand_per_available_listing === null
+          ? "No available supply"
+          : Number(row.demand_per_available_listing).toFixed(2);
         return `
           <tr>
             <td><span class="report-table-primary">${escapeHtml(row.barangay)}</span></td>
@@ -644,14 +724,8 @@
         statRow("Pending", number(inquiries.pending)),
         statRow("Closed", number(inquiries.closed)),
         statRow("Landlord response rate", percent(inquiries.response_rate)),
-        statRow(
-          "Average first response",
-          `${Number(inquiries.average_response_hours).toFixed(1)} hours`,
-        ),
-        statRow(
-          "Unanswered after 48 hours",
-          number(inquiries.unanswered_over_48_hours),
-        ),
+        statRow("Average first response", `${Number(inquiries.average_response_hours).toFixed(1)} hours`),
+        statRow("Unanswered after 48 hours", number(inquiries.unanswered_over_48_hours)),
       ].join("");
     }
 
@@ -661,14 +735,8 @@
         statRow("Approved", number(verification.approved)),
         statRow("Rejected", number(verification.rejected)),
         statRow("Current pending backlog", number(verification.pending)),
-        statRow(
-          "Pending after 48 hours",
-          number(verification.pending_over_48_hours),
-        ),
-        statRow(
-          "Average review time",
-          `${Number(verification.average_review_hours).toFixed(1)} hours`,
-        ),
+        statRow("Pending after 48 hours", number(verification.pending_over_48_hours)),
+        statRow("Average review time", `${Number(verification.average_review_hours).toFixed(1)} hours`),
       ].join("");
     }
 
@@ -736,26 +804,12 @@
     const negativeBody = document.querySelector("#negative-review-body");
     const total = Number(reviews.total) || 0;
 
-    setText(
-      "#review-average",
-      total > 0 ? Number(reviews.average_rating).toFixed(1) : "—",
-    );
-    setText(
-      "#review-total",
-      `${number(total)} published review${total === 1 ? "" : "s"}`,
-    );
-    setText(
-      "#review-average-badge",
-      total > 0
-        ? `${Number(reviews.average_rating).toFixed(1)} / 5`
-        : "No reviews",
-    );
+    setText("#review-average", total > 0 ? Number(reviews.average_rating).toFixed(1) : "—");
+    setText("#review-total", `${number(total)} published review${total === 1 ? "" : "s"}`);
+    setText("#review-average-badge", total > 0 ? `${Number(reviews.average_rating).toFixed(1)} / 5` : "No reviews");
 
     if (distribution) {
-      const maximum = Math.max(
-        1,
-        ...Object.values(reviews.distribution || {}).map(Number),
-      );
+      const maximum = Math.max(1, ...Object.values(reviews.distribution || {}).map(Number));
       distribution.innerHTML = [5, 4, 3, 2, 1]
         .map((score) => {
           const amount = Number(reviews.distribution?.[score] || 0);
@@ -829,6 +883,7 @@
     populateRentalTypes(data.rental_types || []);
     renderReportMeta(data);
     renderOverview(data);
+    renderPrintSummary(data);
     renderInsights(data);
     renderTrend(data);
     renderListingHealth(data);
@@ -841,157 +896,154 @@
   }
 
   async function loadReport() {
-    if (state.loading) return;
+    if (state.filterTimer) {
+      window.clearTimeout(state.filterTimer);
+      state.filterTimer = null;
+    }
+
+    state.abortController?.abort();
+    const controller = new AbortController();
+    state.abortController = controller;
 
     hideMessage();
     setLoading(true);
+    let failed = false;
 
     try {
-      const data = await fetchJson(buildReportUrl());
+      const data = await fetchJson(buildReportUrl(), controller.signal);
       renderAll(data);
     } catch (error) {
-      showMessage(error.message || "Unable to generate the report.");
+      if (error.name !== "AbortError") {
+        failed = true;
+        showMessage(error.message || "Unable to generate the report.");
+      }
     } finally {
-      setLoading(false);
+      if (state.abortController === controller) {
+        state.abortController = null;
+        setLoading(false);
+
+        if (failed && elements.autoUpdate) {
+          elements.autoUpdate.textContent = "Automatic update failed";
+        }
+      }
     }
   }
 
-  function csvCell(value) {
-    let output = String(value ?? "");
-    if (/^[=+\-@]/.test(output)) output = `'${output}`;
-    return `"${output.replaceAll('"', '""')}"`;
+  function filtersAreValid() {
+    if (!elements.startDate?.value || !elements.endDate?.value) return false;
+
+    if (elements.startDate.value > elements.endDate.value) {
+      showMessage("Start date must not be later than end date.");
+      return false;
+    }
+
+    hideMessage();
+    return true;
   }
 
-  function pushCsvRow(rows, values = []) {
-    rows.push(values.map(csvCell).join(","));
+  function scheduleReportLoad() {
+    if (state.filterTimer) window.clearTimeout(state.filterTimer);
+
+    if (state.abortController) {
+      state.abortController.abort();
+      state.abortController = null;
+      setLoading(false);
+    }
+
+    if (!filtersAreValid()) {
+      if (elements.autoUpdate) {
+        elements.autoUpdate.textContent = "Waiting for a valid date range";
+      }
+      return;
+    }
+
+    if (elements.autoUpdate) {
+      elements.autoUpdate.textContent = "Preparing automatic update…";
+    }
+
+    state.filterTimer = window.setTimeout(loadReport, 350);
   }
 
-  function exportCsv() {
+  function exportExcel() {
     const data = state.data;
     if (!data) return;
+    const workbook = window.SilipMuntiReportWorkbook;
+    if (!workbook) {
+      showMessage("The Excel report generator is unavailable. Refresh the page and try again.");
+      return;
+    }
 
-    const rows = [];
-    pushCsvRow(rows, ["SILIPMUNTI PERFORMANCE REPORT"]);
-    pushCsvRow(rows, [
-      "Reporting period",
-      data.filters.start_date,
-      data.filters.end_date,
-    ]);
-    pushCsvRow(rows, ["Barangay", data.filters.barangay || "All barangays"]);
-    pushCsvRow(rows, ["Rental type", selectedRentalTypeName()]);
-    pushCsvRow(rows, ["Generated by", data.generated_by || "Administrator"]);
-    pushCsvRow(rows, ["Generated on", data.generated_at]);
-    rows.push("");
-
-    pushCsvRow(rows, ["EXECUTIVE SUMMARY"]);
-    [
-      ["New users", data.overview.new_users],
-      ["Active listings", data.overview.active_listings],
-      ["Inquiries", data.overview.inquiries],
-      ["Favorites", data.overview.favorites],
-      ["Landlord response rate", percent(data.overview.landlord_response_rate)],
-      ["Average rating", data.overview.average_rating],
-      ["Pending verifications", data.overview.pending_verifications],
-      ["Customer reviews", data.overview.total_reviews],
-    ].forEach((row) => pushCsvRow(rows, row));
-    rows.push("");
-
-    pushCsvRow(rows, ["DEMAND AND SUPPLY BY BARANGAY"]);
-    pushCsvRow(rows, [
-      "Barangay",
-      "Available listings",
-      "Inquiries",
-      "Favorites",
-      "Demand score",
-      "Demand per listing",
-      "Average price",
-    ]);
-    data.demand_by_barangay.forEach((row) =>
-      pushCsvRow(rows, [
-        row.barangay,
-        row.available_listings,
-        row.inquiries,
-        row.favorites,
-        row.demand_score,
-        row.demand_per_available_listing ?? "No available supply",
-        row.average_price,
-      ]),
-    );
-    rows.push("");
-
-    pushCsvRow(rows, ["LISTING PERFORMANCE"]);
-    pushCsvRow(rows, [
-      "Listing",
-      "Landlord",
-      "Barangay",
-      "Rental type",
-      "Price",
-      "Inquiries",
-      "Favorites",
-      "Average rating",
-      "Engagement score",
-    ]);
-    data.top_listings.forEach((row) =>
-      pushCsvRow(rows, [
-        row.title,
-        row.landlord_name,
-        row.barangay,
-        row.rental_type,
-        row.price,
-        row.inquiries,
-        row.favorites,
-        row.average_rating,
-        row.engagement_score,
-      ]),
-    );
-    rows.push("");
-
-    pushCsvRow(rows, ["LANDLORD PERFORMANCE"]);
-    pushCsvRow(rows, [
-      "Landlord",
-      "Verification",
-      "Listings",
-      "Inquiries",
-      "Response rate",
-      "Average rating",
-      "Reviews",
-    ]);
-    data.landlords.forEach((row) =>
-      pushCsvRow(rows, [
-        row.landlord_name,
-        verificationLabel(row.verification_level),
-        row.active_listings,
-        row.inquiries,
-        percent(row.response_rate),
-        row.average_rating,
-        row.total_reviews,
-      ]),
-    );
-    rows.push("");
-
-    pushCsvRow(rows, ["CUSTOMER REVIEWS REQUIRING ATTENTION"]);
-    pushCsvRow(rows, ["Date", "Customer", "Subject", "Rating", "Feedback"]);
-    data.reviews.negative_reviews.forEach((row) =>
-      pushCsvRow(rows, [
-        row.created_at,
-        row.customer_name,
-        row.subject,
-        row.rating,
-        row.comment,
-      ]),
-    );
-
-    const blob = new Blob(["\ufeff", rows.join("\r\n")], {
-      type: "text/csv;charset=utf-8",
+    const context = reportContext(data);
+    workbook.download(data, {
+      ...context,
+      insights: buildInsights(data),
+      verificationLabel,
     });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `SilipMunti-Report-${data.filters.start_date}-to-${data.filters.end_date}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+  }
+
+  function clearPrintSelection() {
+    document
+      .querySelectorAll(".report-print-summary, .report-section")
+      .forEach((section) => section.classList.remove("print-excluded"));
+
+    document.body.removeAttribute("data-print-scope");
+    setText("#print-report-title", DEFAULT_PRINT_TITLE);
+    document.title = DEFAULT_DOCUMENT_TITLE;
+  }
+
+  function preparePrintSelection(scopeKey) {
+    const selectedScope = Object.hasOwn(PDF_REPORT_SCOPES, scopeKey)
+      ? scopeKey
+      : "full";
+    const scope = PDF_REPORT_SCOPES[selectedScope];
+    const printableSections = document.querySelectorAll(
+      ".report-print-summary, .report-section",
+    );
+
+    printableSections.forEach((section) => {
+      const included =
+        selectedScope === "full" ||
+        scope.selectors.some((selector) => section.matches(selector));
+      section.classList.toggle("print-excluded", !included);
+    });
+
+    document.body.dataset.printScope = selectedScope;
+    setText("#print-report-title", scope.title);
+
+    const startDate = elements.startDate?.value || "start";
+    const endDate = elements.endDate?.value || "end";
+    document.title = `SilipMunti-${scope.filename}-${startDate}-to-${endDate}`;
+  }
+
+  function downloadPdfReport() {
+    if (!state.data || state.loading) return;
+
+    const scopeKey = elements.pdfScope?.value || "full";
+    preparePrintSelection(scopeKey);
+    window.requestAnimationFrame(() => window.print());
+  }
+
+  function downloadWordReport() {
+    const data = state.data;
+    if (!data || state.loading) return;
+
+    const documentGenerator = window.SilipMuntiReportDocument;
+    if (!documentGenerator) {
+      showMessage("The Word report generator is unavailable. Refresh the page and try again.");
+      return;
+    }
+
+    const context = reportContext(data);
+    const scopeKey = elements.pdfScope?.value || "full";
+    documentGenerator.download(
+      data,
+      {
+        ...context,
+        insights: buildInsights(data),
+        verificationLabel,
+      },
+      scopeKey,
+    );
   }
 
   function setupSearch() {
@@ -999,8 +1051,7 @@
       const keyword = elements.search.value.trim().toLowerCase();
 
       document.querySelectorAll(".report-section").forEach((section) => {
-        const searchable =
-          `${section.dataset.reportSearch || ""} ${section.textContent || ""}`.toLowerCase();
+        const searchable = `${section.dataset.reportSearch || ""} ${section.textContent || ""}`.toLowerCase();
         section.classList.toggle(
           "search-hidden",
           keyword !== "" && !searchable.includes(keyword),
@@ -1012,24 +1063,25 @@
   function setupEvents() {
     elements.form?.addEventListener("submit", (event) => {
       event.preventDefault();
-
-      if (
-        elements.startDate?.value &&
-        elements.endDate?.value &&
-        elements.startDate.value > elements.endDate.value
-      ) {
-        showMessage("Start date must not be later than end date.");
-        return;
-      }
-
-      loadReport();
+      if (filtersAreValid()) loadReport();
     });
 
-    elements.refresh?.addEventListener("click", loadReport);
-    elements.exportCsv?.addEventListener("click", exportCsv);
-    elements.print?.addEventListener("click", () => {
-      if (state.data) window.print();
+    [
+      elements.startDate,
+      elements.endDate,
+      elements.barangay,
+      elements.rentalType,
+    ].forEach((element) => {
+      element?.addEventListener("change", scheduleReportLoad);
     });
+
+    elements.refresh?.addEventListener("click", () => {
+      if (filtersAreValid()) loadReport();
+    });
+    elements.exportExcel?.addEventListener("click", exportExcel);
+    elements.exportWord?.addEventListener("click", downloadWordReport);
+    elements.print?.addEventListener("click", downloadPdfReport);
+    window.addEventListener("afterprint", clearPrintSelection);
     setupSearch();
   }
 

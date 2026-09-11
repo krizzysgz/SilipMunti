@@ -1073,7 +1073,10 @@
     }
 
     if (messageText.length > 2000) {
-      window.alert("Message must not exceed 2000 characters.");
+      await window.SilipModal.warning({
+        title: "Message is too long",
+        message: "Messages can contain up to 2,000 characters.",
+      });
 
       return;
     }
@@ -1101,7 +1104,10 @@
       await loadMiniMessages(true);
       await loadConversations(true);
     } catch (error) {
-      window.alert(error.message);
+      await window.SilipModal.error({
+        title: "Message not sent",
+        message: error.message || "Unable to send your message.",
+      });
     } finally {
       isSendingMessage = false;
       sendButton.disabled = false;

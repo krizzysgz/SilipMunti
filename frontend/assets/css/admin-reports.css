@@ -33,6 +33,7 @@
 }
 
 .report-print-header,
+.report-print-summary,
 .report-print-footer {
   display: none;
 }
@@ -42,6 +43,37 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 9px;
+}
+
+.report-pdf-export {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-pdf-export select {
+  width: min(270px, 34vw);
+  min-width: 210px;
+  min-height: 40px;
+  padding: 0 34px 0 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  outline: none;
+  color: #394150;
+  background: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.report-pdf-export select:focus {
+  border-color: #aebaf3;
+  box-shadow: 0 0 0 3px rgba(23, 52, 199, 0.08);
+}
+
+.report-pdf-export select:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .report-button {
@@ -128,6 +160,62 @@
 .report-filter-form select:focus {
   border-color: #aebaf3;
   box-shadow: 0 0 0 3px rgba(23, 52, 199, 0.08);
+}
+
+.report-auto-update {
+  position: relative;
+  display: flex;
+  min-width: 150px;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  overflow: hidden;
+  border: 1px solid #dfe4f7;
+  border-radius: 9px;
+  color: var(--admin-blue);
+  background: #f7f9ff;
+  font-size: 9px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.report-auto-update::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--admin-blue);
+  content: "";
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.report-auto-update.loading::after {
+  opacity: 1;
+  animation: report-auto-progress 1s ease-in-out infinite;
+}
+
+.report-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+@keyframes report-auto-progress {
+  0% {
+    transform: scaleX(0);
+  }
+
+  50% {
+    transform: scaleX(0.7);
+  }
+
+  100% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
 }
 
 .report-period-banner {
@@ -783,7 +871,7 @@
     grid-template-columns: repeat(4, minmax(150px, 1fr));
   }
 
-  .report-filter-form .admin-primary-button {
+  .report-auto-update {
     grid-column: 1 / -1;
     justify-self: end;
   }
@@ -835,12 +923,27 @@
     grid-column: 1 / -1;
   }
 
+  .report-pdf-export {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .report-pdf-export select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .report-pdf-export .report-button.primary {
+    grid-column: auto;
+  }
+
   .report-filter-form,
   .review-insight-layout {
     grid-template-columns: 1fr;
   }
 
-  .report-filter-form .admin-primary-button,
+  .report-auto-update,
   .review-theme-panel {
     grid-column: auto;
     width: 100%;
@@ -884,5 +987,10 @@
 @media (prefers-reduced-motion: reduce) {
   .report-button {
     transition: none;
+  }
+
+  .report-auto-update.loading::after {
+    animation: none;
+    transform: scaleX(1);
   }
 }

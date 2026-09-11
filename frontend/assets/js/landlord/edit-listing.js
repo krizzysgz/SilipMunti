@@ -298,7 +298,13 @@
 
   imageGrid.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-image-id]");
-    if (!button || !confirm("Delete this property image?")) return;
+    if (!button) return;
+    const shouldDelete = await window.SilipModal.confirm({
+      title: "Delete property image?",
+      message: "This image will be permanently removed from the listing.",
+      confirmText: "Delete image",
+    });
+    if (!shouldDelete) return;
     button.disabled = true;
     try {
       const imageId = Number(button.dataset.imageId);

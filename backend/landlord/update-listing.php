@@ -358,13 +358,7 @@ try {
         'amenities' => $normalizeStoredList($amenities)
     ];
 
-    $contentChanged = $currentContent !== $submittedContent;
-    $verificationStatus = (
-        $currentListing['verification_status'] === 'verified'
-        && !$contentChanged
-    )
-        ? 'verified'
-        : 'pending';
+    $verificationStatus = $currentListing['verification_status'];
 
     $updateListing = $pdo->prepare("
         UPDATE listings
@@ -414,10 +408,8 @@ try {
     ]);
 
     echo json_encode([
-        'success' => true,
-        'message' => $verificationStatus === 'pending'
-            ? 'Property details updated and submitted for admin review.'
-            : 'Property availability updated successfully.',
+    'success' => true,
+    'message' => 'Property details updated successfully.',
         'data' => [
             'listing_id' => (int) $listingId,
             'title' => $title,

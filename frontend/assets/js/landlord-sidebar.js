@@ -352,7 +352,10 @@ const SilipMuntiLandlordShell = (() => {
   async function logout() {
     const sessionManager = window.SilipMuntiSession;
     if (!sessionManager?.logoutUser) {
-      window.alert("Logout service is unavailable. Please refresh the page.");
+      await window.SilipModal.error({
+        title: "Logout unavailable",
+        message: "Please refresh the page and try again.",
+      });
       return;
     }
     await sessionManager.logoutUser();

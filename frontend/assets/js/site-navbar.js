@@ -374,7 +374,10 @@ const SilipMuntiSiteNavbar = (() => {
 
   async function logout() {
     if (!window.SilipMuntiSession?.logoutUser) {
-      alert("Logout service is unavailable. Please refresh the page.");
+      await window.SilipModal.error({
+        title: "Logout unavailable",
+        message: "Please refresh the page and try again.",
+      });
       return;
     }
 

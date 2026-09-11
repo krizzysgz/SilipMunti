@@ -476,7 +476,10 @@ async function logoutUser() {
 
     window.location.href = `${FRONTEND_BASE}/pages/auth/login.html`;
   } catch (error) {
-    alert(error.message || "Unable to connect to the server.");
+    await window.SilipModal.error({
+      title: "Logout failed",
+      message: error.message || "Unable to connect to the server.",
+    });
   }
 }
 

@@ -536,14 +536,26 @@
         let rejectionReason = "";
 
         if (action === "approved") {
-          const confirmed = window.confirm(
-            "Approve this landlord account and allow listing management?",
-          );
+          const confirmed = await window.SilipModal.confirm({
+            title: "Approve landlord account?",
+            message:
+              "The landlord will be verified and allowed to manage property listings.",
+            confirmText: "Approve account",
+          });
           if (!confirmed) return;
         } else {
-          rejectionReason = window.prompt(
-            "Enter the reason for rejecting this landlord account:",
-          );
+          rejectionReason = await window.SilipModal.prompt({
+            title: "Reject landlord account?",
+            message:
+              "Provide a clear reason so the landlord knows what needs to be corrected.",
+            inputLabel: "Rejection reason",
+            inputPlaceholder: "Enter the reason for rejection",
+            inputType: "textarea",
+            required: true,
+            requiredMessage: "A rejection reason is required.",
+            maxLength: 500,
+            confirmText: "Reject account",
+          });
           if (rejectionReason === null) return;
           rejectionReason = rejectionReason.trim();
 

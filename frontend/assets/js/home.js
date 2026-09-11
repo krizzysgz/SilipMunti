@@ -218,7 +218,10 @@
     }
 
     if (currentUser.role !== "renter") {
-      alert("Only renter accounts can save properties.");
+      await window.SilipModal.warning({
+        title: "Renter account required",
+        message: "Only renter accounts can save properties.",
+      });
       return;
     }
 
@@ -266,7 +269,10 @@
 
       updateFavoriteButton(button, normalizedListingId);
     } catch (error) {
-      alert(error.message || "Unable to update favorite.");
+      await window.SilipModal.error({
+        title: "Favorite not updated",
+        message: error.message || "Unable to update favorite.",
+      });
     } finally {
       button.disabled = false;
     }
@@ -701,7 +707,12 @@
         >
           <div class="home-landlord-photo">
             <span class="home-landlord-monogram" aria-hidden="true">
-              ${escapeHtml(String(landlord.name || "L").trim().charAt(0).toUpperCase())}
+              ${escapeHtml(
+                String(landlord.name || "L")
+                  .trim()
+                  .charAt(0)
+                  .toUpperCase(),
+              )}
             </span>
             <img
               src="${escapeHtml(getProfilePictureUrl(landlord.profile_picture_url))}"

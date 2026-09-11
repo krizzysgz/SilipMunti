@@ -310,7 +310,10 @@ async function toggleFavorite() {
   }
 
   if (currentUser.role !== "renter") {
-    alert("Only renter accounts can save properties.");
+    await window.SilipModal.warning({
+      title: "Renter account required",
+      message: "Only renter accounts can save properties.",
+    });
 
     return;
   }
@@ -365,7 +368,10 @@ async function toggleFavorite() {
 
     updateFavoriteButton();
   } catch (error) {
-    alert(error.message || "Unable to update favorite.");
+    await window.SilipModal.error({
+      title: "Favorite not updated",
+      message: error.message || "Unable to update favorite.",
+    });
   } finally {
     favoriteButton.disabled = false;
   }
@@ -1155,7 +1161,7 @@ function getInquiryId(result) {
   );
 }
 
-function openInquiryModal() {
+async function openInquiryModal() {
   if (!currentUser) {
     window.SilipMuntiSession?.showLoginPrompt({
       title: "Message the landlord",
@@ -1167,7 +1173,10 @@ function openInquiryModal() {
   }
 
   if (currentUser.role !== "renter") {
-    alert("Only renter accounts can send inquiries.");
+    await window.SilipModal.warning({
+      title: "Renter account required",
+      message: "Only renter accounts can send inquiries.",
+    });
 
     return;
   }
@@ -1298,7 +1307,7 @@ async function submitInquiry(event) {
   }
 }
 
-function openListingReviewPage() {
+async function openListingReviewPage() {
   if (!currentListing) {
     return;
   }
@@ -1316,7 +1325,10 @@ function openListingReviewPage() {
   }
 
   if (currentUser.role !== "renter") {
-    alert("Only renter accounts can submit property reviews.");
+    await window.SilipModal.warning({
+      title: "Renter account required",
+      message: "Only renter accounts can submit property reviews.",
+    });
     return;
   }
 

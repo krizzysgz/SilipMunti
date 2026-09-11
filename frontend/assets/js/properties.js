@@ -166,7 +166,10 @@ async function toggleFavorite(listingId, button) {
   }
 
   if (currentUser.role !== "renter") {
-    alert("Only renter accounts can save properties.");
+    await window.SilipModal.warning({
+      title: "Renter account required",
+      message: "Only renter accounts can save properties.",
+    });
 
     return;
   }
@@ -221,7 +224,10 @@ async function toggleFavorite(listingId, button) {
 
     updateFavoriteButton(button, normalizedListingId);
   } catch (error) {
-    alert(error.message || "Unable to update favorite.");
+    await window.SilipModal.error({
+      title: "Favorite not updated",
+      message: error.message || "Unable to update favorite.",
+    });
   } finally {
     button.disabled = false;
   }
@@ -726,7 +732,7 @@ async function loadProperties(scrollToResults = false) {
   }
 }
 
-filterForm.addEventListener("submit", (event) => {
+filterForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const minPrice = Number(minPriceInput.value || 0);
@@ -734,7 +740,10 @@ filterForm.addEventListener("submit", (event) => {
   const maxPrice = Number(maxPriceInput.value || 0);
 
   if (minPriceInput.value && maxPriceInput.value && minPrice > maxPrice) {
-    alert("Minimum price cannot be greater than maximum price.");
+    await window.SilipModal.warning({
+      title: "Invalid price range",
+      message: "Minimum price cannot be greater than maximum price.",
+    });
 
     return;
   }

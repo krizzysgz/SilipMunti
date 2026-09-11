@@ -993,7 +993,7 @@ async function changeInquiryStatus(status) {
   }
 }
 
-function toggleInquiryStatus() {
+async function toggleInquiryStatus() {
   if (!activeInquiry) {
     return;
   }
@@ -1005,12 +1005,14 @@ function toggleInquiryStatus() {
     return;
   }
 
-  const shouldClose = window.confirm(
-    "Close this inquiry? The conversation history will remain available.",
-  );
+  const shouldClose = await window.SilipModal.confirm({
+    title: "Close this inquiry?",
+    message: "The conversation history will remain available after closing.",
+    confirmText: "Close inquiry",
+  });
 
   if (shouldClose) {
-    changeInquiryStatus("closed");
+    await changeInquiryStatus("closed");
   }
 }
 

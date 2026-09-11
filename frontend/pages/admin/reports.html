@@ -14,17 +14,19 @@
     />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/admin-reports.css?v=2"
-    />
-    <link
-      rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/admin-reports-print.css?v=2"
-      media="print"
+      href="/SilipMunti/frontend/assets/css/admin-reports.css?v=5"
     />
     <link
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/responsive.css?v=2"
     />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/admin-reports-print.css?v=6"
+      media="print"
+    />
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/system-modal.css?v=1" />
+    <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
   </head>
 
   <body>
@@ -77,7 +79,7 @@
               />
               <div>
                 <span>Administrative Analytics</span>
-                <h1>SilipMunti Performance Report</h1>
+                <h1 id="print-report-title">SilipMunti Performance Report</h1>
               </div>
             </div>
             <dl class="report-print-meta">
@@ -100,6 +102,33 @@
             </dl>
           </header>
 
+          <section class="report-print-summary" aria-label="Executive summary">
+            <div class="report-print-section-heading">
+              <span>Executive summary</span>
+              <h2 id="print-summary-title">Platform performance overview</h2>
+              <p id="print-executive-summary">
+                This report summarizes platform activity, rental supply, service
+                performance, verification operations, and renter feedback for
+                the selected reporting period.
+              </p>
+            </div>
+            <table class="report-print-kpi-table">
+              <thead>
+                <tr>
+                  <th>Management indicator</th>
+                  <th>Result</th>
+                  <th>Interpretation</th>
+                </tr>
+              </thead>
+              <tbody id="print-kpi-table-body"></tbody>
+            </table>
+            <p class="report-print-method-note">
+              Current-supply and pending-backlog indicators reflect the system
+              status when the report was generated. Period activity follows the
+              selected date range and scope.
+            </p>
+          </section>
+
           <div class="admin-page-header report-screen-only">
             <div>
               <span class="admin-eyebrow">Decision intelligence</span>
@@ -113,16 +142,44 @@
               <button type="button" class="report-button" id="refresh-report">
                 Refresh
               </button>
-              <button type="button" class="report-button" id="export-csv">
-                Export CSV
+              <button type="button" class="report-button" id="export-excel">
+                Export Excel
               </button>
-              <button
-                type="button"
-                class="report-button primary"
-                id="print-report"
-              >
-                Print / Save PDF
-              </button>
+              <div class="report-pdf-export">
+                <select
+                  id="report-pdf-scope"
+                  aria-label="Select report to download"
+                >
+                  <option value="full">Full performance report</option>
+                  <option value="executive">
+                    Executive summary and actions
+                  </option>
+                  <option value="activity">Activity and listing health</option>
+                  <option value="demand">Rental demand and supply</option>
+                  <option value="listings">Listing performance</option>
+                  <option value="operations">
+                    Inquiry and verification operations
+                  </option>
+                  <option value="landlords">Landlord performance</option>
+                  <option value="reviews">
+                    Customer reviews and experience
+                  </option>
+                </select>
+                <button
+                  type="button"
+                  class="report-button"
+                  id="download-word-report"
+                >
+                  Download Word
+                </button>
+                <button
+                  type="button"
+                  class="report-button primary"
+                  id="print-report"
+                >
+                  Download PDF
+                </button>
+              </div>
             </div>
           </div>
 
@@ -158,13 +215,21 @@
                   <option value="">All rental types</option>
                 </select>
               </label>
-              <button type="submit" class="admin-primary-button">
-                Apply filters
-              </button>
+              <div
+                class="report-auto-update"
+                id="report-auto-update"
+                role="status"
+                aria-live="polite"
+              >
+                Updates automatically
+              </div>
             </form>
           </section>
 
-          <div class="admin-message hidden report-screen-only" id="report-message">
+          <div
+            class="admin-message hidden report-screen-only"
+            id="report-message"
+          >
             Message
           </div>
 
@@ -239,7 +304,7 @@
           </section>
 
           <section
-            class="report-two-column report-section"
+            class="report-two-column report-section report-trend-health-section"
             data-report-search="trend growth activity users listings inquiries reviews"
           >
             <article class="admin-panel report-chart-panel">
@@ -275,11 +340,26 @@
                   </div>
                 </div>
                 <dl class="report-stat-list">
-                  <div><dt>Available</dt><dd id="listing-available">—</dd></div>
-                  <div><dt>Occupied</dt><dd id="listing-occupied">—</dd></div>
-                  <div><dt>Without images</dt><dd id="listing-without-images">—</dd></div>
-                  <div><dt>Stale for 60+ days</dt><dd id="listing-stale">—</dd></div>
-                  <div><dt>Average price</dt><dd id="listing-average-price">—</dd></div>
+                  <div>
+                    <dt>Available</dt>
+                    <dd id="listing-available">—</dd>
+                  </div>
+                  <div>
+                    <dt>Occupied</dt>
+                    <dd id="listing-occupied">—</dd>
+                  </div>
+                  <div>
+                    <dt>Without images</dt>
+                    <dd id="listing-without-images">—</dd>
+                  </div>
+                  <div>
+                    <dt>Stale for 60+ days</dt>
+                    <dd id="listing-stale">—</dd>
+                  </div>
+                  <div>
+                    <dt>Average price</dt>
+                    <dd id="listing-average-price">—</dd>
+                  </div>
                 </dl>
               </div>
             </article>
@@ -294,7 +374,9 @@
                 <h2>Executive findings and recommended actions</h2>
                 <p>Priority signals that require an administrative decision.</p>
               </div>
-              <span class="report-status-pill" id="report-health-status">Assessing</span>
+              <span class="report-status-pill" id="report-health-status"
+                >Assessing</span
+              >
             </div>
             <div class="report-insights-grid" id="report-insights">
               <div class="report-empty-state">Analyzing report data…</div>
@@ -302,13 +384,15 @@
           </section>
 
           <section
-            class="admin-panel report-section"
+            class="admin-panel report-section report-demand-section"
             data-report-search="demand supply barangay location price gap"
           >
             <div class="admin-panel-header">
               <div>
                 <h2>Rental demand and supply gap</h2>
-                <p>Interest compared with available listings in each barangay.</p>
+                <p>
+                  Interest compared with available listings in each barangay.
+                </p>
               </div>
             </div>
             <div class="demand-visual" id="demand-visual"></div>
@@ -326,14 +410,18 @@
                   </tr>
                 </thead>
                 <tbody id="demand-table-body">
-                  <tr><td colspan="7" class="admin-table-message">Loading demand data…</td></tr>
+                  <tr>
+                    <td colspan="7" class="admin-table-message">
+                      Loading demand data…
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </section>
 
           <section
-            class="admin-panel report-section"
+            class="admin-panel report-section report-listing-section"
             data-report-search="listing performance engagement favorites inquiries ratings"
           >
             <div class="admin-panel-header">
@@ -357,13 +445,20 @@
                   </tr>
                 </thead>
                 <tbody id="listing-performance-body">
-                  <tr><td colspan="8" class="admin-table-message">Loading listing performance…</td></tr>
+                  <tr>
+                    <td colspan="8" class="admin-table-message">
+                      Loading listing performance…
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </section>
 
-          <section class="report-two-column report-section" data-report-search="inquiries verification operations response backlog">
+          <section
+            class="report-two-column report-section report-operations-section"
+            data-report-search="inquiries verification operations response backlog"
+          >
             <article class="admin-panel report-metric-panel">
               <div class="admin-panel-header">
                 <div>
@@ -381,19 +476,24 @@
                   <p>Document review throughput and current backlog.</p>
                 </div>
               </div>
-              <dl class="report-stat-list large" id="verification-stat-list"></dl>
+              <dl
+                class="report-stat-list large"
+                id="verification-stat-list"
+              ></dl>
               <div class="report-reason-list" id="verification-reasons"></div>
             </article>
           </section>
 
           <section
-            class="admin-panel report-section"
+            class="admin-panel report-section report-landlord-section"
             data-report-search="landlord performance response ratings verified listings"
           >
             <div class="admin-panel-header">
               <div>
                 <h2>Landlord performance</h2>
-                <p>Responsiveness, verification, listings, and renter ratings.</p>
+                <p>
+                  Responsiveness, verification, listings, and renter ratings.
+                </p>
               </div>
             </div>
             <div class="admin-table-wrapper report-table-wrapper">
@@ -410,7 +510,11 @@
                   </tr>
                 </thead>
                 <tbody id="landlord-performance-body">
-                  <tr><td colspan="7" class="admin-table-message">Loading landlord performance…</td></tr>
+                  <tr>
+                    <td colspan="7" class="admin-table-message">
+                      Loading landlord performance…
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -423,9 +527,13 @@
             <div class="admin-panel-header">
               <div>
                 <h2>Customer reviews and experience</h2>
-                <p>Published renter feedback used to explain performance results.</p>
+                <p>
+                  Published renter feedback used to explain performance results.
+                </p>
               </div>
-              <span class="report-rating-badge" id="review-average-badge">—</span>
+              <span class="report-rating-badge" id="review-average-badge"
+                >—</span
+              >
             </div>
             <div class="review-insight-layout">
               <div class="review-rating-panel">
@@ -460,7 +568,11 @@
                   </tr>
                 </thead>
                 <tbody id="negative-review-body">
-                  <tr><td colspan="5" class="admin-table-message">Loading customer feedback…</td></tr>
+                  <tr>
+                    <td colspan="5" class="admin-table-message">
+                      Loading customer feedback…
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -476,6 +588,8 @@
 
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=5"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-reports.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-report-workbook.js?v=1"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-report-document.js?v=1"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-reports.js?v=6"></script>
   </body>
 </html>

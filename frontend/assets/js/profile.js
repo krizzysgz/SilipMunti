@@ -449,9 +449,11 @@ async function uploadProfilePicture() {
 }
 
 async function removeProfilePicture() {
-  const confirmed = window.confirm(
-    "Do you want to remove your profile picture?",
-  );
+  const confirmed = await window.SilipModal.confirm({
+    title: "Remove profile picture?",
+    message: "Your account will use the default profile image.",
+    confirmText: "Remove picture",
+  });
 
   if (!confirmed) {
     return;
