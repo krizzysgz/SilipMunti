@@ -31,19 +31,19 @@
 
 .notification-count {
   position: absolute;
-  top: 1px;
-  right: 0;
-  display: grid;
-  min-width: 18px;
-  height: 18px;
+  top: -8px;
+  right: -11px;
+  min-width: 19px;
+  height: 19px;
   padding: 0 5px;
-  place-items: center;
-  color: #ffffff;
-  background: #e53935;
   border: 2px solid #ffffff;
-  border-radius: 10px;
-  font-size: 9px;
+  border-radius: 999px;
+  background: #f9d84a;
+  color: #112bc1;
+  font-size: 10px;
   font-weight: 700;
+  line-height: 15px;
+  text-align: center;
 }
 
 .notification-dropdown {
