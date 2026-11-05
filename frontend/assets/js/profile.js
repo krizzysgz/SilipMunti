@@ -92,6 +92,43 @@ const savePasswordButton = document.querySelector("#save-password-button");
 
 let currentUser = null;
 
+// ===== NEW: Password requirements (pareho ng sa registration) =====
+const passwordRequirementRules = [
+  { id: "req-length", test: (value) => value.length >= 8 },
+  { id: "req-upper", test: (value) => /[A-Z]/.test(value) },
+  { id: "req-lower", test: (value) => /[a-z]/.test(value) },
+  { id: "req-number", test: (value) => /[0-9]/.test(value) },
+  { id: "req-symbol", test: (value) => /[\W_]/.test(value) },
+];
+
+function passwordMeetsRequirements(value) {
+  return passwordRequirementRules.every((rule) => rule.test(value));
+}
+
+function updatePasswordRequirements() {
+  const value = newPasswordInput.value;
+
+  passwordRequirementRules.forEach(({ id, test }) => {
+    const item = document.getElementById(id);
+
+    if (!item) {
+      return;
+    }
+
+    const passed = test(value);
+
+    const icon = item.querySelector("i");
+
+    item.classList.toggle("valid", passed);
+
+    if (icon) {
+      icon.className = passed
+        ? "fa-solid fa-circle-check"
+        : "fa-solid fa-circle-xmark";
+    }
+  });
+}
+
 function getProfilePictureUrl(path) {
   if (!path) {
     return DEFAULT_PROFILE_PICTURE;
@@ -515,6 +552,8 @@ function openPasswordModal() {
 
   hideFormMessage(passwordFormMessage);
 
+  updatePasswordRequirements(); // NEW
+
   passwordModal.classList.remove("hidden");
 
   document.body.classList.add("modal-open");
@@ -534,6 +573,8 @@ function closePasswordModal() {
   clearFieldErrors(passwordForm);
 
   hideFormMessage(passwordFormMessage);
+
+  updatePasswordRequirements(); // NEW
 }
 
 async function changePassword(event) {
@@ -561,6 +602,12 @@ async function changePassword(event) {
     errors.new_password = "New password is required.";
   } else if (passwordData.new_password.length < 8) {
     errors.new_password = "New password must contain at least 8 characters.";
+  } else if (passwordData.new_password.length > 255) {
+    errors.new_password = "New password is too long.";
+  } else if (!passwordMeetsRequirements(passwordData.new_password)) {
+    // NEW
+    errors.new_password =
+      "Password must include an uppercase letter, a lowercase letter, a number, and a special character.";
   }
 
   if (passwordData.confirm_password === "") {
@@ -603,6 +650,8 @@ async function changePassword(event) {
     }
 
     passwordForm.reset();
+
+    updatePasswordRequirements(); // NEW
 
     showFormMessage(
       passwordFormMessage,
@@ -712,6 +761,9 @@ passwordModal.addEventListener("click", (event) => {
 });
 
 passwordForm.addEventListener("submit", changePassword);
+
+// NEW: live na pag-update ng checklist habang nagta-type
+newPasswordInput.addEventListener("input", updatePasswordRequirements);
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && !passwordModal.classList.contains("hidden")) {

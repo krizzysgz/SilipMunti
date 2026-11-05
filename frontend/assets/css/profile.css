@@ -1391,3 +1391,69 @@ body {
     padding: 25px 18px 20px;
   }
 }
+/* =====================================================
+   Password requirements checklist (Change Password modal)
+   Idikit sa PINAKADULO ng profile.css
+   Gumagamit ng theme variables mo (--blue-soft, --border, --success, --danger)
+   ===================================================== */
+
+.password-requirements {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin: 2px 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--blue-soft);
+  color: var(--muted);
+  font-size: 11px;
+  text-align: left;
+}
+
+.password-requirements span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: color 0.2s ease;
+}
+
+.password-requirements i {
+  flex-shrink: 0;
+  color: var(--danger);
+  font-size: 12px;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.password-requirements span.valid {
+  color: var(--success);
+}
+
+.password-requirements span.valid i {
+  color: var(--success);
+  transform: scale(1.15);
+}
+
+@media (max-width: 480px) {
+  .password-requirements {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===== Itago ang built-in na eye icon ng Edge/Chromium ===== */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+}
+
+/* Ayusin ang alignment ng checklist sa forgot password (naka-center kasi ang .otp-panel) */
+#reset-panel .password-requirements {
+  text-align: left;
+}

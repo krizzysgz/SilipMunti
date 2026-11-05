@@ -1232,131 +1232,155 @@ main {
   text-transform: uppercase;
 }
 
+/* --- BAGONG LANDLORD CARD DESIGN START --- */
+
 .home-landlord-card {
   position: relative;
-  min-height: 505px;
-  display: grid;
-  grid-template-rows: 270px 1fr;
-  padding: 11px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
   overflow: hidden;
-  border: 1px solid #2846ce;
+  /* Manipis at neutral na border */
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
-  color: #000000;
+  color: #0f172a;
   background: #ffffff;
-  box-shadow: 0 14px 34px rgb(17 43 193 / 18%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+  padding: 0; /* Tanggalin ang padding sa labas */
 }
 
+/* Seryosong hover effect: subtle lift at shadow, walang kulay */
+.home-landlord-card:hover {
+  transform: translateY(-4px);
+  border-color: #cbd5e1;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* Image Section - Sagad hanggang gilid */
+/* Image Section - Sagad hanggang gilid */
 .home-landlord-photo {
   position: relative;
+  width: 100%;
+  height: 320px; /* Pinalaki ang height para makita ang buong picture */
   overflow: hidden;
-  border-radius: 13px;
-  background: #20283d;
+  background: #f8fafc;
+  border-radius: 16px 16px 0 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .home-landlord-photo::before {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  background: linear-gradient(to top, rgb(5 10 24 / 34%), transparent 38%);
-  content: "";
-  pointer-events: none;
+  display: none;
 }
 
+/* Fallback kapag walang picture */
 .home-landlord-monogram {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
   color: #ffffff;
-  background: linear-gradient(135deg, #102aaf, #345be7);
-  font-size: 64px;
-  font-weight: 800;
+  background: #334155; /* Professional slate gray, hindi masyadong maliwanag */
+  font-size: 56px;
+  font-weight: 600;
 }
 
+/* Image handling */
 .home-landlord-photo img {
   position: relative;
   z-index: 1;
   width: 100%;
   height: 100%;
   display: block;
-  background: #e8ebf4;
   object-fit: cover;
   object-position: center top;
-}
-
-.home-landlord-badge {
-  flex: 0 0 auto;
-  display: inline-grid;
-  place-items: center;
-  color: #0036da;
-  font-size: 13px;
-}
-
-.home-landlord-badge.is-fully-verified {
-  color: #ffcc00;
+  color: transparent;
 }
 
 .home-landlord-info {
   display: flex;
   flex-direction: column;
-  padding: 13px 4px 2px;
+  flex: 1;
+  padding: 16px 20px 20px; /* Bahagyang binawasan ang space sa taas */
 }
 
 .home-landlord-name-row {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .home-landlord-name-row > strong {
   min-width: 0;
   display: block;
   overflow: hidden;
-  color: #000000;
-  font-size: 15px;
-  font-weight: 800;
-  line-height: 1.3;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700; /* Standard bold, hindi black */
+  line-height: 1.4;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* Badge styling - Gagawa tayong maliit at subtle */
+.home-landlord-badge {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  color: #3b82f6; /* Standard blue check */
+  font-size: 14px;
+}
+
+.home-landlord-badge.is-fully-verified {
+  color: #3b82f6; /* Isang kulay na lang para professional */
+}
+
+/* Details (Location & Member Since) */
 .home-landlord-details {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 6px;
-  margin-top: 9px;
-  color: #19245b;
-  font-size: 10px;
-  font-weight: 600;
+  margin-top: 4px;
+  margin-bottom: 16px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .home-landlord-details span {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
 .home-landlord-details i {
-  width: 12px;
-  color: #f3ce35;
+  width: 14px;
+  color: #94a3b8; /* Gray icons */
   text-align: center;
 }
 
+/* Stats Section */
 .home-landlord-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 13px;
-  padding: 10px 0;
-  border-top: 1px solid rgb(255 255 255 / 18%);
-  border-bottom: 1px solid rgb(255 255 255 / 18%);
+  grid-template-columns: repeat(3, 1fr);
+  padding: 14px 0;
+  margin-top: auto;
+  margin-bottom: 16px;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .home-landlord-stats > span {
   min-width: 0;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 2px;
-  place-items: center;
-  border-right: 1px solid rgb(255 255 255 / 18%);
-  text-align: center;
+  border-right: 1px solid #e2e8f0;
 }
 
 .home-landlord-stats > span:last-child {
@@ -1366,98 +1390,56 @@ main {
 .home-landlord-stats strong {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  color: #000000;
-  font-size: 12px;
-  font-weight: 800;
+  gap: 4px;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .home-landlord-stats strong i {
-  color: #f3ce35;
-  font-size: 10px;
+  color: #eab308; /* Standard yellow star */
+  font-size: 12px;
 }
 
 .home-landlord-stats small {
   overflow: hidden;
-  color: #06176d;
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   text-overflow: ellipsis;
-  text-transform: uppercase;
+  text-transform: capitalize;
   white-space: nowrap;
 }
 
+/* Action Button */
 .home-landlord-actions {
   display: block;
   margin-top: auto;
-  padding-top: 11px;
 }
 
 .home-landlord-link {
-  display: grid;
-  place-items: center;
-  border-radius: 11px;
-}
-
-.home-landlord-link {
-  grid-template-columns: auto auto;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 8px;
+  width: 100%;
   min-height: 40px;
-  color: #101521;
-  background: #f3ce35;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  transition:
-    transform 0.25s ease,
-    background 0.25s ease;
+  border-radius: 8px; /* Standard corporate radius */
+  color: #ffffff;
+  background: #1e293b; /* Dark slate, hindi pure black */
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: background 0.2s ease;
 }
 
 .home-landlord-card:hover .home-landlord-link {
-  background: #ffdc45;
+  background: #0f172a; /* Mas madilim ng konti on hover */
 }
 
-.landlord-empty-state {
-  grid-column: 1 / -1;
-  display: grid;
-  min-height: 190px;
-  place-items: center;
-  align-content: center;
-  gap: 8px;
-  padding: 28px;
-  border: 1px dashed #cbd3f7;
-  border-radius: 16px;
-  color: #6b7180;
-  background: #f8f9ff;
-  text-align: center;
-}
-
-.landlord-showcase-section .landlord-empty-state {
-  border-color: #bdc7ee;
-  color: #666b78;
-  background: #ffffff;
-}
-
-.landlord-showcase-section .landlord-empty-state i,
-.landlord-showcase-section .landlord-empty-state strong {
-  color: #112bc1;
-}
-
-.landlord-empty-state i {
-  color: #112bc1;
-  font-size: 28px;
-}
-
-.landlord-empty-state strong {
-  color: #202431;
-}
-
-.landlord-empty-state span {
-  font-size: 13px;
-}
+/* --- BAGONG LANDLORD CARD DESIGN END --- */
 
 .reviews-section {
   overflow: hidden;

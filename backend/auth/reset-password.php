@@ -2,10 +2,11 @@
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
+header('X-Content-Type-Options: nosniff');
 
 require_once __DIR__ . '/../config/database.php';
 
-function password_reset_invalid_response(): never
+function password_reset_session_invalid(): never
 {
     usleep(random_int(120000, 240000));
 
@@ -13,9 +14,10 @@ function password_reset_invalid_response(): never
 
     echo json_encode([
         'success' => false,
-        'message' => 'The verification code is invalid or expired.',
-        'errors' => [
-            'otp' => 'Enter a valid, unexpired verification code.'
+        'message' =>
+            'Your verification expired. Please request a new code.',
+        'data' => [
+            'restart' => true
         ]
     ]);
 
@@ -43,7 +45,7 @@ if (!is_array($data)) {
 }
 
 $email = strtolower(trim($data['email'] ?? ''));
-$otp = trim((string) ($data['otp'] ?? ''));
+$resetToken = trim((string) ($data['reset_token'] ?? ''));
 $newPassword = $data['new_password'] ?? '';
 $confirmPassword = $data['confirm_password'] ?? '';
 
@@ -57,13 +59,6 @@ if ($email === '') {
     $errors['email'] = 'Email address is invalid.';
 }
 
-if ($otp === '') {
-    $errors['otp'] = 'Verification code is required.';
-} elseif (!preg_match('/^\d{6}$/', $otp)) {
-    $errors['otp'] =
-        'Verification code must contain exactly six digits.';
-}
-
 if ($newPassword === '') {
     $errors['new_password'] = 'New password is required.';
 } elseif (strlen($newPassword) < 8) {
@@ -71,6 +66,14 @@ if ($newPassword === '') {
         'New password must contain at least 8 characters.';
 } elseif (strlen($newPassword) > 255) {
     $errors['new_password'] = 'New password is too long.';
+} elseif (
+    !preg_match('/[A-Z]/', $newPassword) ||
+    !preg_match('/[a-z]/', $newPassword) ||
+    !preg_match('/[0-9]/', $newPassword) ||
+    !preg_match('/[\W_]/', $newPassword)
+) {
+    $errors['new_password'] =
+        'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.';
 }
 
 if ($confirmPassword === '') {
@@ -91,6 +94,11 @@ if ($errors !== []) {
     ]);
 
     exit;
+}
+
+// Walang saysay na mag-query kung mali na ang itsura ng token.
+if (!preg_match('/^[a-f0-9]{64}$/', $resetToken)) {
+    password_reset_session_invalid();
 }
 
 try {
@@ -115,15 +123,13 @@ try {
 
     if (!$user) {
         $pdo->commit();
-        password_reset_invalid_response();
+        password_reset_session_invalid();
     }
 
     $getOtp = $pdo->prepare('
         SELECT
             id,
-            otp_hash,
-            attempts,
-            expires_at,
+            reset_token_hash,
             expires_at <= NOW() AS is_expired
         FROM password_reset_otps
         WHERE email = :email
@@ -137,72 +143,41 @@ try {
 
     $otpRecord = $getOtp->fetch();
 
-    if (!$otpRecord) {
+    // Walang record, hindi pa na-verify ang code, o expired na.
+    if (
+        !$otpRecord
+        || $otpRecord['reset_token_hash'] === null
+    ) {
         $pdo->commit();
-        password_reset_invalid_response();
+        password_reset_session_invalid();
     }
 
     if ((int) $otpRecord['is_expired'] === 1) {
-        $deleteExpiredOtp = $pdo->prepare('
+        $deleteExpired = $pdo->prepare('
             DELETE FROM password_reset_otps
             WHERE id = :otp_id
         ');
 
-        $deleteExpiredOtp->execute([
+        $deleteExpired->execute([
             'otp_id' => $otpRecord['id']
         ]);
 
         $pdo->commit();
-        password_reset_invalid_response();
+        password_reset_session_invalid();
     }
 
-    if ((int) $otpRecord['attempts'] >= 5) {
-        $deleteLockedOtp = $pdo->prepare('
-            DELETE FROM password_reset_otps
-            WHERE id = :otp_id
-        ');
-
-        $deleteLockedOtp->execute([
-            'otp_id' => $otpRecord['id']
-        ]);
-
+    if (
+        !hash_equals(
+            (string) $otpRecord['reset_token_hash'],
+            hash('sha256', $resetToken)
+        )
+    ) {
         $pdo->commit();
-        password_reset_invalid_response();
-    }
-
-    if (!password_verify($otp, $otpRecord['otp_hash'])) {
-        $newAttemptCount =
-            (int) $otpRecord['attempts'] + 1;
-
-        if ($newAttemptCount >= 5) {
-            $deleteOtp = $pdo->prepare('
-                DELETE FROM password_reset_otps
-                WHERE id = :otp_id
-            ');
-
-            $deleteOtp->execute([
-                'otp_id' => $otpRecord['id']
-            ]);
-        } else {
-            $updateAttempts = $pdo->prepare('
-                UPDATE password_reset_otps
-                SET
-                    attempts = :attempts,
-                    updated_at = NOW()
-                WHERE id = :otp_id
-            ');
-
-            $updateAttempts->execute([
-                'attempts' => $newAttemptCount,
-                'otp_id' => $otpRecord['id']
-            ]);
-        }
-
-        $pdo->commit();
-        password_reset_invalid_response();
+        password_reset_session_invalid();
     }
 
     if (password_verify($newPassword, $user['password'])) {
+        // Hindi ginagalaw ang token para makapili ulit ng ibang password.
         $pdo->rollBack();
 
         http_response_code(422);

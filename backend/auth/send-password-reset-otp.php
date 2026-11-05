@@ -258,6 +258,7 @@ try {
         )
         ON DUPLICATE KEY UPDATE
             otp_hash = :replacement_otp_hash,
+            reset_token_hash = NULL,
             expires_at = DATE_ADD(NOW(), INTERVAL 10 MINUTE),
             attempts = 0,
             last_sent_at = NOW(),

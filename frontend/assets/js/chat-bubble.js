@@ -940,46 +940,65 @@
 
       messageElement.classList.toggle("mine", Boolean(message.is_mine));
 
-      const bubble = document.createElement("div");
+      const senderName =
+        message.sender_name || capitalize(message.sender_role) || "User";
 
-      bubble.className = "silip-mini-message-bubble";
+      // Wrapper holds label + quote + bubble so they stack vertically
+      const content = document.createElement("div");
+      content.className = "silip-mini-message-content";
 
-      const messageText = document.createElement("span");
-
-      messageText.className = "silip-mini-message-text";
-
-      messageText.textContent = message.message_text || "";
-
-      const messageTime = document.createElement("time");
-
-      messageTime.className = "silip-mini-message-time";
-
-      messageTime.textContent = formatMessageTime(message.created_at);
-
+      // Reply label + quote (Messenger style) — only if reply_to exists
       if (message.reply_to) {
+        const originalSenderName = message.reply_to.sender_name || "a message";
+
+        const replyLabel = document.createElement("div");
+        replyLabel.className = "silip-mini-reply-label";
+
+        const labelIcon = document.createElement("i");
+        labelIcon.className = "fa-solid fa-reply";
+
+        const labelText = document.createElement("span");
+        labelText.textContent = `${senderName} replied to ${originalSenderName}`;
+
+        replyLabel.appendChild(labelIcon);
+        replyLabel.appendChild(labelText);
+
         const quote = document.createElement("button");
         quote.className = "silip-mini-reply-quote";
         quote.type = "button";
         quote.dataset.targetMessageId = message.reply_to.id;
 
-        const quoteName = document.createElement("strong");
-        quoteName.textContent = message.reply_to.sender_name || "Message";
-
         const quoteText = document.createElement("span");
         quoteText.textContent =
           message.reply_to.message_text || "Message unavailable";
 
-        quote.appendChild(quoteName);
         quote.appendChild(quoteText);
         quote.addEventListener("click", () => {
           scrollToMiniMessage(message.reply_to.id);
         });
-        bubble.appendChild(quote);
+
+        content.appendChild(replyLabel);
+        content.appendChild(quote);
       }
+
+      // Actual reply bubble
+      const bubble = document.createElement("div");
+      bubble.className = "silip-mini-message-bubble";
+
+      const messageText = document.createElement("span");
+      messageText.className = "silip-mini-message-text";
+      messageText.textContent = message.message_text || "";
+
+      const messageTime = document.createElement("time");
+      messageTime.className = "silip-mini-message-time";
+      messageTime.textContent = formatMessageTime(message.created_at);
 
       bubble.appendChild(messageText);
       bubble.appendChild(messageTime);
 
+      content.appendChild(bubble);
+
+      // Reply button (outside the content wrapper)
       const replyButton = document.createElement("button");
       replyButton.className = "silip-mini-reply-button";
       replyButton.type = "button";
@@ -988,7 +1007,7 @@
       replyButton.innerHTML = '<i class="fa-solid fa-reply"></i>';
       replyButton.addEventListener("click", () => startMiniReply(message));
 
-      messageElement.appendChild(bubble);
+      messageElement.appendChild(content);
       messageElement.appendChild(replyButton);
       container.appendChild(messageElement);
     });

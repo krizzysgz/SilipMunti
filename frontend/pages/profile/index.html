@@ -23,7 +23,12 @@
 
     <link rel="stylesheet" href="../../assets/css/global.css" />
 
-    <link rel="stylesheet" href="../../assets/css/profile.css" />
+    <link rel="stylesheet" href="../../assets/css/profile.css?v=2" />
+    <!-- NEW: checklist CSS (ilagay ang profile-password-checklist.css sa assets/css/) -->
+    <link
+      rel="stylesheet"
+      href="../../assets/css/profile-password-checklist.css?v=1"
+    />
     <link
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/chat-bubble.css"
@@ -482,6 +487,26 @@
             <span class="field-error" data-error-for="confirm_password"></span>
           </div>
 
+          <!-- NEW: Password requirements checklist -->
+          <div class="password-requirements" id="password-requirements">
+            <span id="req-length"
+              ><i class="fa-solid fa-circle-xmark"></i> At least 8
+              characters</span
+            >
+            <span id="req-upper"
+              ><i class="fa-solid fa-circle-xmark"></i> Uppercase (A-Z)</span
+            >
+            <span id="req-lower"
+              ><i class="fa-solid fa-circle-xmark"></i> Lowercase (a-z)</span
+            >
+            <span id="req-number"
+              ><i class="fa-solid fa-circle-xmark"></i> Number (0-9)</span
+            >
+            <span id="req-symbol"
+              ><i class="fa-solid fa-circle-xmark"></i> Special character</span
+            >
+          </div>
+
           <div
             class="form-message hidden"
             id="password-form-message"
@@ -502,7 +527,8 @@
 
     <script src="../../assets/js/session.js?v=4"></script>
 
-    <script src="../../assets/js/profile.js?v=2"></script>
+    <!-- CHANGED: v=2 -> v=3 -->
+    <script src="../../assets/js/profile.js?v=3"></script>
     <script src="/SilipMunti/frontend/assets/js/chat-bubble.js?v=2"></script>
   </body>
 </html>

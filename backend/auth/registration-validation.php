@@ -49,13 +49,21 @@ function validate_registration_data(array $data): array
             'Phone number must not exceed 30 characters.';
     }
 
-    if ($values['password'] === '') {
+        if ($values['password'] === '') {
         $errors['password'] = 'Password is required.';
     } elseif (strlen($values['password']) < 8) {
         $errors['password'] =
             'Password must contain at least 8 characters.';
     } elseif (strlen($values['password']) > 255) {
         $errors['password'] = 'Password is too long.';
+    } elseif (
+        !preg_match('/[A-Z]/', $values['password']) ||
+        !preg_match('/[a-z]/', $values['password']) ||
+        !preg_match('/[0-9]/', $values['password']) ||
+        !preg_match('/[\W_]/', $values['password'])
+    ) {
+        $errors['password'] =
+            'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.';
     }
 
     if ($values['confirm_password'] === '') {

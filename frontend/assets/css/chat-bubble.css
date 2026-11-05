@@ -501,18 +501,98 @@
   scrollbar-width: thin;
 }
 
+/* Message row: holds content wrapper + reply button */
 .silip-mini-message {
+  position: relative;
   display: flex;
-  max-width: 80%;
-  margin-bottom: 9px;
+  max-width: 85%;
+  margin-bottom: 11px;
+  align-items: flex-end;
+  gap: 5px;
 }
 
 .silip-mini-message.mine {
   margin-left: auto;
-  justify-content: flex-end;
+  flex-direction: row-reverse;
 }
 
+/* Content wrapper: holds label + quote + bubble, stacked vertically */
+.silip-mini-message-content {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.silip-mini-message.mine .silip-mini-message-content {
+  align-items: flex-end;
+}
+
+/* Reply label: "↩ Name replied to Name" */
+.silip-mini-reply-label {
+  display: flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 3px 2px;
+  color: #90949c;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.silip-mini-reply-label i {
+  font-size: 9px;
+  transform: scaleX(-1);
+  opacity: 0.6;
+}
+
+.silip-mini-reply-label span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.silip-mini-message.mine .silip-mini-reply-label {
+  margin-right: 2px;
+  margin-left: 0;
+}
+
+/* Quoted message bubble */
+.silip-mini-reply-quote {
+  display: block;
+  max-width: 100%;
+  margin: 0 0 3px;
+  padding: 6px 10px;
+  overflow: hidden;
+  text-align: left;
+  color: #8a8d91;
+  background: #ebedf0;
+  border: 0;
+  border-radius: 13px;
+  cursor: pointer;
+  font-size: 10px;
+  line-height: 1.35;
+  transition: background-color 0.16s ease;
+}
+
+.silip-mini-reply-quote:hover {
+  background: #e1e4e8;
+}
+
+.silip-mini-reply-quote span {
+  display: block;
+  overflow: hidden;
+  font-size: 10px;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Main reply bubble */
 .silip-mini-message-bubble {
+  max-width: 100%;
   padding: 8px 11px;
   color: var(--chat-text);
   background: #edf0f5;
@@ -529,10 +609,27 @@
   border-radius: 15px 15px 5px 15px;
 }
 
+.silip-mini-message-text {
+  display: block;
+  white-space: pre-wrap;
+}
+
+.silip-mini-message-time {
+  display: block;
+  margin-top: 3px;
+  color: #9a9faf;
+  font-size: 8px;
+}
+
+.silip-mini-message.mine .silip-mini-message-time {
+  text-align: right;
+}
+
+/* Reply button: absolute, sits beside the content wrapper */
 .silip-mini-reply-button {
-  width: 27px;
-  height: 27px;
-  flex: 0 0 27px;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
   align-self: center;
   color: #687083;
   background: transparent;
@@ -556,53 +653,7 @@
   background: #edf0ff;
 }
 
-.silip-mini-message.mine .silip-mini-reply-button {
-  order: -1;
-}
-
-.silip-mini-reply-quote {
-  display: block;
-  width: 100%;
-  margin: 0 0 6px;
-  padding: 6px 8px;
-  overflow: hidden;
-  text-align: left;
-  color: #31394a;
-  background: rgba(255, 255, 255, 0.78);
-  border: 0;
-  border-left: 3px solid var(--chat-yellow);
-  border-radius: 7px;
-  cursor: pointer;
-}
-
-.silip-mini-message.mine .silip-mini-reply-quote {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.silip-mini-reply-quote strong,
-.silip-mini-reply-quote span {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.silip-mini-reply-quote strong {
-  margin-bottom: 2px;
-  font-size: 9px;
-}
-
-.silip-mini-reply-quote span {
-  opacity: 0.82;
-  font-size: 9px;
-}
-
-.silip-mini-message-text {
-  display: block;
-  white-space: pre-wrap;
-}
-
+/* Highlight animation */
 .silip-mini-message-highlight .silip-mini-message-bubble {
   animation: silip-mini-highlight 1.6s ease;
 }
@@ -618,17 +669,6 @@
   }
 }
 
-.silip-mini-message-time {
-  display: block;
-  margin-top: 3px;
-  color: #9a9faf;
-  font-size: 8px;
-}
-
-.silip-mini-message.mine .silip-mini-message-time {
-  text-align: right;
-}
-
 .silip-mini-composer {
   display: flex;
   min-height: 61px;
@@ -636,7 +676,7 @@
   align-items: flex-end;
   gap: 8px;
   border-top: 1px solid var(--chat-border);
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; — removed so textarea + button stay on one line */
 }
 
 .silip-mini-reply-preview {
@@ -649,6 +689,11 @@
   background: #f5f6fa;
   border-left: 3px solid var(--chat-blue);
   border-radius: 7px;
+}
+
+/* Keep reply preview on its own line (full width) */
+.silip-mini-composer:has(.silip-mini-reply-preview:not([hidden])) {
+  flex-wrap: wrap;
 }
 
 .silip-mini-reply-preview[hidden] {
@@ -690,7 +735,9 @@
 }
 
 .silip-mini-composer textarea {
-  width: 100%;
+  width: auto;
+  min-width: 0;
+  flex: 1;
   max-height: 85px;
   min-height: 41px;
   padding: 10px 14px;

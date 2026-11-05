@@ -47,6 +47,41 @@ let resendTurnstileToken = "";
 let registrationTurnstileWidgetId = null;
 let resendTurnstileWidgetId = null;
 
+// --- PASSWORD STRENGTH CHECKER START ---
+function validatePasswordStrength(password) {
+  const reqs = {
+    length: password.length >= 8,
+    upper: /[A-Z]/.test(password),
+    lower: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    symbol: /[\W_]/.test(password),
+  };
+
+  const reqElements = {
+    length: document.getElementById("req-length"),
+    upper: document.getElementById("req-upper"),
+    lower: document.getElementById("req-lower"),
+    number: document.getElementById("req-number"),
+    symbol: document.getElementById("req-symbol"),
+  };
+
+  const iconValid =
+    '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i>';
+  const iconInvalid =
+    '<i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i>';
+
+  for (const key in reqs) {
+    if (reqElements[key]) {
+      const text = reqElements[key].innerText.replace(/^[^\s]+\s/, "");
+      reqElements[key].innerHTML =
+        `${reqs[key] ? iconValid : iconInvalid} ${text}`;
+    }
+  }
+
+  return reqs.length && reqs.upper && reqs.lower && reqs.number && reqs.symbol;
+}
+// --- PASSWORD STRENGTH CHECKER END ---
+
 function showMessage(message, type) {
   formMessage.textContent = message;
   formMessage.className = `form-message ${type}`;
@@ -438,6 +473,11 @@ document.querySelectorAll("[data-password-target]").forEach((button) => {
   });
 });
 
+// Live password validation habang nagta-type
+passwordInput.addEventListener("input", (e) => {
+  validatePasswordStrength(e.target.value);
+});
+
 otpInput.addEventListener("input", () => {
   otpInput.value = otpInput.value.replace(/\D/g, "").slice(0, 6);
 });
@@ -448,6 +488,14 @@ registerForm.addEventListener("submit", async (event) => {
   hideMessage();
 
   const registrationData = getRegistrationData();
+
+  // Check password strength bago mag-submit
+  if (!validatePasswordStrength(registrationData.password)) {
+    showFieldErrors({
+      password: "Please meet all password requirements.",
+    });
+    return;
+  }
 
   if (registrationData.password !== registrationData.confirm_password) {
     showFieldErrors({

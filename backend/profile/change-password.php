@@ -53,6 +53,44 @@ if (strlen($newPassword) < 8) {
     exit;
 }
 
+// NEW: maximum length (pareho ng sa registration)
+if (strlen($newPassword) > 255) {
+    http_response_code(422);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'New password is too long.',
+        'errors' => [
+            'new_password' => 'New password is too long.'
+        ]
+    ]);
+    exit;
+}
+
+// NEW: uppercase, lowercase, number at special character
+// (pareho ng rules sa registration at forgot password)
+if (
+    !preg_match('/[A-Z]/', $newPassword) ||
+    !preg_match('/[a-z]/', $newPassword) ||
+    !preg_match('/[0-9]/', $newPassword) ||
+    !preg_match('/[\W_]/', $newPassword)
+) {
+    $passwordRuleMessage =
+        'Password must include at least one uppercase letter, '
+        . 'one lowercase letter, one number, and one special character.';
+
+    http_response_code(422);
+
+    echo json_encode([
+        'success' => false,
+        'message' => $passwordRuleMessage,
+        'errors' => [
+            'new_password' => $passwordRuleMessage
+        ]
+    ]);
+    exit;
+}
+
 if ($newPassword !== $confirmPassword) {
     http_response_code(422);
 

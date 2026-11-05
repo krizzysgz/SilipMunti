@@ -30,12 +30,15 @@
       defer
     ></script>
 
-    <script src="../../assets/js/register.js?v=3" defer></script>
+    <script src="../../assets/js/register.js?v=4" defer></script>
     <link
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/responsive.css?v=1"
     />
-    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/system-modal.css?v=1" />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
+    />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
   </head>
 
@@ -180,13 +183,12 @@
                 </label>
               </fieldset>
 
+              <!-- Password at Confirm Password Row -->
               <div class="field-row">
                 <label class="form-field">
                   <span>Password</span>
-
                   <div class="input-group">
                     <i class="fa-solid fa-lock"></i>
-
                     <input
                       id="password"
                       name="password"
@@ -197,7 +199,6 @@
                       maxlength="255"
                       required
                     />
-
                     <button
                       class="password-toggle"
                       type="button"
@@ -207,16 +208,13 @@
                       <i class="fa-solid fa-eye"></i>
                     </button>
                   </div>
-
                   <small class="field-error" data-error-for="password"></small>
                 </label>
 
                 <label class="form-field">
                   <span>Confirm password</span>
-
                   <div class="input-group">
                     <i class="fa-solid fa-lock"></i>
-
                     <input
                       id="confirm-password"
                       name="confirm_password"
@@ -227,7 +225,6 @@
                       maxlength="255"
                       required
                     />
-
                     <button
                       class="password-toggle"
                       type="button"
@@ -237,12 +234,34 @@
                       <i class="fa-solid fa-eye"></i>
                     </button>
                   </div>
-
                   <small
                     class="field-error"
                     data-error-for="confirm_password"
                   ></small>
                 </label>
+              </div>
+
+              <!-- ILAGAY DITO SA LABAS: Password Requirements checklist -->
+              <div class="password-requirements" id="password-requirements">
+                <span id="req-length"
+                  ><i class="fa-solid fa-circle-xmark"></i> At least 8
+                  characters</span
+                >
+                <span id="req-upper"
+                  ><i class="fa-solid fa-circle-xmark"></i> Uppercase
+                  (A-Z)</span
+                >
+                <span id="req-lower"
+                  ><i class="fa-solid fa-circle-xmark"></i> Lowercase
+                  (a-z)</span
+                >
+                <span id="req-number"
+                  ><i class="fa-solid fa-circle-xmark"></i> Number (0-9)</span
+                >
+                <span id="req-symbol"
+                  ><i class="fa-solid fa-circle-xmark"></i> Special
+                  character</span
+                >
               </div>
 
               <label class="terms-option">

@@ -288,8 +288,8 @@ a {
   margin-top: 18px;
   padding: 22px;
   border-radius: 16px;
-  color: var(--legal-white);
-  background: var(--legal-blue-dark);
+  color: black;
+  /* background: var(--legal-blue-dark); */
 }
 
 .legal-contact-card strong {
@@ -300,7 +300,7 @@ a {
 
 .legal-contact-card p,
 .legal-contact-card a {
-  color: rgb(255 255 255 / 86%);
+  color: black;
 }
 
 .site-footer {
@@ -746,10 +746,10 @@ a {
 .legal-contact-card {
   overflow: hidden;
   border-radius: 10px;
-  background:
+  /* background:
     linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px) 0 0 /
       54px 54px,
-    var(--legal-blue-dark);
+    var(--legal-blue-dark); */
 }
 
 .legal-back-to-top {

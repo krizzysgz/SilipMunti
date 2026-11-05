@@ -723,6 +723,7 @@ function renderMessages(messages) {
     const fragment = messageTemplate.content.cloneNode(true);
     const row = fragment.querySelector(".message-row");
     const avatar = fragment.querySelector(".message-avatar");
+    const content = fragment.querySelector(".message-content");
     const sender = fragment.querySelector(".message-sender");
     const bubble = fragment.querySelector(".message-bubble");
     const time = fragment.querySelector(".message-time");
@@ -737,24 +738,41 @@ function renderMessages(messages) {
       DEFAULT_PROFILE,
     );
 
-    sender.textContent = message.sender_name || capitalize(message.sender_role);
+    const senderName = message.sender_name || capitalize(message.sender_role);
+
+    sender.textContent = senderName;
 
     if (message.reply_to) {
+      const originalSenderName = message.reply_to.sender_name || "a message";
+
+      // Reply label: "↩ Jane replied to Jasmine"
+      const replyLabel = document.createElement("div");
+      replyLabel.className = "message-reply-label";
+
+      const labelIcon = document.createElement("i");
+      labelIcon.className = "fa-solid fa-reply";
+
+      const labelText = document.createElement("span");
+      labelText.textContent = `${senderName} replied to ${originalSenderName}`;
+
+      replyLabel.appendChild(labelIcon);
+      replyLabel.appendChild(labelText);
+
+      // Quoted message: own muted bubble, outside the main bubble
       const quote = document.createElement("button");
       quote.className = "message-reply-quote";
       quote.type = "button";
       quote.dataset.targetMessageId = message.reply_to.id;
 
-      const quoteName = document.createElement("strong");
-      quoteName.textContent = message.reply_to.sender_name || "Message";
-
       const quoteText = document.createElement("span");
       quoteText.textContent =
         message.reply_to.message_text || "Message unavailable";
 
-      quote.appendChild(quoteName);
       quote.appendChild(quoteText);
-      bubble.appendChild(quote);
+
+      // Insert label + quote BEFORE the main bubble
+      content.insertBefore(replyLabel, bubble);
+      content.insertBefore(quote, bubble);
     }
 
     const messageText = document.createElement("span");

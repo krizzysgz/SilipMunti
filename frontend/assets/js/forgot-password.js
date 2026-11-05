@@ -3,22 +3,26 @@ const BASE_URL = "/SilipMunti";
 const TURNSTILE_CONFIG_ENDPOINT = `${BASE_URL}/backend/security/turnstile-config.php`;
 const SEND_RESET_CODE_ENDPOINT = `${BASE_URL}/backend/auth/send-password-reset-otp.php`;
 const RESET_PASSWORD_ENDPOINT = `${BASE_URL}/backend/auth/reset-password.php`;
+const VERIFY_RESET_CODE_ENDPOINT = `${BASE_URL}/backend/auth/verify-password-reset-otp.php`;
 
 const emailPanel = document.querySelector("#email-panel");
 const resetPanel = document.querySelector("#reset-panel");
 const successPanel = document.querySelector("#success-panel");
 const emailForm = document.querySelector("#email-form");
+const verifyPanel = document.querySelector("#verify-panel");
+const verifyForm = document.querySelector("#verify-form");
 const resetForm = document.querySelector("#reset-form");
 const emailInput = document.querySelector("#email");
 const otpInput = document.querySelector("#otp");
 const newPasswordInput = document.querySelector("#new-password");
 const confirmPasswordInput = document.querySelector("#confirm-password");
 const sendCodeButton = document.querySelector("#send-code-button");
+const verifyCodeButton = document.querySelector("#verify-code-button");
 const resetPasswordButton = document.querySelector("#reset-password-button");
 const resendCodeButton = document.querySelector("#resend-code-button");
 const changeEmailButton = document.querySelector("#change-email-button");
 const formMessage = document.querySelector("#form-message");
-const resetEmailElement = document.querySelector("#reset-email");
+const resetEmailElement = document.querySelector("#verify-email");
 const pageTitle = document.querySelector("#page-title");
 const pageDescription = document.querySelector("#page-description");
 const signinLink = document.querySelector("#signin-link");
@@ -37,6 +41,7 @@ const resendTurnstileError = document.querySelector(
 );
 
 let resetEmail = "";
+let resetToken = "";
 let resendTimer = null;
 let resendSeconds = 0;
 let sendRequestLoading = false;
@@ -388,36 +393,53 @@ async function initializeTurnstile() {
   }
 }
 
+function showOnlyPanel(panelToShow) {
+  [emailPanel, verifyPanel, resetPanel, successPanel].forEach((panel) => {
+    panel.classList.toggle("hidden", panel !== panelToShow);
+  });
+}
+
+// STEP 1: Email
 function showEmailPanel() {
-  emailPanel.classList.remove("hidden");
-  resetPanel.classList.add("hidden");
-  successPanel.classList.add("hidden");
+  showOnlyPanel(emailPanel);
   pageTitle.textContent = "Forgot Password?";
   pageDescription.textContent =
     "Enter your registered email to receive a reset code.";
   signinLink.classList.remove("hidden");
 }
 
-function showResetPanel() {
-  emailPanel.classList.add("hidden");
-  resetPanel.classList.remove("hidden");
-  successPanel.classList.add("hidden");
+// STEP 2: Verification code
+function showVerifyPanel() {
+  showOnlyPanel(verifyPanel);
   pageTitle.textContent = "Check Your Email";
   pageDescription.textContent =
-    "Enter the verification code and choose a new password.";
+    "Enter the verification code we sent to your email.";
   resetEmailElement.textContent = maskEmail(resetEmail);
   signinLink.classList.remove("hidden");
   prepareResendTurnstile();
 
   window.setTimeout(() => {
-    otpInput.focus();
+    focusOtpField();
+  }, 100);
+}
+
+// STEP 3: New password (lalabas lang kapag tama na ang code)
+function showResetPanel() {
+  showOnlyPanel(resetPanel);
+  pageTitle.textContent = "Create New Password";
+  pageDescription.textContent =
+    "Choose a strong new password for your account.";
+  signinLink.classList.remove("hidden");
+
+  updatePasswordRequirements();
+
+  window.setTimeout(() => {
+    newPasswordInput.focus();
   }, 100);
 }
 
 function showSuccessPanel() {
-  emailPanel.classList.add("hidden");
-  resetPanel.classList.add("hidden");
-  successPanel.classList.remove("hidden");
+  showOnlyPanel(successPanel);
   pageTitle.textContent = "Reset Complete";
   pageDescription.textContent = "Your SilipMunti account is ready to use.";
   signinLink.classList.add("hidden");
@@ -438,10 +460,42 @@ function validateEmail() {
   return { email, errors };
 }
 
-function validateResetForm() {
+// Password requirements (pareho ng sa registration)
+const passwordRequirementRules = [
+  { id: "req-length", test: (value) => value.length >= 8 },
+  { id: "req-upper", test: (value) => /[A-Z]/.test(value) },
+  { id: "req-lower", test: (value) => /[a-z]/.test(value) },
+  { id: "req-number", test: (value) => /[0-9]/.test(value) },
+  { id: "req-symbol", test: (value) => /[\W_]/.test(value) },
+];
+
+function passwordMeetsRequirements(value) {
+  return passwordRequirementRules.every((rule) => rule.test(value));
+}
+
+function updatePasswordRequirements() {
+  const value = newPasswordInput.value;
+
+  passwordRequirementRules.forEach(({ id, test }) => {
+    const item = document.getElementById(id);
+
+    if (!item) return;
+
+    const passed = test(value);
+    const icon = item.querySelector("i");
+
+    item.classList.toggle("valid", passed);
+
+    if (icon) {
+      icon.className = passed
+        ? "fa-solid fa-circle-check"
+        : "fa-solid fa-circle-xmark";
+    }
+  });
+}
+
+function validateVerifyForm() {
   const otp = otpInput.value.trim();
-  const newPassword = newPasswordInput.value;
-  const confirmPassword = confirmPasswordInput.value;
   const errors = {};
 
   if (otp === "") {
@@ -450,12 +504,23 @@ function validateResetForm() {
     errors.otp = "Verification code must contain exactly six digits.";
   }
 
+  return { otp, errors };
+}
+
+function validateResetForm() {
+  const newPassword = newPasswordInput.value;
+  const confirmPassword = confirmPasswordInput.value;
+  const errors = {};
+
   if (newPassword === "") {
     errors.new_password = "New password is required.";
   } else if (newPassword.length < 8) {
     errors.new_password = "New password must contain at least 8 characters.";
   } else if (newPassword.length > 255) {
     errors.new_password = "New password is too long.";
+  } else if (!passwordMeetsRequirements(newPassword)) {
+    errors.new_password =
+      "Password must include an uppercase letter, a lowercase letter, a number, and a special character.";
   }
 
   if (confirmPassword === "") {
@@ -465,7 +530,6 @@ function validateResetForm() {
   }
 
   return {
-    otp,
     newPassword,
     confirmPassword,
     errors,
@@ -510,7 +574,7 @@ emailForm.addEventListener("submit", async (event) => {
       if (response.status === 429 && result.data?.retry_after) {
         resetEmail = email;
         resetRequestTurnstile();
-        showResetPanel();
+        showVerifyPanel();
         startResendCountdown(result.data.retry_after);
         showMessage(
           result.message || "Please wait before requesting another code.",
@@ -530,7 +594,7 @@ emailForm.addEventListener("submit", async (event) => {
 
     resetEmail = email;
     resetRequestTurnstile();
-    showResetPanel();
+    showVerifyPanel();
     startResendCountdown(result.data?.retry_after || 60);
     showMessage(
       result.message || "If an active account exists, a reset code was sent.",
@@ -550,14 +614,14 @@ resetForm.addEventListener("submit", async (event) => {
   clearErrors();
   hideMessage();
 
-  const { otp, newPassword, confirmPassword, errors } = validateResetForm();
+  const { newPassword, confirmPassword, errors } = validateResetForm();
 
   if (Object.keys(errors).length > 0) {
     showFieldErrors(errors);
     return;
   }
 
-  if (resetEmail === "") {
+  if (resetEmail === "" || resetToken === "") {
     showEmailPanel();
     showMessage("Enter your email and request a new code.", "error");
     return;
@@ -573,24 +637,33 @@ resetForm.addEventListener("submit", async (event) => {
   try {
     const { response, result } = await requestJson(RESET_PASSWORD_ENDPOINT, {
       email: resetEmail,
-      otp,
+      reset_token: resetToken,
       new_password: newPassword,
       confirm_password: confirmPassword,
     });
 
     if (!response.ok || !result.success) {
-      showFieldErrors(result.errors);
-      showMessage(result.message || "Unable to reset the password.", "error");
-
-      if (response.status === 410 || response.status === 429) {
-        stopResendCountdown();
+      // Expired / invalid na ang verification: balik sa umpisa
+      if (result.data?.restart) {
+        resetToken = "";
+        resetForm.reset();
+        showEmailPanel();
+        showMessage(
+          result.message || "Your verification expired. Please request a new code.",
+          "error",
+        );
+        return;
       }
 
+      showFieldErrors(result.errors);
+      showMessage(result.message || "Unable to reset the password.", "error");
       return;
     }
 
     stopResendCountdown();
+    resetToken = "";
     resetForm.reset();
+    verifyForm.reset();
     hideMessage();
     showSuccessPanel();
   } catch (error) {
@@ -602,6 +675,63 @@ resetForm.addEventListener("submit", async (event) => {
       false,
       "Resetting password...",
       "Reset Password",
+    );
+  }
+});
+
+// STEP 2 submit: i-verify muna ang code bago payagang mag-set ng password
+verifyForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  clearErrors();
+  hideMessage();
+
+  const { otp, errors } = validateVerifyForm();
+
+  if (Object.keys(errors).length > 0) {
+    showFieldErrors(errors);
+    return;
+  }
+
+  if (resetEmail === "") {
+    showEmailPanel();
+    showMessage("Enter your email and request a new code.", "error");
+    return;
+  }
+
+  setButtonLoading(
+    verifyCodeButton,
+    true,
+    "Verifying code...",
+    "Verify Code",
+  );
+
+  try {
+    const { response, result } = await requestJson(VERIFY_RESET_CODE_ENDPOINT, {
+      email: resetEmail,
+      otp,
+    });
+
+    if (!response.ok || !result.success || !result.data?.reset_token) {
+      showFieldErrors(result.errors);
+      showMessage(result.message || "Unable to verify the code.", "error");
+      otpInput.value = "";
+      focusOtpField();
+      return;
+    }
+
+    resetToken = result.data.reset_token;
+    stopResendCountdown();
+    hideMessage();
+    showResetPanel();
+  } catch (error) {
+    console.error(error);
+    showMessage("Unable to connect to the server.", "error");
+  } finally {
+    setButtonLoading(
+      verifyCodeButton,
+      false,
+      "Verifying code...",
+      "Verify Code",
     );
   }
 });
@@ -653,7 +783,7 @@ resendCodeButton.addEventListener("click", async () => {
       result.message || "If an active account exists, a new code was sent.",
       "success",
     );
-    otpInput.focus();
+    focusOtpField(); // CHANGED: dating otpInput.focus()
   } catch (error) {
     console.error(error);
     resetResendTurnstile();
@@ -670,11 +800,15 @@ changeEmailButton.addEventListener("click", () => {
   clearErrors();
   hideMessage();
   resetForm.reset();
+  verifyForm.reset();
   resetEmail = "";
+  resetToken = "";
   resetRequestTurnstile();
   showEmailPanel();
   emailInput.focus();
 });
+
+newPasswordInput.addEventListener("input", updatePasswordRequirements);
 
 otpInput.addEventListener("input", () => {
   otpInput.value = otpInput.value.replace(/\D/g, "").slice(0, 6);
@@ -698,6 +832,130 @@ document.querySelectorAll("[data-password-target]").forEach((button) => {
     );
   });
 });
+
+/* =====================================================
+   NEW: OTP 6-BOX UI
+   Itinatago ang original #otp at gumagawa ng 6 boxes
+   na nag-sync dito, kaya gumagana pa rin ang validation.
+   ===================================================== */
+let otpBoxes = [];
+
+function focusOtpField() {
+  if (otpBoxes.length > 0) {
+    otpBoxes[0].focus();
+  } else {
+    otpInput.focus();
+  }
+}
+
+(function initOtpBoxes() {
+  const LENGTH = 6;
+
+  if (!otpInput || otpInput.dataset.boxed) return;
+  otpInput.dataset.boxed = "1";
+  otpInput.classList.add("otp-real");
+
+  const wrap = document.createElement("div");
+  wrap.className = "otp-boxes";
+
+  for (let i = 0; i < LENGTH; i++) {
+    const box = document.createElement("input");
+    box.type = "text";
+    box.inputMode = "numeric";
+    box.maxLength = 1;
+    box.className = "otp-box";
+    box.setAttribute("aria-label", `Digit ${i + 1}`);
+    if (i === 0) box.autocomplete = "one-time-code";
+    wrap.appendChild(box);
+    otpBoxes.push(box);
+  }
+
+  otpInput.insertAdjacentElement("afterend", wrap);
+
+  function pushToReal() {
+    otpInput.value = otpBoxes.map((box) => box.value).join("");
+    otpInput.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  function pullFromReal() {
+    const value = otpInput.value.replace(/\D/g, "").slice(0, LENGTH);
+
+    otpBoxes.forEach((box, i) => {
+      box.value = value[i] || "";
+      box.classList.toggle("filled", box.value !== "");
+    });
+  }
+
+  function fillFrom(startIndex, digits) {
+    digits.split("").forEach((digit, k) => {
+      const box = otpBoxes[startIndex + k];
+
+      if (box) {
+        box.value = digit;
+        box.classList.add("filled");
+      }
+    });
+
+    pushToReal();
+    otpBoxes[Math.min(startIndex + digits.length, LENGTH - 1)].focus();
+  }
+
+  otpBoxes.forEach((box, i) => {
+    box.addEventListener("input", () => {
+      const digits = box.value.replace(/\D/g, "");
+
+      box.value = "";
+      box.classList.remove("filled");
+
+      if (digits) {
+        fillFrom(i, digits);
+      } else {
+        pushToReal();
+      }
+    });
+
+    box.addEventListener("keydown", (event) => {
+      if (event.key === "Backspace" && !box.value && i > 0) {
+        otpBoxes[i - 1].value = "";
+        otpBoxes[i - 1].classList.remove("filled");
+        otpBoxes[i - 1].focus();
+        pushToReal();
+      } else if (event.key === "ArrowLeft" && i > 0) {
+        otpBoxes[i - 1].focus();
+      } else if (event.key === "ArrowRight" && i < LENGTH - 1) {
+        otpBoxes[i + 1].focus();
+      }
+    });
+
+    box.addEventListener("focus", () => box.select());
+
+    box.addEventListener("paste", (event) => {
+      event.preventDefault();
+
+      const text = (event.clipboardData || window.clipboardData)
+        .getData("text")
+        .replace(/\D/g, "")
+        .slice(0, LENGTH);
+
+      if (text) fillFrom(0, text);
+    });
+  });
+
+  // Sync ang "invalid" state ng original input papunta sa boxes
+  new MutationObserver(() => {
+    wrap.classList.toggle("invalid", otpInput.classList.contains("invalid"));
+  }).observe(otpInput, { attributes: true, attributeFilter: ["class"] });
+
+  // Kapag nilinis/binago ng code ang value (resetForm.reset(), resend, atbp.)
+  let lastValue = otpInput.value;
+
+  window.setInterval(() => {
+    if (otpInput.value !== lastValue) {
+      lastValue = otpInput.value;
+      pullFromReal();
+    }
+  }, 200);
+})();
 
 showEmailPanel();
 updateSendCodeButton();
