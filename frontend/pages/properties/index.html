@@ -36,18 +36,21 @@
       href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
     />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
+    <script src="/SilipMunti/frontend/assets/js/browse-presentation.js?v=1" defer></script>
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3" />
   </head>
 
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <site-navbar active-page="properties"></site-navbar>
 
-    <main>
+    <main id="main-content" tabindex="-1">
       <section class="properties-banner">
         <div class="properties-container">
           <div class="banner-content">
             <span class="banner-label"> Verified rental properties </span>
 
-            <h1>Find Your Next Home</h1>
+            <h1>Rentals in Muntinlupa</h1>
 
             <p>
               Browse available rental properties from verified landlords
@@ -79,12 +82,11 @@
                   type="search"
                   id="filter-search"
                   name="search"
-                  placeholder="Search title, address, or location"
+                  placeholder="Property name, street or barangay"
                   maxlength="100"
                 />
               </div>
             </div>
-
             <div class="filter-field">
               <label for="filter-barangay"> Location </label>
 
@@ -105,38 +107,8 @@
                 </select>
               </div>
             </div>
-
             <div class="filter-field">
-              <label for="filter-rental-type"> Property type </label>
-
-              <div class="filter-input">
-                <i class="fa-solid fa-house"></i>
-
-                <select id="filter-rental-type" name="rental_type_id">
-                  <option value="">Loading property types...</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="filter-field">
-              <label for="filter-min-price"> Minimum price </label>
-
-              <div class="filter-input">
-                <i class="fa-solid fa-peso-sign"></i>
-
-                <input
-                  type="number"
-                  id="filter-min-price"
-                  name="min_price"
-                  placeholder="Minimum"
-                  min="0"
-                  step="500"
-                />
-              </div>
-            </div>
-
-            <div class="filter-field">
-              <label for="filter-max-price"> Maximum price </label>
+              <label for="filter-max-price"> Monthly budget </label>
 
               <div class="filter-input">
                 <i class="fa-solid fa-peso-sign"></i>
@@ -151,25 +123,55 @@
                 />
               </div>
             </div>
+            <details class="additional-filters" id="additional-filters" open>
+              <summary><span>Property type, bedrooms &amp; more <span class="filter-selection-note" id="filter-selection-note" aria-live="polite" hidden></span></span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+              <div class="additional-filter-fields">
+                <div class="filter-field">
+                  <label for="filter-rental-type"> Property type </label>
 
-            <div class="filter-field">
-              <label for="filter-bedrooms"> Bedrooms </label>
+                  <div class="filter-input">
+                    <i class="fa-solid fa-house"></i>
 
-              <div class="filter-input">
-                <i class="fa-solid fa-bed"></i>
+                    <select id="filter-rental-type" name="rental_type_id">
+                      <option value="">Loading property types...</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="filter-field">
+                  <label for="filter-min-price"> Minimum price </label>
 
-                <select id="filter-bedrooms" name="bedroom_no">
-                  <option value="">Any bedrooms</option>
-                  <option value="0">Studio</option>
-                  <option value="1">1 bedroom</option>
-                  <option value="2">2 bedrooms</option>
-                  <option value="3">3 bedrooms</option>
-                  <option value="4">4 bedrooms</option>
-                  <option value="5">5 bedrooms</option>
-                </select>
+                  <div class="filter-input">
+                    <i class="fa-solid fa-peso-sign"></i>
+
+                    <input
+                      type="number"
+                      id="filter-min-price"
+                      name="min_price"
+                      placeholder="Minimum"
+                      min="0"
+                      step="500"
+                    />
+                  </div>
+                </div>
+                <div class="filter-field">
+                  <label for="filter-bedrooms"> Bedrooms </label>
+
+                  <div class="filter-input">
+                    <i class="fa-solid fa-bed"></i>
+
+                    <select id="filter-bedrooms" name="bedroom_no">
+                      <option value="">Any bedrooms</option>
+                      <option value="0">Studio</option>
+                      <option value="1">1 bedroom</option>
+                      <option value="2">2 bedrooms</option>
+                      <option value="3">3 bedrooms</option>
+                      <option value="4">4 bedrooms</option>
+                      <option value="5">5 bedrooms</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-            </div>
-
+            </details>
             <div class="filter-actions">
               <button
                 type="submit"
@@ -194,7 +196,7 @@
             <div>
               <h2>Available Properties</h2>
 
-              <p id="properties-total">Loading properties...</p>
+              <p id="properties-total" aria-live="polite" aria-atomic="true">Loading properties...</p>
             </div>
 
             <div class="sort-wrapper">
@@ -212,7 +214,7 @@
 
           <div class="properties-grid" id="properties-grid"></div>
 
-          <div class="properties-message hidden" id="properties-message"></div>
+          <div class="properties-message hidden" id="properties-message" role="status"></div>
 
           <nav
             class="pagination hidden"

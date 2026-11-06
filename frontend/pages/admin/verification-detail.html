@@ -21,9 +21,11 @@
       href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
     />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3" />
   </head>
 
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="admin-layout">
       <admin-sidebar active-page="verifications"></admin-sidebar>
       <div class="admin-content">
@@ -62,7 +64,7 @@
           </div>
         </header>
 
-        <main class="admin-main">
+        <main id="main-content" tabindex="-1" class="admin-main">
           <div class="admin-page-header">
             <div>
               <span class="admin-eyebrow">Landlord profile</span>

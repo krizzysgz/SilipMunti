@@ -1,0 +1,1362 @@
+/* Shared visual refinements. Load after page styles; preserve brand colors,
+   component visibility, layout modes, and application behavior. */
+:root {
+  --sm-ui-radius: 10px;
+  --sm-ui-control-radius: 6px;
+  --sm-ui-shadow: 0 4px 16px rgb(25 34 65 / 7%);
+  --sm-ui-overlay-shadow: 0 12px 32px rgb(25 34 65 / 14%);
+  --sm-responsive-radius: 10px;
+  --about-radius: 10px;
+  --about-radius-lg: 14px;
+}
+
+body {
+  line-height: 1.55;
+}
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  line-height: 1.65;
+}
+
+/* Keep the original typefaces, with a quieter weight and size hierarchy. */
+.hero-content h1,
+.banner-content h1,
+.about-hero h1,
+.landlord-directory-intro h1,
+.landlord-profile-title h1,
+.favorites-hero h1,
+.review-hero h1,
+.legal-hero h1 {
+  font-size: clamp(30px, 3.5vw, 48px);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+}
+.hero-content p {
+  font-size: clamp(16px, 1.4vw, 18px);
+  line-height: 1.65;
+}
+.section-heading h2,
+.landlord-showcase-section .section-heading h2,
+.section-title {
+  font-size: clamp(23px, 2.2vw, 30px);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+.auth-heading h1 {
+  font-size: clamp(26px, 3vw, 32px);
+  font-weight: 600;
+}
+.page-heading h1,
+.admin-page-header h1,
+.listings-page-header h1 {
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+/* Yellow remains the brand accent. Use the existing blue for readable text
+   on light surfaces, retaining yellow as an underline. */
+.home-section .section-heading h2 span,
+.section-title span {
+  color: var(--primary-blue, #1027b5);
+  text-decoration: underline;
+  text-decoration-color: var(--accent-yellow, #f6d447);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 7px;
+}
+
+/* Explicit component lists avoid flattening avatars, badges, map controls,
+   message bubbles, image masks, and circular icon buttons. */
+.property-card,
+.property-skeleton,
+.home-landlord-card,
+.landlord-card,
+.landlord-directory-card,
+.landlord-listing-card,
+.review-card,
+.favorite-card,
+.stat-card,
+.listing-summary-card,
+.admin-summary-card,
+.admin-landlord-card,
+.admin-document-detail-card,
+.dashboard-panel,
+.admin-panel,
+.listings-management-card,
+.profile-picture-card,
+.profile-information-card,
+.security-card,
+.create-form-card,
+.form-card,
+.documents-section,
+.verification-overview,
+.notifications-shell,
+.legal-document,
+.search-panel,
+.properties-filters,
+.landlord-directory-filters {
+  border-radius: var(--sm-ui-radius);
+  box-shadow: var(--sm-ui-shadow);
+}
+.property-card:hover,
+.home-landlord-card:hover,
+.landlord-listing-card:hover,
+.admin-action-card:hover,
+.review-card:hover {
+  transform: none;
+  box-shadow: 0 6px 20px rgb(25 34 65 / 11%);
+}
+.property-card:hover img,
+.landlord-listing-card:hover .landlord-listing-image img {
+  transform: none;
+}
+.property-title,
+.listing-card-title {
+  font-weight: 600;
+  line-height: 1.4;
+}
+.property-price,
+.listing-card-price {
+  font-variant-numeric: tabular-nums;
+}
+
+.primary-button,
+.secondary-button,
+.navbar-button,
+.search-button,
+.filter-button,
+.reset-button,
+.directory-filter-button,
+.directory-reset-button,
+.login-button,
+.register-button,
+.add-property-button,
+.admin-primary-button,
+.admin-refresh-button,
+.admin-review-button,
+.modal-cancel-button,
+.modal-danger-button,
+.sm-dialog-button,
+.sm-ai-home-trigger {
+  border-radius: var(--sm-ui-control-radius);
+  min-height: 44px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.primary-button:hover,
+.secondary-button:hover,
+.navbar-button:hover,
+.add-property-button:hover,
+.sm-ai-home-trigger:hover {
+  transform: none;
+}
+.sm-ai-home-trigger {
+  box-shadow: none;
+  font-size: 14px;
+}
+.navbar-button {
+  padding: 11px 20px;
+  min-width: 100px;
+}
+.navbar-links a,
+.navbar-links a:hover,
+.navbar-links a.active {
+  font-weight: 500;
+}
+.navbar-links a {
+  font-size: 15px;
+}
+.navbar-links a.active {
+  font-weight: 600;
+}
+.profile-dropdown,
+.notification-dropdown {
+  border-radius: var(--sm-ui-radius);
+  box-shadow: var(--sm-ui-overlay-shadow);
+  max-width: calc(100vw - 24px);
+}
+.dropdown-link {
+  min-height: 44px;
+  padding-block: 12px;
+  font-size: 14px;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+    [type="file"]
+  ):not([type="hidden"]):not([type="color"]),
+select,
+textarea {
+  border-radius: var(--sm-ui-control-radius);
+}
+textarea {
+  line-height: 1.6;
+}
+input::placeholder,
+textarea::placeholder {
+  opacity: 1;
+}
+.form-field label,
+.form-group label,
+.search-field label {
+  line-height: 1.5;
+}
+
+.auth-shell,
+.register-shell {
+  border-radius: 14px;
+  box-shadow: var(--sm-ui-overlay-shadow);
+}
+.auth-logo {
+  margin-bottom: 16px;
+}
+.auth-logo img {
+  height: 96px;
+}
+.auth-heading {
+  margin-bottom: 24px;
+}
+.auth-form-section {
+  padding: clamp(24px, 4vw, 52px);
+}
+.sm-dialog,
+.admin-modal-dialog,
+.modal-content,
+.password-modal-dialog,
+.otp-modal-dialog {
+  border-radius: 12px;
+  box-shadow: var(--sm-ui-overlay-shadow);
+}
+.sm-dialog {
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+}
+.admin-modal-dialog {
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+}
+
+.admin-table th,
+.dashboard-table th {
+  line-height: 1.5;
+  font-weight: 600;
+}
+.admin-table td,
+.dashboard-table td {
+  line-height: 1.5;
+}
+.admin-table,
+.dashboard-table {
+  font-variant-numeric: tabular-nums;
+}
+.admin-table-wrapper,
+.table-wrapper {
+  scrollbar-width: thin;
+}
+
+/* A dual ring stays visible on both blue and light surfaces. */
+:focus-visible {
+  outline: 2px solid var(--primary-blue, var(--admin-blue, #1027b5)) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px #ffffff !important;
+}
+:where(a, button, input, select, textarea, [tabindex]) {
+  scroll-margin-block: 100px 24px;
+}
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  z-index: 2147483001;
+  padding: 12px 18px;
+  border-radius: 6px;
+  color: #ffffff;
+  background: var(--primary-blue, var(--admin-blue, #1027b5));
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: none;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+@media (min-width: 851px) {
+  .navbar {
+    min-height: 80px;
+  }
+  .navbar-logo img {
+    width: 150px;
+    height: 58px;
+  }
+  .navbar-content {
+    margin-left: clamp(32px, 6vw, 100px);
+  }
+  .navbar-links {
+    gap: clamp(22px, 3vw, 44px);
+  }
+  .guest-actions,
+  .user-actions {
+    gap: 16px;
+  }
+}
+@media (max-width: 1024px) {
+  .container {
+    width: calc(100% - 48px);
+  }
+  .search-field,
+  .filter-field,
+  .form-field,
+  .form-group {
+    min-width: 0;
+  }
+}
+@media (max-width: 767px) {
+  .hero-content h1,
+  .banner-content h1,
+  .about-hero h1,
+  .landlord-directory-intro h1,
+  .landlord-profile-title h1,
+  .favorites-hero h1,
+  .review-hero h1,
+  .legal-hero h1 {
+    font-size: clamp(28px, 7.5vw, 36px);
+    line-height: 1.2;
+  }
+  .container {
+    width: calc(100% - 32px);
+  }
+  .hero-content p span {
+    display: inline;
+  }
+  .search-panel {
+    padding: 16px;
+    gap: 14px;
+  }
+  .sm-ai-home-trigger {
+    max-width: 100%;
+    white-space: normal;
+    text-align: left;
+  }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+      [type="hidden"]
+    ),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  .notification-button,
+  .carousel-button,
+  .mobile-menu-button,
+  .mobile-menu-close,
+  .password-toggle,
+  .admin-icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .form-actions,
+  .create-form-actions,
+  .admin-modal-actions {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .admin-modal-dialog,
+  .sm-dialog {
+    max-height: calc(100dvh - 32px);
+  }
+  .profile-summary strong {
+    overflow-wrap: anywhere;
+  }
+}
+@media (max-width: 380px) {
+  .properties-filters,
+  .landlord-directory-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .properties-filters > *,
+  .landlord-directory-filters > * {
+    grid-column: 1 / -1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Reveal content that the existing home entrance animations stage offscreen. */
+  .home-motion-ready .home-motion-item,
+  .home-motion-ready .hero-content h1,
+  .home-motion-ready .hero-content p,
+  .home-motion-ready .search-panel,
+  .home-motion-ready .sm-ai-home-trigger {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The shared navbar has deliberately scoped base rules. Match that scope. */
+site-navbar .navbar-links a,
+site-navbar .navbar-links a:hover,
+site-navbar .navbar-links a.active {
+  font-size: 15px;
+  font-weight: 500;
+}
+site-navbar .navbar-links a.active {
+  font-weight: 600;
+}
+site-navbar .navbar-button {
+  border-radius: 6px;
+  min-height: 44px;
+  padding: 11px 20px;
+}
+site-navbar .navbar-button:hover {
+  transform: none;
+  box-shadow: none;
+}
+site-navbar .profile-dropdown {
+  border-radius: 10px;
+  box-shadow: var(--sm-ui-overlay-shadow);
+}
+@media (min-width: 851px) {
+  site-navbar .site-header,
+  site-navbar .navbar {
+    min-height: 80px;
+  }
+  site-navbar .navbar-logo {
+    flex-basis: 150px;
+  }
+  site-navbar .navbar-logo img {
+    width: 150px;
+    height: 58px;
+  }
+  site-navbar .navbar-content {
+    margin-left: clamp(24px, 5vw, 80px);
+  }
+}
+.about-primary-button,
+.about-secondary-button,
+.directory-hero-primary,
+.directory-hero-secondary {
+  border-radius: 6px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.about-primary-button:hover,
+.about-secondary-button:hover,
+.directory-hero-primary:hover,
+.directory-hero-secondary:hover {
+  transform: none;
+}
+.directory-visual-frame {
+  border-radius: 14px;
+  transform: none;
+  box-shadow: var(--sm-ui-overlay-shadow);
+}
+.directory-floating-card {
+  border-radius: 10px;
+  box-shadow: var(--sm-ui-shadow);
+}
+.directory-floating-card-top {
+  right: 12px;
+}
+.password-modal-card {
+  border-radius: 12px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+}
+.home-motion-ready .property-card.home-card-reveal.is-visible:hover,
+.home-motion-ready .home-motion-loaded .search-button:hover {
+  transform: none;
+}
+@media (max-width: 767px) {
+  /* The original hero's 480px minimum grid track clips the visual on mobile. */
+  .landlord-directory-hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* Legacy notifications navigation uses its own markup and UI-only toggle. */
+@media (max-width: 850px) {
+  .notifications-page .navbar {
+    position: relative;
+    min-height: 72px;
+    width: calc(100% - 32px);
+  }
+  .notifications-page .navbar-logo img {
+    width: 116px;
+    height: 48px;
+  }
+  .notifications-page .mobile-menu-button {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+  }
+  .notifications-page .navbar-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: -16px;
+    right: -16px;
+    margin: 0;
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: var(--sm-ui-overlay-shadow);
+    max-height: calc(100dvh - 72px);
+    overflow-y: auto;
+  }
+  .notifications-page .navbar-content.open {
+    display: block;
+  }
+  .notifications-page .navbar-links {
+    display: grid;
+    gap: 8px;
+  }
+  .notifications-page .navbar-links a {
+    display: block;
+    padding-block: 12px;
+  }
+  .notifications-page .user-actions {
+    margin-top: 16px;
+    justify-content: flex-start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-motion-ready .search-field,
+  .home-motion-ready .search-button,
+  .home-motion-ready .home-reveal-up,
+  .home-motion-ready .home-reveal-left,
+  .home-motion-ready .home-reveal-right,
+  .home-motion-ready .home-card-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Quiet the remaining oversized auth decoration without replacing its theme. */
+.visual-content h2 {
+  font-size: clamp(30px, 3vw, 40px);
+  font-weight: 600;
+  line-height: 1.2;
+}
+.visual-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  box-shadow: none;
+}
+.visual-features span {
+  border-radius: 6px;
+}
+.auth-card .form-message.error {
+  border-left-color: var(--error, #d62839);
+  box-shadow: none;
+}
+.auth-card input::placeholder {
+  color: var(--text-muted, #666b78);
+  font-weight: 400;
+}
+.home-motion-ready .home-landlord-card.home-card-reveal.is-visible:hover {
+  transform: none;
+  box-shadow: var(--sm-ui-shadow);
+}
+.home-landlord-card:hover img,
+.review-card:hover .review-top i {
+  transform: none;
+}
+@media (max-width: 560px) {
+  .auth-shell {
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* Consistent listing actions across home, search and saved properties. */
+.favorite-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid #e1e4ef;
+  background: #ffffff;
+  color: #112bc1;
+  box-shadow: 0 2px 8px rgb(25 34 65 / 10%);
+  font-size: 18px;
+}
+.favorite-button.active {
+  color: #112bc1;
+  background: #f9d84a;
+}
+.favorite-button:hover {
+  transform: none;
+}
+.silip-chat-bubble {
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  box-shadow: 0 3px 12px rgb(17 43 193 / 18%);
+}
+.silip-chat-bubble:hover {
+  transform: none;
+}
+
+.properties-grid .property-card,
+.favorites-grid .property-card {
+  border-radius: 8px;
+  box-shadow: none;
+}
+.properties-grid .property-card-content,
+.favorites-grid .property-card-content {
+  padding: 16px;
+}
+@media (max-width: 480px) {
+  .properties-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .properties-grid .property-price {
+    font-size: 18px;
+  }
+  .properties-grid .property-title {
+    font-size: 16px;
+  }
+  .properties-grid .property-location,
+  .properties-grid .property-information {
+    font-size: 12px;
+  }
+}
+@media (max-width: 767px) {
+  .silip-chat-widget {
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  .silip-chat-bubble {
+    width: 48px;
+    height: 48px;
+    border: 2px solid #ffffff;
+    font-size: 18px;
+  }
+}
+
+/* Product finish: spacious hierarchy, compact and readable working areas. */
+:root {
+  --sm-content-width: 1440px;
+  --sm-page-gutter: clamp(20px, 3vw, 32px);
+  --sm-space-section: clamp(24px, 3vw, 40px);
+}
+.properties-container,
+.favorites-container,
+.review-container,
+.landlord-directory-container,
+.landlord-profile-container {
+  width: min(calc(100% - var(--sm-page-gutter) * 2), var(--sm-content-width));
+  margin-inline: auto;
+}
+@media (min-width: 851px) {
+  site-navbar .navbar {
+    width: min(calc(100% - 64px), var(--sm-content-width));
+  }
+}
+/* Results should be near the top of a browsing page, rather than below a hero. */
+.properties-banner {
+  padding: 36px 0 40px;
+}
+.properties-banner::after {
+  opacity: 0.35;
+}
+.banner-content {
+  max-width: 850px;
+}
+.properties-banner .banner-label {
+  padding: 0;
+  margin-bottom: 10px;
+  border-radius: 0;
+  background: transparent;
+  color: #f9d84a;
+  text-transform: none;
+  font-size: 12px;
+  font-weight: 500;
+}
+.properties-banner h1 {
+  margin-bottom: 10px;
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 600;
+}
+.properties-banner p {
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 620px;
+}
+.sm-ai-properties-trigger {
+  min-height: 44px;
+  margin-top: 12px;
+  padding: 9px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: #f8d447;
+  font-size: 13px;
+  font-weight: 500;
+}
+.sm-ai-properties-trigger:hover {
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.properties-filters {
+  margin-top: 24px;
+  padding: 22px;
+  grid-template-columns: minmax(240px, 1.6fr) repeat(2, minmax(160px, 1fr)) auto;
+  gap: 18px;
+  box-shadow: none;
+  border-color: #e1e4ef;
+  align-items: end;
+}
+.properties-filters > .filter-search {
+  grid-column: auto;
+}
+.properties-filters > .filter-actions {
+  grid-column: 4;
+  grid-row: 1;
+}
+.properties-filters .filter-field label,
+.properties-filters .filter-search label {
+  font-size: 12px;
+  font-weight: 500;
+}
+.properties-filters .filter-input input,
+.properties-filters .filter-input select {
+  background-color: #ffffff;
+  font-size: 14px;
+}
+.properties-filters .apply-filter-button,
+.properties-filters .reset-filter-button {
+  padding-inline: 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.additional-filters {
+  grid-column: 1 / -1;
+  border-top: 1px solid #e1e4ef;
+  padding-top: 16px;
+  min-width: 0;
+}
+.additional-filters summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  color: #112bc1;
+  font-size: 13px;
+  font-weight: 500;
+  list-style: none;
+  cursor: pointer;
+}
+.additional-filters summary::-webkit-details-marker {
+  display: none;
+}
+.additional-filters summary i {
+  font-size: 11px;
+  transition: transform 160ms ease;
+}
+.additional-filters[open] summary i {
+  transform: rotate(180deg);
+}
+.additional-filter-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding-top: 14px;
+}
+.additional-filter-fields .filter-field {
+  grid-column: auto;
+}
+.properties-toolbar {
+  margin: 30px 0 20px;
+  align-items: center;
+}
+.properties-toolbar h2,
+.favorites-toolbar h2 {
+  font-size: 23px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+}
+.properties-toolbar p {
+  font-size: 13px;
+}
+.sort-wrapper select {
+  height: 44px;
+  font-size: 13px;
+  background-color: #ffffff;
+  padding-right: 28px;
+}
+/* Native arrow remains visible: no custom pseudo-arrow masks the selected text. */
+.filter-input select,
+.sort-wrapper select {
+  appearance: auto;
+}
+.properties-grid,
+.favorites-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+.properties-grid .property-card,
+.favorites-grid .property-card {
+  border-color: #e1e4ef;
+}
+.properties-grid .property-image-wrapper,
+.favorites-grid .property-image-wrapper {
+  height: auto;
+  aspect-ratio: 4 / 3;
+}
+.properties-grid .property-price,
+.favorites-grid .property-price {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.45;
+  margin-bottom: 7px;
+}
+.properties-grid .property-price span,
+.favorites-grid .property-price span {
+  font-size: 11px;
+  font-weight: 400;
+}
+.properties-grid .property-title,
+.favorites-grid .property-title {
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+.properties-grid .property-location,
+.favorites-grid .property-location {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.properties-grid .property-information,
+.favorites-grid .property-information {
+  font-size: 12px;
+  line-height: 1.6;
+  gap: 8px 12px;
+}
+.property-type-badge {
+  border-radius: 5px;
+  font-weight: 500;
+}
+.properties-message,
+.favorites-message,
+.property-empty-message {
+  line-height: 1.7;
+}
+.pagination button,
+.pagination a {
+  min-width: 44px;
+  min-height: 44px;
+}
+/* Property details: a clear reading column and useful, quiet contact sidebar. */
+.property-page .property-container {
+  width: min(calc(100% - 64px), var(--sm-content-width));
+}
+.property-page .breadcrumbs {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  border-radius: 0;
+  padding: 0;
+  margin-bottom: 24px;
+  line-height: 1.6;
+  flex-wrap: wrap;
+}
+.property-page .property-heading {
+  margin-bottom: 24px;
+  gap: 24px;
+}
+.property-page .property-heading h1 {
+  font-size: clamp(26px, 2.6vw, 38px);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+.property-page .property-address {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.property-page .verified-label {
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 5px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.property-page .property-price-wrapper {
+  box-shadow: none;
+  backdrop-filter: none;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+}
+.property-page .property-price > span {
+  font-size: 28px;
+  letter-spacing: -0.025em;
+}
+.property-page .property-layout {
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 28px;
+}
+.property-page .property-main-column {
+  gap: 24px;
+}
+.property-page .property-gallery {
+  margin-bottom: 0;
+}
+.property-page .gallery-grid {
+  height: clamp(300px, 30vw, 440px);
+  border-radius: 10px;
+  gap: 6px;
+}
+.property-page .property-content-section,
+.property-page .landlord-card,
+.property-page .inquiry-card,
+.property-page .listing-review-card,
+.property-page .safety-card {
+  border-radius: 10px;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.property-page .property-content-section {
+  padding: 26px;
+}
+.property-page .section-title {
+  margin-bottom: 18px;
+}
+.property-page .section-title h2 {
+  font-size: 18px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+.property-page .property-description {
+  font-size: 14px;
+  line-height: 1.85;
+  max-width: 75ch;
+}
+.property-page .property-facts {
+  border-radius: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.property-page .property-fact {
+  padding: 16px;
+  border-bottom: 1px solid #e8e8e8;
+}
+.property-page .property-fact:nth-child(3n) {
+  border-right: 0;
+}
+.property-page .property-fact small {
+  font-size: 11px;
+}
+.property-page .property-fact strong {
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+.property-page .fact-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 15px;
+}
+.property-page .detail-chip,
+.property-page .detail-list-item {
+  padding: 8px 12px;
+  line-height: 1.5;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.property-page .property-sidebar {
+  gap: 16px;
+  top: 100px;
+}
+.property-page .button {
+  min-height: 44px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.property-page .listing-reviews-overview {
+  border-radius: 8px;
+  background: #f8f9ff;
+}
+/* Form hierarchy and keyboard-visible account choices. */
+.auth-card .form-field {
+  font-weight: 500;
+  font-size: 13px;
+}
+.auth-card .field-error {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.auth-card .input-group input {
+  font-weight: 400;
+}
+.auth-card .role-option input:focus-visible + span {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 3px;
+}
+.auth-card .role-option span {
+  min-height: 76px;
+  border-radius: 7px;
+}
+.auth-card .role-option small {
+  font-size: 11px;
+  line-height: 1.5;
+}
+.auth-card .password-requirements {
+  font-size: 12px;
+  line-height: 1.65;
+}
+.auth-card .terms-option {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.profile-heading h1,
+.notifications-heading h1 {
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
+}
+.profile-information-card h2,
+.profile-picture-card h2,
+.security-information h2 {
+  font-weight: 600;
+  line-height: 1.5;
+}
+.profile-information-card label,
+.security-information p {
+  font-size: 13px;
+  line-height: 1.65;
+}
+.password-modal-card,
+.inquiry-modal-card {
+  padding: 28px;
+  border-radius: 10px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+}
+.modal-close-button {
+  width: 44px;
+  height: 44px;
+}
+.inquiry-modal-card textarea {
+  min-height: 140px;
+  padding: 14px;
+  font-size: 14px;
+}
+/* Working views retain their existing sidebar colors and data hierarchy. */
+.admin-page-header,
+.page-heading,
+.listings-page-header {
+  margin-bottom: 28px;
+  gap: 20px;
+}
+.admin-page-header h1,
+.page-heading h1,
+.listings-page-header h1 {
+  font-size: clamp(26px, 2.5vw, 32px);
+  font-weight: 600;
+}
+.admin-summary-card,
+.stat-card,
+.listing-summary-card {
+  padding: 20px;
+  box-shadow: none;
+}
+.admin-panel,
+.dashboard-panel,
+.listings-management-card {
+  box-shadow: none;
+}
+.admin-panel-header,
+.panel-header {
+  padding-block: 20px;
+}
+.admin-panel-header h2,
+.panel-header h2 {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.admin-table th,
+.dashboard-table th {
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  padding-block: 14px;
+}
+.admin-table td,
+.dashboard-table td {
+  font-size: 13px;
+  padding-block: 16px;
+}
+.admin-icon-button {
+  width: 44px;
+  height: 44px;
+}
+.admin-nav-link {
+  border-radius: 6px;
+}
+.admin-modal-dialog {
+  border-radius: 10px;
+}
+
+@media (max-width: 1199px) {
+  .properties-filters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .properties-filters > .filter-actions {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+  .properties-grid,
+  .favorites-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .property-page .property-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 20px;
+  }
+  .property-page .property-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .property-page .property-fact:nth-child(n) {
+    border-right: 1px solid #e8e8e8;
+  }
+  .property-page .property-fact:nth-child(even),
+  .property-page .property-fact:last-child {
+    border-right: 0;
+  }
+}
+@media (max-width: 900px) {
+  .property-page .property-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .property-page .property-sidebar {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .properties-grid,
+  .favorites-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 767px) {
+  .properties-banner {
+    padding: 26px 0;
+  }
+  .properties-banner h1 {
+    font-size: 28px;
+  }
+  .properties-banner p {
+    font-size: 14px;
+  }
+  .sm-ai-properties-trigger {
+    width: auto;
+    text-align: left;
+    font-size: 12px;
+  }
+  .properties-filters {
+    margin-top: 20px;
+    padding: 18px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .properties-filters > .filter-search,
+  .properties-filters > .filter-field {
+    grid-column: 1 / -1;
+  }
+  .properties-filters > .filter-actions {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    width: 100%;
+    flex-direction: row;
+  }
+  .properties-filters .filter-input input,
+  .properties-filters .filter-input select {
+    font-size: 16px;
+    padding-left: 38px;
+    padding-right: 12px;
+  }
+  .properties-filters .apply-filter-button,
+  .properties-filters .reset-filter-button {
+    font-size: 14px;
+  }
+  .additional-filter-fields {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .properties-toolbar {
+    margin-top: 26px;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .properties-toolbar h2 {
+    font-size: 22px;
+  }
+  .properties-grid,
+  .favorites-grid {
+    gap: 14px;
+  }
+  .properties-grid .property-card-content,
+  .favorites-grid .property-card-content {
+    padding: 12px;
+  }
+  .properties-grid .property-title,
+  .favorites-grid .property-title {
+    font-size: 14px;
+  }
+  .properties-grid .property-price,
+  .favorites-grid .property-price {
+    font-size: 16px;
+  }
+  .properties-grid .property-information,
+  .favorites-grid .property-information {
+    font-size: 11px;
+    gap: 6px;
+  }
+  .properties-grid .property-price span,
+  .favorites-grid .property-price span {
+    display: block;
+  }
+  .properties-grid .property-type-badge,
+  .favorites-grid .property-type-badge {
+    padding: 5px 7px;
+    font-size: 10px;
+  }
+  .properties-grid .favorite-button,
+  .favorites-grid .favorite-button {
+    top: 7px;
+    right: 7px;
+  }
+  .property-page .property-container {
+    width: calc(100% - 40px);
+    padding-top: 20px;
+  }
+  .property-page .property-heading h1 {
+    font-size: 26px;
+  }
+  .property-page .property-heading > div:first-child {
+    padding-right: 52px;
+  }
+  .property-page .property-price > span {
+    font-size: 24px;
+  }
+  .property-page .property-content-section {
+    padding: 20px;
+  }
+  .property-page .property-sidebar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .property-page .gallery-grid {
+    height: clamp(230px, 60vw, 340px);
+  }
+  .property-page .property-fact {
+    padding: 13px 10px;
+  }
+  .property-page .fact-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
+  }
+  .property-page .property-fact strong {
+    font-size: 13px;
+  }
+  .auth-card .field-row {
+    gap: 14px;
+  }
+  .password-modal-card,
+  .inquiry-modal-card {
+    padding: 24px 20px;
+  }
+  .inquiry-modal-card textarea {
+    font-size: 16px;
+  }
+  .admin-summary-card,
+  .stat-card,
+  .listing-summary-card {
+    padding: 16px;
+  }
+}
+@media (max-width: 389px) {
+  .properties-grid,
+  .favorites-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .properties-grid .property-title,
+  .favorites-grid .property-title {
+    font-size: 16px;
+  }
+  .properties-grid .property-price,
+  .favorites-grid .property-price {
+    font-size: 18px;
+  }
+  .properties-grid .property-price span,
+  .favorites-grid .property-price span {
+    display: inline;
+  }
+  .property-page .property-container {
+    width: calc(100% - 32px);
+  }
+}
+.filter-selection-note {
+  font-size: 12px;
+  font-weight: 400;
+}
+/* Match shared navigation labels across the older page-specific stylesheets. */
+site-navbar .navbar-button {
+  text-transform: none;
+}
+.property-page .gallery-grid {
+  box-shadow: none;
+  border-width: 0;
+}
+@media (min-width: 768px) {
+  .property-page .property-price-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .property-page .property-heading .favorite-button {
+    position: static;
+    flex-shrink: 0;
+  }
+}
+/* Keep decorative landlord visuals inside the reading column at every width. */
+.landlord-directory-visual,
+.directory-visual-frame {
+  min-width: 0;
+  max-width: 100%;
+}
+.directory-floating-card-bottom {
+  right: 12px;
+}

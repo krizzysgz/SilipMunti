@@ -15,8 +15,10 @@
       href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
     />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3" />
   </head>
-  <body>
+  <body class="notifications-page">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <header class="site-header">
       <nav class="navbar">
         <a href="../../index.html" class="navbar-logo">
@@ -28,6 +30,8 @@
           class="mobile-menu-button"
           id="mobile-menu-button"
           aria-label="Open navigation menu"
+          aria-controls="navbar-content"
+          aria-expanded="false"
         >
           <i class="fa-solid fa-bars"></i>
         </button>
@@ -59,7 +63,7 @@
             >
               <img
                 id="navbar-profile-picture"
-                src="../../assets/images/default-profile.png"
+                src="../../assets/images/default-profile.svg"
                 alt="Profile picture"
               />
             </a>
@@ -68,7 +72,7 @@
       </nav>
     </header>
 
-    <main class="notifications-main">
+    <main id="main-content" tabindex="-1" class="notifications-main">
       <section class="notifications-shell">
         <div class="notifications-heading">
           <div>
@@ -118,6 +122,7 @@
       </section>
     </main>
 
+    <script src="../../assets/js/notifications-navigation.js"></script>
     <script src="../../assets/js/notifications-page.js"></script>
   </body>
 </html>

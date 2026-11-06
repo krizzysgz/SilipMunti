@@ -24,11 +24,6 @@
     <link rel="stylesheet" href="../../assets/css/global.css?v=7" />
 
     <link rel="stylesheet" href="../../assets/css/profile.css?v=4" />
-    <!-- NEW: checklist CSS (ilagay ang profile-password-checklist.css sa assets/css/) -->
-    <link
-      rel="stylesheet"
-      href="../../assets/css/profile-password-checklist.css?v=1"
-    />
     <link
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/chat-bubble.css"
@@ -42,12 +37,17 @@
       href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
     />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3"
+    />
   </head>
 
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <site-navbar active-page="profile"></site-navbar>
 
-    <main class="profile-main">
+    <main id="main-content" tabindex="-1" class="profile-main">
       <section class="profile-status" id="profile-loading">
         <i class="fa-solid fa-spinner fa-spin"></i>
 

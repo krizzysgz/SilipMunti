@@ -29,8 +29,10 @@
       href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
     />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
+    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3" />
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="dashboard-layout">
       <landlord-sidebar active-page="listings"></landlord-sidebar>
 
@@ -102,7 +104,7 @@
           </div>
         </header>
 
-        <main class="landlord-form-page">
+        <main id="main-content" tabindex="-1" class="landlord-form-page">
           <div class="form-page-heading">
             <div>
               <p class="page-eyebrow">PROPERTY MANAGEMENT</p>
