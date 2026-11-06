@@ -109,9 +109,7 @@
     dialog.innerHTML = `
       <header class="sm-ai-header">
         <div class="sm-ai-brand">
-          <span class="sm-ai-brand-icon" aria-hidden="true">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-          </span>
+          
           <div>
             <strong id="sm-ai-dialog-title">SilipMunti AI Assistant</strong>
             <span>Rental guidance and verified property recommendations</span>
@@ -853,9 +851,9 @@
         appendChatMessage("assistant", interpretation.message, {
           sourceLabel: isGeneralAnswer
             ? interpretation.data?.ai_generated_answer
-              ? "Gemini renter guidance"
-              : "SilipMunti renter guidance"
-            : "SilipMunti database availability",
+              ? "SilipMunti AI Assistant"
+              : "SilipMunti AI Assistant"
+            : "SilipMunti AI Assistant",
         });
         document.querySelector("#sm-ai-preference-summary").innerHTML =
           preferenceSummary(answers)

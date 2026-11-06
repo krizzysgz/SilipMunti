@@ -989,194 +989,364 @@ main {
   box-shadow: 0 8px 18px rgb(17 43 193 / 12%);
 }
 
+/* =========================================================
+   LOCATION CAROUSEL (NETFLIX-STYLE ROW)
+   - Poster cards na may malaking rank number
+   - Hover: lumalaki ang card, dumidilim ang iba, lumalabas ang info + button
+   - May prev/next arrows (ginagawa ng JS)
+   - Navy + brand blue + yellow
+   ========================================================= */
+.location-carousel {
+  position: relative;
+}
+
 .location-rail {
+  --location-gutter: 24px;
+  --location-gap: 16px;
+  --location-per-view: 6;
+
   display: flex;
-  gap: 18px;
+  gap: var(--location-gap);
   align-items: stretch;
-  width: 100%;
-  max-width: 100%;
-  margin-inline: 0;
-  overflow-x: hidden;
+  /* Mas malapad ng gutter sa magkabilang gilid para may space
+     ang paglaki ng card sa hover at hindi ma-crop */
+  width: calc(100% + var(--location-gutter) * 2);
+  max-width: none;
+  margin-inline: calc(var(--location-gutter) * -1);
+  overflow-x: auto;
   overflow-y: hidden;
-  padding: 10px 8px 20px;
+  padding: 32px var(--location-gutter) 56px;
   scroll-behavior: smooth;
-  scrollbar-width: thin;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--location-gutter);
+  scrollbar-width: none;
 }
 
 .location-rail::-webkit-scrollbar {
-  height: 8px;
-}
-
-.location-rail::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: #ccd4ff;
+  display: none;
 }
 
 .location-card {
   position: relative;
+  display: block;
+  /* Eksaktong bilang ng cards bawat view, kaya walang naka-crop */
+  flex: 0 0
+    calc(
+      (100% - (var(--location-per-view) - 1) * var(--location-gap)) /
+        var(--location-per-view)
+    );
+  height: 380px;
+  color: #ffffff;
+  text-decoration: none;
+  scroll-snap-align: start;
+  outline: none;
+}
+
+.location-card:hover,
+.location-card:focus-visible {
+  z-index: 5;
+}
+
+.location-card-frame {
+  position: relative;
   display: flex;
-  flex: 1 1 0;
-  min-width: 0;
-  height: 520px;
-  min-height: 520px;
+  width: 100%;
+  height: 100%;
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-  padding: 26px 14px;
-  border: 0;
-  border-radius: 16px;
-  color: #ffffff;
-  background:
-    linear-gradient(180deg, rgb(23 31 51 / 18%), rgb(9 13 24 / 86%)), #4b5563;
-  background-position: center;
-  background-size: cover;
-  box-shadow: 0 12px 24px rgb(15 23 42 / 18%);
-  filter: saturate(1) brightness(1);
+  isolation: isolate;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 14px;
+  background-color: #0d1230;
+  box-shadow: 0 8px 16px -6px rgb(8 12 40 / 32%);
   transition:
-    flex-grow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    padding 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.5s ease,
-    transform 0.28s ease,
-    box-shadow 0.28s ease,
-    opacity 0.28s ease;
-  will-change: flex-grow;
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease,
+    border-color 0.4s ease,
+    filter 0.4s ease;
 }
 
-.location-rail:has(.location-card.active) .location-card:not(.active) {
-  filter: saturate(0.75) brightness(0.82);
-}
-
-.location-rail:has(.location-card.active) .location-card:not(.active):hover {
-  filter: saturate(0.95) brightness(0.95);
-}
-
-.location-card::before {
+.location-card-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.76));
-  content: "";
-  transition: opacity 0.3s ease;
+  z-index: 0;
+  background-image: var(--location-image, none);
+  background-position: center;
+  background-size: cover;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.location-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 30px rgb(15 23 42 / 22%);
-}
-
-.location-card.active {
-  flex: 6 1 0;
-  min-width: 0;
-  padding: 32px;
-  border-radius: 16px;
-}
-
-.location-card span {
-  position: relative;
-  z-index: 1;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 23px;
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: 0.1px;
-  text-shadow: 0 2px 8px rgb(0 0 0 / 38%);
-  transition:
-    writing-mode 0s linear 0.22s,
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    font-size 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.location-card small {
-  position: relative;
-  z-index: 1;
-  margin-top: 4px;
-  font-size: 0;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
-
-.location-card.empty {
-  background:
-    linear-gradient(180deg, rgb(107 114 128 / 72%), rgb(31 41 55 / 96%)),
-    #4b5563;
-  opacity: 0.92;
-}
-
-.location-card.empty small {
+/* Dark fade para mabasa lagi ang text */
+.location-card-frame::before {
   position: absolute;
-  right: 10px;
-  bottom: 48px;
-  left: 10px;
-  display: none;
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1.35;
-  text-align: center;
-}
-
-.location-card-copy {
-  position: relative;
+  inset: 0;
   z-index: 1;
-  max-width: 92%;
+  background: linear-gradient(
+    180deg,
+    rgb(13 18 48 / 10%) 0%,
+    rgb(13 18 48 / 35%) 45%,
+    rgb(7 10 30 / 94%) 100%
+  );
+  content: "";
 }
 
-.location-card.active span {
-  writing-mode: initial;
-  transform: none;
-  font-size: 28px;
-  transition:
-    writing-mode 0s linear,
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s,
-    font-size 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+/* Yellow line sa baba, lumalabas pag hover */
+.location-card-frame::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  height: 4px;
+  background: #f9d84a;
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.location-card.active small {
-  display: -webkit-box;
-  max-width: 340px;
-  margin-top: 7px;
-  overflow: hidden;
+/* EMPTY STATE: navy + blue glow + manipis na grid */
+.location-card.empty .location-card-bg {
+  display: none;
+}
+
+.location-card.empty .location-card-frame {
+  background-image:
+    radial-gradient(circle at 50% 0%, rgb(17 43 193 / 65%), transparent 65%),
+    linear-gradient(rgb(255 255 255 / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 5%) 1px, transparent 1px),
+    linear-gradient(180deg, #151b4a 0%, #080b24 100%);
+  background-size:
+    100% 100%,
+    28px 28px,
+    28px 28px,
+    100% 100%;
+}
+
+/* Rank number (outline, parang Top 10) */
+.location-card-rank {
+  position: absolute;
+  top: 8px;
+  left: 14px;
+  z-index: 2;
+  color: transparent;
+  font-size: 84px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -4px;
+  -webkit-text-stroke: 2px rgb(255 255 255 / 85%);
+}
+
+.location-card-chip {
+  position: absolute;
+  top: 16px;
+  left: 14px;
+  z-index: 2;
+  padding: 6px 12px;
+  border: 1px solid rgb(249 216 74 / 55%);
+  border-radius: 999px;
+  background: rgb(249 216 74 / 14%);
+  color: #f9d84a;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.location-card-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 18px;
+}
+
+.location-card-title {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-shadow: 0 2px 10px rgb(0 0 0 / 55%);
+}
+
+.location-card-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(255 255 255 / 86%);
   font-size: 13px;
   font-weight: 600;
-  line-height: 1.45;
-  opacity: 1;
-  transition: opacity 0.45s ease 0.22s;
-  -webkit-box-orient: vertical;
-  /* -webkit-line-clamp: 2; */
 }
 
-.location-card.active.empty small {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.location-card i {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
-  z-index: 1;
-  display: grid;
-  width: 32px;
-  height: 32px;
-  place-items: center;
+.location-card-count::before {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #ffffff;
-  color: #112bc1;
+  background: #f9d84a;
+  content: "";
+}
+
+.location-card.empty .location-card-count::before {
+  background: rgb(255 255 255 / 40%);
+}
+
+/* Info na lumalabas pag hover */
+.location-card-description {
+  display: -webkit-box;
+  max-height: 0;
+  margin: 0;
+  overflow: hidden;
+  color: rgb(255 255 255 / 82%);
+  font-size: 13px;
+  line-height: 1.45;
+  opacity: 0;
   transition:
-    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    background 0.3s ease;
+    max-height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    margin 0.35s ease,
+    opacity 0.35s ease;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
-.location-card.active i {
-  transform: rotate(90deg);
+.location-card-cta {
+  display: inline-flex;
+  width: fit-content;
+  max-height: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f9d84a;
+  color: #0d1230;
+  font-size: 13px;
+  font-weight: 800;
+  opacity: 0;
+  transition:
+    max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    margin 0.35s ease,
+    opacity 0.35s ease;
 }
 
-.location-card:hover i {
+.location-card-cta i {
+  font-size: 11px;
+}
+
+/* HOVER / FOCUS */
+.location-card:hover .location-card-frame,
+.location-card:focus-visible .location-card-frame {
+  border-color: rgb(255 255 255 / 45%);
+  box-shadow: 0 14px 22px -8px rgb(8 12 40 / 50%);
+  transform: scale(1.06);
+}
+
+.location-card:hover .location-card-bg,
+.location-card:focus-visible .location-card-bg {
   transform: scale(1.08);
 }
 
-.location-card.active:hover i {
-  transform: rotate(90deg) scale(1.08);
+.location-card:hover .location-card-frame::after,
+.location-card:focus-visible .location-card-frame::after {
+  transform: scaleX(1);
 }
+
+.location-card:hover .location-card-description,
+.location-card:focus-visible .location-card-description {
+  max-height: 70px;
+  margin-top: 4px;
+  opacity: 1;
+}
+
+.location-card:hover .location-card-cta,
+.location-card:focus-visible .location-card-cta {
+  max-height: 40px;
+  margin-top: 8px;
+  padding: 10px 16px;
+  opacity: 1;
+}
+
+/* Netflix effect: dim lahat ng hindi naka-hover */
+.location-rail:hover .location-card:not(:hover) .location-card-frame {
+  filter: brightness(0.55) saturate(0.8);
+}
+
+/* Touch devices walang hover, kaya laging nakikita ang info */
+@media (hover: none) {
+  .location-card-description {
+    max-height: 70px;
+    margin-top: 4px;
+    opacity: 1;
+  }
+
+  .location-card-cta {
+    max-height: 40px;
+    margin-top: 8px;
+    padding: 10px 16px;
+    opacity: 1;
+  }
+}
+
+/* Prev / Next arrows */
+.location-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  margin-top: -23px;
+  border: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #112bc1;
+  font-size: 16px;
+  box-shadow: 0 8px 20px rgb(8 12 40 / 30%);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.25s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.location-arrow-prev {
+  left: -20px;
+}
+
+.location-arrow-next {
+  right: -20px;
+}
+
+.location-carousel:hover .location-arrow:not(:disabled),
+.location-arrow:focus-visible {
+  opacity: 1;
+}
+
+.location-arrow:hover {
+  background: #f9d84a;
+  transform: scale(1.08);
+}
+
+.location-arrow:disabled {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.location-carousel:not(.has-overflow) .location-arrow {
+  display: none;
+}
+
+@media (hover: none) {
+  .location-arrow {
+    display: none;
+  }
+}
+
+/* END LOCATION RAIL */
 
 .landlord-grid {
   display: grid;
@@ -1260,7 +1430,6 @@ main {
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
 }
 
-/* Image Section - Sagad hanggang gilid */
 /* Image Section - Sagad hanggang gilid */
 .home-landlord-photo {
   position: relative;
@@ -1657,10 +1826,15 @@ main {
   text-transform: uppercase;
 }
 
+@media (max-width: 1400px) {
+  .location-rail {
+    --location-per-view: 5;
+  }
+}
+
 @media (max-width: 1250px) {
-  .location-card {
-    height: 460px;
-    min-height: 460px;
+  .location-rail {
+    --location-per-view: 4;
   }
 
   .landlord-grid {
@@ -1676,28 +1850,14 @@ main {
    so the rail switches to fixed-width cards you can scroll/swipe through. */
 @media (max-width: 900px) {
   .location-rail {
-    width: max-content;
-    max-width: 100%;
-    margin-inline: 0;
-    overflow-x: auto;
-    padding: 10px 8px 30px;
-    scroll-snap-type: x proximity;
+    --location-per-view: 3;
+
+    padding-top: 26px;
+    padding-bottom: 48px;
   }
 
   .location-card {
-    flex: 0 0 110px;
-    width: 110px;
-    min-width: 110px;
-    height: 440px;
-    min-height: 440px;
-    scroll-snap-align: start;
-  }
-
-  .location-card.active {
-    flex: 0 0 min(440px, 78vw);
-    width: min(440px, 78vw);
-    min-width: 0;
-    scroll-snap-align: center;
+    height: 360px;
   }
 }
 
@@ -1720,17 +1880,22 @@ main {
     justify-content: space-between;
   }
 
-  .location-card {
-    flex: 0 0 92px;
-    width: 92px;
-    min-width: 92px;
-    height: 380px;
-    min-height: 380px;
+  .location-rail {
+    --location-gutter: 16px;
+    --location-gap: 12px;
+    --location-per-view: 2;
   }
 
-  .location-card.active {
-    flex: 0 0 min(380px, 84vw);
-    width: min(380px, 84vw);
+  .location-card {
+    height: 330px;
+  }
+
+  .location-card-title {
+    font-size: 20px;
+  }
+
+  .location-card-rank {
+    font-size: 64px;
   }
 
   .review-carousel {
@@ -1895,10 +2060,6 @@ main {
   transform: translateY(-6px);
 }
 
-.home-motion-ready .location-card.home-card-reveal.is-visible:hover {
-  transform: translateY(-4px);
-}
-
 .select-wrapper select {
   transition:
     border-color 0.2s ease,
@@ -1987,6 +2148,12 @@ main {
   .property-card,
   .property-image,
   .location-card,
+  .location-card-frame,
+  .location-card-frame::after,
+  .location-card-bg,
+  .location-card-description,
+  .location-card-cta,
+  .location-arrow,
   .home-landlord-card,
   .home-landlord-card img,
   .favorite-button,

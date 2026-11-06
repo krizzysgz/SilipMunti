@@ -36,7 +36,6 @@
   let currentUser = null;
   let allListings = [];
   let newlyAddedIndex = 0;
-  let activeLocation = "";
   let reviews = [];
   let verifiedLandlordList = [];
 
@@ -529,91 +528,170 @@
     renderPropertyGrid(newlyAddedListings, newlyAddedMessage, visibleListings);
   }
 
-  function buildLocationCardElement(barangay, listings, placeholderIndex) {
+  function createLocationElement(tag, className, text) {
+    const element = document.createElement(tag);
+    element.className = className;
+    if (text !== undefined) element.textContent = text;
+    return element;
+  }
+
+  function buildLocationCardElement(barangay, listings, rank) {
     const sample = listings[0] || null;
     const count = listings.length;
     const hasListings = count > 0;
 
-    // Use a real listing photo when available; otherwise fall back to a
-    // cycling placeholder image so every card always shows a background photo.
-    const image = sample
-      ? getListingImage(sample)
-      : placeholderLocationImages[
-          placeholderIndex % placeholderLocationImages.length
-        ];
-
     const description = sample?.description
       ? sample.description
       : "No available rentals yet in this area.";
-    const countText = hasListings
-      ? `${count} available`
-      : "No available rentals yet";
+    const countText = hasListings ? `${count} available` : "No rentals yet";
     const href = `${FRONTEND_BASE}/pages/properties/index.html?barangay=${encodeURIComponent(barangay)}`;
 
-    const anchor = document.createElement("a");
-    anchor.className = hasListings ? "location-card" : "location-card empty";
+    const anchor = createLocationElement(
+      "a",
+      hasListings ? "location-card" : "location-card empty",
+    );
     anchor.href = href;
     anchor.dataset.locationCard = barangay;
     anchor.setAttribute(
-      "style",
-      `background-image: linear-gradient(rgba(0, 0, 0, .22), rgba(0, 0, 0, .68)), url('${image}')`,
+      "aria-label",
+      `${barangay}: ${hasListings ? countText : "no available rentals yet"}`,
     );
-    anchor.setAttribute("aria-label", `${barangay} rentals`);
 
-    const copy = document.createElement("div");
-    copy.className = "location-card-copy";
+    // Real listing photo lang ang ginagamit. Walang inline background, para
+    // ang empty cards ay makuha ang navy pattern galing sa CSS.
+    if (hasListings) {
+      const fallbackImage = placeholderLocationImages[0];
+      const image = getListingImage(sample);
+      const setImage = (url) =>
+        anchor.style.setProperty(
+          "--location-image",
+          `url("${String(url).replace(/"/g, "%22")}")`,
+        );
 
-    const span = document.createElement("span");
-    span.textContent = barangay;
+      setImage(image);
 
-    const small = document.createElement("small");
-    small.dataset.count = countText;
-    small.dataset.description = description;
-    small.textContent = countText;
+      const probe = new Image();
+      probe.addEventListener("error", () => setImage(fallbackImage), {
+        once: true,
+      });
+      probe.src = image;
+    }
 
-    copy.append(span, small);
+    const frame = createLocationElement("span", "location-card-frame");
+    const background = createLocationElement("span", "location-card-bg");
+    background.setAttribute("aria-hidden", "true");
 
-    const icon = document.createElement("i");
-    icon.className = "fa-solid fa-plus";
+    const badge = hasListings
+      ? createLocationElement("span", "location-card-rank", String(rank))
+      : createLocationElement("span", "location-card-chip", "Coming soon");
+    badge.setAttribute("aria-hidden", "true");
 
-    anchor.append(copy, icon);
+    const body = createLocationElement("span", "location-card-body");
+    const title = createLocationElement(
+      "span",
+      "location-card-title",
+      barangay,
+    );
+    const countLabel = createLocationElement(
+      "span",
+      "location-card-count",
+      countText,
+    );
+    const descriptionLabel = createLocationElement(
+      "span",
+      "location-card-description",
+      description,
+    );
+    const cta = createLocationElement("span", "location-card-cta");
+    const ctaIcon = document.createElement("i");
+
+    ctaIcon.className = "fa-solid fa-arrow-right";
+    ctaIcon.setAttribute("aria-hidden", "true");
+    cta.append(hasListings ? "View rentals" : "View area", ctaIcon);
+
+    body.append(title, countLabel, descriptionLabel, cta);
+    frame.append(background, badge, body);
+    anchor.append(frame);
 
     return anchor;
   }
 
-  function setActiveLocationCard(barangay, { scroll = true } = {}) {
-    if (!popularLocations) return;
+  let locationCarousel = null;
 
-    const cards = popularLocations.querySelectorAll("[data-location-card]");
+  function createLocationArrow(direction) {
+    const button = document.createElement("button");
+    const icon = document.createElement("i");
 
-    cards.forEach((card) => {
-      const isActive = card.dataset.locationCard === barangay;
+    button.type = "button";
+    button.className = `location-arrow location-arrow-${direction}`;
+    button.setAttribute(
+      "aria-label",
+      direction === "prev" ? "Previous locations" : "Next locations",
+    );
+    icon.className = `fa-solid fa-chevron-${direction === "prev" ? "left" : "right"}`;
+    icon.setAttribute("aria-hidden", "true");
+    button.appendChild(icon);
 
-      card.classList.toggle("active", isActive);
+    return button;
+  }
 
-      const icon = card.querySelector("i");
-      icon?.classList.toggle("fa-plus", !isActive);
-      icon?.classList.toggle("fa-xmark", isActive);
+  // Binabalot ang #popular-locations sa isang wrapper at nilalagyan ng
+  // prev/next arrows. Isang beses lang ito tumatakbo.
+  function ensureLocationCarousel() {
+    if (!popularLocations) return null;
+    if (locationCarousel) return locationCarousel;
 
-      const small = card.querySelector("small");
-      if (small) {
-        small.textContent = isActive
-          ? small.dataset.description
-          : small.dataset.count;
-      }
+    const wrapper = document.createElement("div");
+    wrapper.className = "location-carousel";
+
+    popularLocations.parentNode.insertBefore(wrapper, popularLocations);
+    wrapper.appendChild(popularLocations);
+
+    const previousButton = createLocationArrow("prev");
+    const nextButton = createLocationArrow("next");
+
+    wrapper.append(previousButton, nextButton);
+
+    const update = () => {
+      const maxScroll =
+        popularLocations.scrollWidth - popularLocations.clientWidth;
+
+      wrapper.classList.toggle("has-overflow", maxScroll > 4);
+      previousButton.disabled = popularLocations.scrollLeft <= 4;
+      nextButton.disabled = popularLocations.scrollLeft >= maxScroll - 4;
+    };
+
+    // Isang buong "page" ng cards ang aabutin ng arrows
+    const scrollAmount = () => {
+      const card = popularLocations.querySelector(".location-card");
+      if (!card) return popularLocations.clientWidth;
+
+      const styles = getComputedStyle(popularLocations);
+      const gap = parseFloat(styles.columnGap) || 0;
+      const gutter = parseFloat(styles.paddingLeft) || 0;
+      const step = card.getBoundingClientRect().width + gap;
+      const visible = Math.max(
+        1,
+        Math.round((popularLocations.clientWidth - gutter * 2 + gap) / step),
+      );
+
+      return visible * step;
+    };
+
+    previousButton.addEventListener("click", () => {
+      popularLocations.scrollBy({ left: -scrollAmount(), behavior: "smooth" });
     });
 
-    activeLocation = barangay;
+    nextButton.addEventListener("click", () => {
+      popularLocations.scrollBy({ left: scrollAmount(), behavior: "smooth" });
+    });
 
-    if (scroll) {
-      popularLocations
-        .querySelector(`[data-location-card="${CSS.escape(barangay)}"]`)
-        ?.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-          inline: "center",
-        });
-    }
+    popularLocations.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+
+    locationCarousel = { update };
+
+    return locationCarousel;
   }
 
   function renderPopularLocations() {
@@ -632,6 +710,7 @@
       listingsByBarangay.set(barangay, listings);
     });
 
+    // Pinakamaraming available na rentals ang una (rank 1, 2, 3...).
     const sortedBarangays = barangays
       .map((barangay) => ({
         barangay,
@@ -639,29 +718,18 @@
       }))
       .sort((a, b) => b.listings.length - a.listings.length);
 
-    const firstAvailableLocation = sortedBarangays.find(
-      (item) => item.listings.length > 0,
-    )?.barangay;
-
-    if (!activeLocation || !listingsByBarangay.get(activeLocation)?.length) {
-      activeLocation =
-        firstAvailableLocation || sortedBarangays[0]?.barangay || "";
-    }
-
-    // Built once from scratch here (e.g. on initial load or when listings
-    // data changes). Switching the active card afterwards happens through
-    // setActiveLocationCard(), which only toggles classes on these same
-    // elements instead of re-creating them — that's what lets the CSS
-    // transitions actually animate.
     popularLocations.innerHTML = "";
 
     sortedBarangays.forEach(({ barangay, listings }, index) => {
       popularLocations.appendChild(
-        buildLocationCardElement(barangay, listings, index),
+        buildLocationCardElement(barangay, listings, index + 1),
       );
     });
 
-    setActiveLocationCard(activeLocation, { scroll: false });
+    const carousel = ensureLocationCarousel();
+    popularLocations.scrollLeft = 0;
+    carousel?.update();
+    requestAnimationFrame(() => carousel?.update());
   }
 
   function renderVerifiedLandlords() {
@@ -981,7 +1049,145 @@
     }
   }
 
+  function enableMouseDrag(rail) {
+    if (!rail) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let activePointer = null;
+    let startX = 0;
+    let lastX = 0;
+    let lastTime = 0;
+    let velocity = 0;
+    let startScrollLeft = 0;
+    let moved = false;
+    let animation = 0;
+
+    const stopAnimation = () => {
+      cancelAnimationFrame(animation);
+      animation = 0;
+      rail.classList.remove("is-dragging");
+    };
+
+    const finishDrag = (event) => {
+      if (event.pointerId !== activePointer) return;
+      activePointer = null;
+      if (!moved) return;
+
+      const maxScroll = rail.scrollWidth - rail.clientWidth;
+      const projected = Math.max(
+        0,
+        Math.min(maxScroll, rail.scrollLeft - velocity * 130),
+      );
+      const cards = Array.from(rail.children).filter((card) =>
+        card.matches(".property-card, .home-landlord-card, .location-card"),
+      );
+      const railLeft = rail.getBoundingClientRect().left;
+      const padding = parseFloat(getComputedStyle(rail).scrollPaddingLeft) || 0;
+      const targets = cards.map((card) =>
+        Math.max(
+          0,
+          Math.min(
+            maxScroll,
+            rail.scrollLeft +
+              card.getBoundingClientRect().left -
+              railLeft -
+              padding,
+          ),
+        ),
+      );
+      const target = targets.length
+        ? targets.reduce(
+            (best, position) =>
+              Math.abs(position - projected) < Math.abs(best - projected)
+                ? position
+                : best,
+            targets[0],
+          )
+        : projected;
+
+      if (reducedMotion.matches || Math.abs(target - rail.scrollLeft) < 1) {
+        rail.scrollLeft = target;
+        rail.classList.remove("is-dragging");
+        return;
+      }
+
+      const from = rail.scrollLeft;
+      const started = performance.now();
+      const duration = 260;
+      const animate = (now) => {
+        const t = Math.min((now - started) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        rail.scrollLeft = from + (target - from) * ease;
+        if (t < 1) {
+          animation = requestAnimationFrame(animate);
+        } else {
+          animation = 0;
+          rail.classList.remove("is-dragging");
+        }
+      };
+      animation = requestAnimationFrame(animate);
+    };
+
+    rail.addEventListener("dragstart", (event) => {
+      if (activePointer !== null) event.preventDefault();
+    });
+
+    rail.addEventListener("pointerdown", (event) => {
+      if (event.pointerType !== "mouse" || event.button !== 0) return;
+      if (rail.scrollWidth <= rail.clientWidth + 1) return;
+      if (event.target.closest("button, input, select, textarea")) return;
+      stopAnimation();
+      activePointer = event.pointerId;
+      startX = lastX = event.clientX;
+      lastTime = performance.now();
+      velocity = 0;
+      startScrollLeft = rail.scrollLeft;
+      moved = false;
+    });
+
+    rail.addEventListener("pointermove", (event) => {
+      if (event.pointerId !== activePointer) return;
+      const distance = event.clientX - startX;
+      if (!moved && Math.abs(distance) < 5) return;
+      if (!moved) {
+        moved = true;
+        rail.classList.add("is-dragging");
+        rail.setPointerCapture(event.pointerId);
+      }
+      const now = performance.now();
+      const elapsed = now - lastTime;
+      if (elapsed > 0) {
+        velocity = velocity * 0.7 + ((event.clientX - lastX) / elapsed) * 0.3;
+      }
+      lastX = event.clientX;
+      lastTime = now;
+      rail.scrollLeft = startScrollLeft - distance;
+      event.preventDefault();
+    });
+
+    rail.addEventListener("pointerup", finishDrag);
+    rail.addEventListener("pointercancel", finishDrag);
+    rail.addEventListener("lostpointercapture", finishDrag);
+    rail.addEventListener(
+      "click",
+      (event) => {
+        if (!moved) return;
+        event.preventDefault();
+        event.stopPropagation();
+        moved = false;
+      },
+      true,
+    );
+  }
+
   function bindEvents() {
+    [
+      newlyAddedListings,
+      featuredListings,
+      popularLocations,
+      verifiedLandlords,
+    ].forEach(enableMouseDrag);
+
     propertySearchForm?.addEventListener("submit", (event) => {
       event.preventDefault();
 
@@ -1014,18 +1220,6 @@
       );
       newlyAddedIndex = (newlyAddedIndex + 1) % freshCount;
       renderNewlyAddedListings();
-    });
-
-    popularLocations?.addEventListener("click", (event) => {
-      const card = event.target.closest("[data-location-card]");
-      if (!card) return;
-
-      const selectedLocation = card.dataset.locationCard;
-
-      if (selectedLocation && selectedLocation !== activeLocation) {
-        event.preventDefault();
-        setActiveLocationCard(selectedLocation);
-      }
     });
   }
 

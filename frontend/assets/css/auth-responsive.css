@@ -1,0 +1,353 @@
+/* =========================================================
+   SilipMunti – AUTH PAGES RESPONSIVE FIX
+   (login / register / forgot password)
+
+   I-link ito PINAKAHULI, pagkatapos ng auth css mo:
+   <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/auth-responsive.css?v=1" />
+
+   Bakit kailangan: may mga rule sa dulo ng CSS mo (.register-page,
+   .register-shell, .register-form-section, .field-row !important,
+   :has(.forgot-password-card)) na nag-o-override sa mga media query
+   sa taas, kaya hindi gumagana ang mobile styles.
+   ========================================================= */
+
+/* ---------- Pangkalahatan ---------- */
+.auth-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* 16px para hindi mag-auto-zoom ang iOS pag nag-focus sa input */
+.input-group input {
+  font-size: 16px;
+}
+
+.turnstile-section {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* ---------- Laptop / small desktop (<= 1100px) ---------- */
+@media (max-width: 1100px) {
+  .auth-shell {
+    grid-template-columns: 55% 45%;
+  }
+
+  .auth-form-section {
+    padding: 40px 36px;
+  }
+
+  .register-form-section,
+  .auth-form-section:has(.forgot-password-card) {
+    padding: 22px 32px;
+  }
+
+  .auth-visual {
+    padding: 48px 38px;
+  }
+
+  .visual-content h2 {
+    font-size: 38px;
+  }
+
+  .register-card .field-row {
+    gap: 12px !important;
+  }
+}
+
+/* ---------- Tablet (<= 900px): stack, compact banner sa taas ---------- */
+@media (max-width: 900px) {
+  .auth-page,
+  .register-page,
+  .auth-page:has(.forgot-password-card) {
+    padding: 20px;
+  }
+
+  .auth-shell,
+  .register-shell {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .auth-visual {
+    grid-row: 1;
+    min-height: 0;
+    padding: 36px 32px 52px; /* extra sa baba para sa overlap ng form card */
+  }
+
+  .visual-content {
+    max-width: none;
+  }
+
+  .visual-icon {
+    width: 54px;
+    height: 54px;
+    margin-bottom: 16px;
+    font-size: 22px;
+  }
+
+  .visual-content h2 {
+    font-size: 34px;
+  }
+
+  .visual-content > p {
+    max-width: 520px;
+    margin: 12px 0 0;
+  }
+
+  .visual-features {
+    display: none; /* tanggal ang chips para umikli */
+  }
+
+  /* form card na bahagyang umaakyat sa banner */
+  .auth-form-section,
+  .register-form-section,
+  .auth-form-section:has(.forgot-password-card) {
+    position: relative;
+    z-index: 2;
+    margin-top: -24px;
+    padding: 36px 32px 40px;
+    overflow: visible;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .auth-card,
+  .register-card,
+  .forgot-password-card {
+    max-width: 520px;
+  }
+}
+
+/* ---------- Mobile (<= 560px) ---------- */
+@media (max-width: 560px) {
+  .auth-page,
+  .register-page,
+  .auth-page:has(.forgot-password-card) {
+    padding: 0;
+    background: #ffffff;
+  }
+
+  .auth-shell,
+  .register-shell {
+    min-height: 100vh;
+    min-height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+    animation: none;
+  }
+
+  /* compact banner */
+  .auth-visual {
+    padding: 28px 22px 48px;
+  }
+
+  .visual-icon {
+    display: none;
+  }
+
+  .visual-content h2 {
+    font-size: 27px;
+    line-height: 1.12;
+    letter-spacing: -0.5px;
+  }
+
+  .visual-content > p {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .auth-visual::after {
+    right: -120px;
+    bottom: -150px;
+    width: 300px;
+    height: 300px;
+    border-width: 50px;
+  }
+
+  .auth-form-section,
+  .register-form-section,
+  .auth-form-section:has(.forgot-password-card) {
+    margin-top: -22px;
+    padding: 30px 20px 36px;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .auth-card,
+  .register-card,
+  .forgot-password-card {
+    max-width: none;
+  }
+
+  /* logo + heading */
+  .auth-logo {
+    width: 125px;
+    margin-bottom: 14px;
+  }
+
+  .auth-logo img {
+    height: 80px;
+  }
+
+  .register-logo {
+    width: 105px;
+  }
+
+  .register-logo img {
+    height: 62px;
+  }
+
+  .auth-heading {
+    margin-bottom: 20px;
+  }
+
+  .auth-heading h1,
+  .register-card .auth-heading h1,
+  .forgot-password-card .auth-heading h1 {
+    font-size: 26px;
+  }
+
+  /* inputs mas madaling i-tap */
+  .input-group input,
+  .register-card .input-group input,
+  .forgot-password-card .input-group input,
+  #reset-panel .input-group input {
+    height: 50px;
+  }
+
+  .login-button,
+  .register-card .login-button,
+  .forgot-password-card .login-button {
+    height: 52px;
+  }
+
+  /* register: isang column lahat */
+  .register-card .field-row,
+  .field-row {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+
+  .role-selection,
+  .register-card .role-selection {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .register-card .role-option span {
+    min-height: 64px;
+    grid-template-columns: 28px 1fr;
+    padding: 9px 10px;
+  }
+
+  .password-requirements {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px 8px !important;
+    font-size: 10.5px;
+  }
+
+  /* login options: sa isang line pa rin kung kasya */
+  .login-options {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 14px;
+  }
+
+  /* OTP boxes */
+  .otp-boxes {
+    gap: 7px;
+  }
+
+  .otp-box,
+  .otp-field .otp-boxes .otp-box {
+    font-size: 21px;
+    border-radius: 10px;
+  }
+
+  .otp-panel {
+    padding: 4px 0;
+  }
+
+  #reset-panel .otp-actions,
+  #verify-panel .otp-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 12px;
+  }
+
+  .back-link {
+    font-size: 12px;
+  }
+}
+
+/* ---------- Maliliit na phone (<= 380px) ---------- */
+@media (max-width: 380px) {
+  .auth-form-section,
+  .register-form-section,
+  .auth-form-section:has(.forgot-password-card) {
+    padding-inline: 16px;
+  }
+
+  .visual-content h2 {
+    font-size: 24px;
+  }
+
+  .role-selection,
+  .register-card .role-selection {
+    grid-template-columns: 1fr;
+  }
+
+  .password-requirements {
+    grid-template-columns: 1fr !important;
+  }
+
+  .otp-boxes {
+    gap: 5px;
+  }
+
+  .otp-box,
+  .otp-field .otp-boxes .otp-box {
+    font-size: 19px;
+  }
+
+  /* Turnstile (300px ang native width) */
+  .turnstile-section #turnstile-widget {
+    transform: scale(0.88);
+    transform-origin: center top;
+    min-height: 58px;
+  }
+}
+
+/* ---------- Landscape phones / maiikling screen ---------- */
+@media (max-height: 520px) and (orientation: landscape) {
+  .auth-visual {
+    display: none;
+  }
+
+  .auth-form-section,
+  .register-form-section,
+  .auth-form-section:has(.forgot-password-card) {
+    margin-top: 0;
+    border-radius: 0;
+  }
+}
+@media (max-width: 560px) {
+  .auth-form-section {
+    place-items: start center; /* itaas na ang simula, hindi naka-center */
+  }
+
+  .login-options {
+    margin: 0 0 14px;
+  }
+
+  .input-group + .field-error:empty {
+    display: none; /* tanggal ang bakanteng espasyo sa pagitan ng fields */
+  }
+
+  .turnstile-section {
+    margin-bottom: 14px !important;
+  }
+}

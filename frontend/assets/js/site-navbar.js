@@ -21,11 +21,21 @@ class SiteNavbar extends HTMLElement {
             class="mobile-menu-button"
             id="mobile-menu-button"
             aria-label="Open navigation menu"
+            aria-controls="navbar-content"
+            aria-expanded="false"
           >
             <i class="fa-solid fa-bars"></i>
           </button>
 
-          <div class="navbar-content" id="navbar-content">
+          <button type="button" class="navbar-backdrop" id="navbar-backdrop"
+            aria-label="Close navigation menu" tabindex="-1" aria-hidden="true"></button>
+
+          <div class="navbar-content" id="navbar-content" aria-label="Site navigation">
+            <div class="mobile-drawer-heading">
+              <span>MENU</span>
+              <button type="button" class="mobile-menu-close" id="mobile-menu-close"
+                aria-label="Close navigation menu"><i class="fa-solid fa-xmark"></i></button>
+            </div>
             <ul class="navbar-links">
               <li>
                 <a href="/SilipMunti/frontend/index.html"${isActive("home")}>
@@ -86,6 +96,7 @@ class SiteNavbar extends HTMLElement {
                   class="profile-menu-button"
                   id="profile-menu-button"
                   aria-label="Open profile menu"
+                  aria-controls="profile-dropdown"
                   aria-expanded="false"
                 >
                   <img
@@ -93,6 +104,7 @@ class SiteNavbar extends HTMLElement {
                     src="/SilipMunti/frontend/assets/images/default-profile.svg"
                     alt="Profile picture"
                   />
+                  <span class="mobile-profile-label">Profile</span>
                 </button>
 
                 <div class="profile-dropdown hidden" id="profile-dropdown">
@@ -255,8 +267,9 @@ const SilipMuntiSiteNavbar = (() => {
     if (!image) return;
 
     image.addEventListener("error", () => {
-      image.onerror = null;
-      image.src = `${FRONTEND_ROOT}/assets/images/default-profile.svg`;
+      if (!image.src.endsWith("/default-profile.svg")) {
+        image.src = `${FRONTEND_ROOT}/assets/images/default-profile.svg`;
+      }
     });
   }
 
@@ -289,24 +302,59 @@ const SilipMuntiSiteNavbar = (() => {
     button.setAttribute("aria-expanded", String(!isHidden));
   }
 
-  function closeMobileMenu() {
-    document.querySelector("#navbar-content")?.classList.remove("open");
-    document
-      .querySelector("#mobile-menu-button")
-      ?.setAttribute("aria-expanded", "false");
+  const mobileBreakpoint = window.matchMedia("(max-width: 850px)");
+  let focusBeforeOpen = null;
+
+  function closeMobileMenu(restoreFocus = true) {
+    const content = document.querySelector("#navbar-content");
+    const button = document.querySelector("#mobile-menu-button");
+    const wasOpen = content?.classList.contains("open");
+    content?.classList.remove("open");
+    document.querySelector("#navbar-backdrop")?.classList.remove("open");
+    button?.setAttribute("aria-expanded", "false");
+    button?.setAttribute("aria-label", "Open navigation menu");
+    document.body.classList.remove("mobile-nav-open");
+    closeProfileDropdown();
+    if (wasOpen && restoreFocus && focusBeforeOpen?.isConnected) {
+      focusBeforeOpen.focus();
+    }
+    focusBeforeOpen = null;
   }
 
   function toggleMobileMenu() {
     const button = document.querySelector("#mobile-menu-button");
     const content = document.querySelector("#navbar-content");
+    if (!button || !content || !mobileBreakpoint.matches) return;
+    if (content.classList.contains("open")) {
+      closeMobileMenu();
+      return;
+    }
+    focusBeforeOpen = document.activeElement;
+    content.classList.add("open");
+    document.querySelector("#navbar-backdrop")?.classList.add("open");
+    button.setAttribute("aria-expanded", "true");
+    button.setAttribute("aria-label", "Close navigation menu");
+    document.body.classList.add("mobile-nav-open");
+    document.querySelector("#mobile-menu-close")?.focus();
+  }
 
-    if (!button || !content) return;
-
-    content.classList.toggle("open");
-    button.setAttribute(
-      "aria-expanded",
-      String(content.classList.contains("open")),
-    );
+  function trapDrawerFocus(event) {
+    if (event.key !== "Tab" || !mobileBreakpoint.matches) return;
+    const drawer = document.querySelector("#navbar-content.open");
+    if (!drawer) return;
+    const focusable = [
+      ...drawer.querySelectorAll("a[href], button:not([disabled])"),
+    ].filter((element) => element.getClientRects().length);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   async function hydrateUser() {
@@ -394,6 +442,12 @@ const SilipMuntiSiteNavbar = (() => {
         return;
       }
 
+      if (target.closest("#mobile-menu-close, #navbar-backdrop")) {
+        event.preventDefault();
+        closeMobileMenu();
+        return;
+      }
+
       if (target.closest("#profile-menu-button")) {
         event.preventDefault();
         event.stopPropagation();
@@ -403,6 +457,7 @@ const SilipMuntiSiteNavbar = (() => {
 
       if (target.closest("#logout-button")) {
         event.preventDefault();
+        closeMobileMenu(false);
         logout();
         return;
       }
@@ -414,15 +469,14 @@ const SilipMuntiSiteNavbar = (() => {
         return;
       }
 
-      if (!target.closest(".profile-menu")) {
-        closeProfileDropdown();
+      if (target.closest("#navbar-content a[href]")) {
+        closeMobileMenu(false);
+        return;
       }
 
-      if (
-        !target.closest("#navbar-content") &&
-        !target.closest("#mobile-menu-button")
-      ) {
-        closeMobileMenu();
+      if (!target.closest(".profile-menu")) closeProfileDropdown();
+      if (!target.closest("#navbar-content, #mobile-menu-button")) {
+        closeMobileMenu(false);
       }
     });
 
@@ -431,12 +485,11 @@ const SilipMuntiSiteNavbar = (() => {
         closeProfileDropdown();
         closeMobileMenu();
       }
+      trapDrawerFocus(event);
     });
 
     window.addEventListener("resize", () => {
-      if (window.innerWidth > 900) {
-        closeMobileMenu();
-      }
+      if (!mobileBreakpoint.matches) closeMobileMenu(false);
     });
   }
 

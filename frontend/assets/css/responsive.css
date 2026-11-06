@@ -55,10 +55,6 @@ button {
   max-width: 100%;
 }
 
-site-navbar .mobile-navbar-logout {
-  display: none;
-}
-
 .section-container,
 .hero-container,
 .properties-container,
@@ -144,87 +140,6 @@ site-navbar .mobile-navbar-logout {
 }
 
 @media (max-width: 850px) {
-  site-navbar .site-header,
-  site-navbar .navbar {
-    min-height: 72px;
-  }
-
-  site-navbar .navbar {
-    padding-inline: 16px;
-  }
-
-  site-navbar .navbar-logo {
-    flex-basis: 116px;
-  }
-
-  site-navbar .navbar-logo img {
-    width: 116px;
-    height: 48px;
-  }
-
-  site-navbar .mobile-menu-button {
-    width: 44px;
-    height: 44px;
-  }
-
-  site-navbar .navbar-content {
-    top: calc(100% + 8px);
-    right: 12px;
-    left: 12px;
-    max-height: calc(100dvh - 92px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-
-  site-navbar .navbar-content.open > .user-actions {
-    flex-wrap: wrap;
-  }
-
-  site-navbar .mobile-navbar-logout {
-    order: 3;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    flex: 0 0 100%;
-    width: 100%;
-    min-height: 44px;
-    margin-top: 2px;
-    padding: 10px 16px;
-    border: 1px solid #dbe2ff;
-    border-radius: 12px;
-    color: #112bc1;
-    background: #f5f7ff;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition:
-      color 0.2s ease,
-      border-color 0.2s ease,
-      background 0.2s ease;
-  }
-
-  site-navbar .mobile-navbar-logout:hover,
-  site-navbar .mobile-navbar-logout:focus-visible {
-    border-color: #112bc1;
-    color: #ffffff;
-    background: #112bc1;
-    outline: none;
-  }
-
-  site-navbar .profile-dropdown {
-    position: fixed;
-    top: calc(84px + env(safe-area-inset-top));
-    right: clamp(16px, 7vw, 32px);
-    left: clamp(16px, 7vw, 32px);
-    z-index: 1400;
-    width: auto;
-    max-height: calc(100dvh - 100px - env(safe-area-inset-top));
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
-
   .notification-dropdown {
     position: fixed;
     top: 80px;
@@ -236,22 +151,6 @@ site-navbar .mobile-navbar-logout {
 
   .notification-list {
     max-height: calc(100dvh - 220px);
-  }
-}
-
-@media (max-width: 850px) and (max-height: 650px) {
-  site-navbar .profile-summary {
-    padding: 14px 16px;
-  }
-
-  site-navbar .profile-summary img {
-    width: 44px;
-    height: 44px;
-  }
-
-  site-navbar .dropdown-link {
-    min-height: 42px;
-    padding: 10px 16px;
   }
 }
 
@@ -392,7 +291,7 @@ site-navbar .mobile-navbar-logout {
     overflow-x: auto;
     overflow-y: hidden;
     scroll-padding-inline: var(--sm-responsive-gutter);
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
     overscroll-behavior-inline: contain;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -469,7 +368,7 @@ site-navbar .mobile-navbar-logout {
     overflow-x: auto;
     overflow-y: hidden;
     scroll-padding-inline: var(--sm-responsive-gutter);
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
     overscroll-behavior-inline: contain;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -857,5 +756,369 @@ site-navbar .mobile-navbar-logout {
   .landlord-showcase-section .landlord-grid,
   .location-rail {
     scroll-behavior: auto;
+  }
+}
+
+/* Shared content sizing for compact screens and wide monitors. */
+@media (max-width: 767px) {
+  .admin-content,
+  .dashboard-content,
+  .messages-layout,
+  .landlord-form-page {
+    min-width: 0;
+  }
+
+  .admin-table-wrapper table,
+  .table-wrapper table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .admin-topbar button,
+  .dashboard-topbar button,
+  .form-actions button,
+  .create-form-actions button {
+    min-height: 44px;
+  }
+}
+
+@media (min-width: 1441px) {
+  .admin-content,
+  .dashboard-content {
+    min-width: 0;
+  }
+  .section-container,
+  .hero-container,
+  .properties-container,
+  .property-container,
+  .about-container,
+  .footer-container {
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .location-rail {
+    scroll-snap-type: x proximity;
+  }
+}
+
+/* Touch keeps native momentum; mouse drag snaps after release. */
+.home-section .property-grid,
+.landlord-showcase-section .landlord-grid,
+.location-rail {
+  touch-action: pan-x pan-y;
+}
+
+.home-section .property-grid.is-dragging,
+.landlord-showcase-section .landlord-grid.is-dragging,
+.location-rail.is-dragging {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  cursor: grabbing;
+  user-select: none;
+}
+
+.home-section .property-grid.is-dragging img,
+.landlord-showcase-section .landlord-grid.is-dragging img,
+.location-rail.is-dragging img {
+  pointer-events: none;
+}
+
+/* Compact property cards on phones. Keep the wider carousel on tablets. */
+@media (max-width: 767px) {
+  .properties-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(8px, 2.5vw, 12px);
+  }
+
+  .properties-grid .property-image-wrapper {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .properties-grid .property-card-content {
+    padding: clamp(9px, 2.5vw, 13px);
+  }
+
+  .properties-grid .property-price {
+    margin-bottom: 5px;
+    font-size: clamp(13px, 3.6vw, 16px);
+  }
+
+  .properties-grid .property-price span {
+    font-size: 10px;
+  }
+
+  .properties-grid .property-title {
+    margin-bottom: 6px;
+    font-size: clamp(12px, 3.5vw, 15px);
+    line-height: 1.35;
+  }
+
+  .properties-grid .property-location,
+  .properties-grid .property-information {
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .properties-grid .property-information {
+    margin-bottom: 0;
+    gap: 5px 9px;
+  }
+
+  .properties-grid .property-description,
+  .properties-grid .property-divider,
+  .properties-grid .property-amenities {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-section .property-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: min(100%, 360px);
+    gap: 12px;
+    margin-inline: calc(var(--sm-responsive-gutter) * -1);
+    padding: 4px var(--sm-responsive-gutter) 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: var(--sm-responsive-gutter);
+  }
+
+  .home-section .property-card,
+  .home-section .property-skeleton {
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .home-section .property-image-wrapper {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .home-section .property-card-content {
+    padding: clamp(9px, 2.5vw, 13px);
+  }
+
+  .home-section .property-price {
+    margin-bottom: 5px;
+    font-size: clamp(13px, 3.6vw, 16px);
+  }
+
+  .home-section .property-price span {
+    font-size: 10px;
+  }
+
+  .home-section .property-title {
+    margin-bottom: 6px;
+    font-size: clamp(12px, 3.5vw, 15px);
+    line-height: 1.35;
+  }
+
+  .home-section .property-location,
+  .home-section .property-information {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  .home-section .property-information {
+    gap: 5px 9px;
+  }
+
+  .home-section .section-actions .carousel-button {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .property-grid .property-type-badge,
+  .properties-grid .property-type-badge {
+    bottom: 7px;
+    left: 7px;
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .property-grid .favorite-button,
+  .properties-grid .favorite-button {
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
+}
+
+/* Compact directory cards; homepage keeps its horizontal carousel. */
+@media (max-width: 767px) {
+  .landlord-directory-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    gap: clamp(8px, 2.5vw, 12px);
+    min-width: 0;
+    margin-inline: 0;
+    padding: 0 0 12px;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .directory-landlord-card {
+    min-width: 0;
+    border-radius: 12px;
+  }
+  .directory-card-cover {
+    height: 66px;
+  }
+  .directory-card-avatar {
+    top: 36px;
+    left: 10px;
+    width: 56px;
+    height: 56px;
+    border-width: 3px;
+  }
+
+  .directory-verified-badge {
+    top: 8px;
+    right: 7px;
+    gap: 3px;
+    padding: 4px 6px;
+    font-size: 8px;
+  }
+
+  .directory-card-content {
+    min-height: 0;
+    padding: 33px clamp(9px, 2.5vw, 13px) 12px;
+  }
+
+  .directory-card-content h2 {
+    font-size: clamp(11px, 3vw, 13px);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  .directory-card-stats {
+    gap: 5px 8px;
+    margin: 8px 0;
+    font-size: 10px;
+  }
+
+  .directory-card-location {
+    min-height: 0;
+    gap: 4px;
+    margin-bottom: 10px;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+  }
+
+  .directory-card-action {
+    gap: 5px;
+    min-height: 44px;
+    padding-top: 8px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-panel,
+  .properties-filters,
+  .landlord-directory-filters {
+    gap: 12px;
+    padding: clamp(12px, 3.5vw, 16px);
+  }
+
+  .search-panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-panel .search-field:first-child,
+  .search-panel .search-button {
+    grid-column: 1 / -1;
+  }
+
+  .search-field {
+    min-width: 0;
+  }
+
+  .search-field label,
+  .filter-field label,
+  .filter-search label,
+  .landlord-directory-filters label {
+    font-size: 12px;
+  }
+
+  .select-wrapper select,
+  .filter-input input,
+  .filter-input select,
+  .directory-input input,
+  .directory-input select {
+    min-width: 0;
+    height: 46px;
+    font-size: 16px;
+  }
+
+  .search-panel .select-wrapper select {
+    padding-left: 32px;
+    padding-right: 22px;
+  }
+
+  .search-panel .select-wrapper > i:first-child {
+    left: 10px;
+    font-size: 13px;
+  }
+
+  .search-panel .select-arrow {
+    right: 8px;
+    font-size: 10px;
+  }
+
+  .properties-filters,
+  .landlord-directory-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .properties-filters .filter-search,
+  .properties-filters .filter-actions,
+  .properties-filters .filter-field:nth-child(6),
+  .landlord-directory-filters .directory-search-field {
+    grid-column: 1 / -1;
+  }
+
+  .properties-filters .filter-actions {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .properties-filters .filter-actions > button,
+  .landlord-directory-filters > button {
+    min-width: 0;
+    width: auto;
+    min-height: 44px;
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+
+  .properties-filters .filter-input > i,
+  .landlord-directory-filters .directory-input > i {
+    left: 11px;
+    font-size: 13px;
+  }
+
+  .properties-filters .filter-input input,
+  .properties-filters .filter-input select,
+  .landlord-directory-filters .directory-input input,
+  .landlord-directory-filters .directory-input select {
+    padding-left: 32px;
+    padding-right: 7px;
+  }
+
+  .landlord-directory-filters .directory-filter-button,
+  .landlord-directory-filters .directory-reset-button {
+    grid-column: auto;
+    margin: 0;
   }
 }

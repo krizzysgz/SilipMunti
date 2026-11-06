@@ -160,7 +160,12 @@
   function setLoading(isLoading) {
     state.loading = isLoading;
 
-    [elements.refresh, elements.exportExcel, elements.exportWord, elements.print].forEach((button) => {
+    [
+      elements.refresh,
+      elements.exportExcel,
+      elements.exportWord,
+      elements.print,
+    ].forEach((button) => {
       if (button) button.disabled = isLoading;
     });
 
@@ -282,14 +287,20 @@
         .join("")}
     `;
 
-    if ([...elements.rentalType.options].some((option) => option.value === selected)) {
+    if (
+      [...elements.rentalType.options].some(
+        (option) => option.value === selected,
+      )
+    ) {
       elements.rentalType.value = selected;
     }
   }
 
   function selectedRentalTypeName() {
-    return elements.rentalType?.selectedOptions?.[0]?.textContent ||
-      "All rental types";
+    return (
+      elements.rentalType?.selectedOptions?.[0]?.textContent ||
+      "All rental types"
+    );
   }
 
   function reportContext(data) {
@@ -352,7 +363,10 @@
     setText("#kpi-favorites", number(overview.favorites));
     setText("#kpi-response-rate", percent(overview.landlord_response_rate));
     setText("#kpi-average-rating", rating(overview.average_rating));
-    setText("#kpi-pending-verifications", number(overview.pending_verifications));
+    setText(
+      "#kpi-pending-verifications",
+      number(overview.pending_verifications),
+    );
     setText("#kpi-total-reviews", number(overview.total_reviews));
 
     applyTrend("#trend-new-users", overview.trends.new_users, "users");
@@ -377,21 +391,56 @@
         : "No barangay-level demand signal was recorded for the selected scope.",
     ].join(" ");
 
-    setText("#print-summary-title", "Platform performance and management priorities");
+    setText(
+      "#print-summary-title",
+      "Platform performance and management priorities",
+    );
     setText("#print-executive-summary", summary);
 
     const tableBody = document.querySelector("#print-kpi-table-body");
     if (!tableBody) return;
 
     const rows = [
-      ["New users", number(overview.new_users), trendText(overview.trends.new_users, "users")],
-      ["Active listings", number(overview.active_listings), `${number(listings.available)} available and ${number(listings.occupied)} occupied listings are currently recorded.`],
-      ["Renter inquiries", number(overview.inquiries), trendText(overview.trends.inquiries, "inquiries")],
-      ["Saved listings", number(overview.favorites), "Favorites represent renter interest recorded within the selected period."],
-      ["Landlord response rate", percent(overview.landlord_response_rate), `${number(unanswered)} ${unanswered === 1 ? "inquiry remained" : "inquiries remained"} unanswered for more than 48 hours.`],
-      ["Average customer rating", rating(overview.average_rating), `${number(reviews.total)} published reviews were included in the selected period.`],
-      ["Pending verification", number(overview.pending_verifications), `${number(delayedDocuments)} ${delayedDocuments === 1 ? "document has" : "documents have"} remained pending for more than 48 hours.`],
-      ["Reviews requiring attention", number(reviews.negative), "Ratings of 1 or 2 stars are included for administrative follow-up."],
+      [
+        "New users",
+        number(overview.new_users),
+        trendText(overview.trends.new_users, "users"),
+      ],
+      [
+        "Active listings",
+        number(overview.active_listings),
+        `${number(listings.available)} available and ${number(listings.occupied)} occupied listings are currently recorded.`,
+      ],
+      [
+        "Renter inquiries",
+        number(overview.inquiries),
+        trendText(overview.trends.inquiries, "inquiries"),
+      ],
+      [
+        "Saved listings",
+        number(overview.favorites),
+        "Favorites represent renter interest recorded within the selected period.",
+      ],
+      [
+        "Landlord response rate",
+        percent(overview.landlord_response_rate),
+        `${number(unanswered)} ${unanswered === 1 ? "inquiry remained" : "inquiries remained"} unanswered for more than 48 hours.`,
+      ],
+      [
+        "Average customer rating",
+        rating(overview.average_rating),
+        `${number(reviews.total)} published reviews were included in the selected period.`,
+      ],
+      [
+        "Pending verification",
+        number(overview.pending_verifications),
+        `${number(delayedDocuments)} ${delayedDocuments === 1 ? "document has" : "documents have"} remained pending for more than 48 hours.`,
+      ],
+      [
+        "Reviews requiring attention",
+        number(reviews.negative),
+        "Ratings of 1 or 2 stars are included for administrative follow-up.",
+      ],
     ];
 
     tableBody.innerHTML = rows
@@ -419,8 +468,10 @@
       insights.push({
         type: "critical",
         title: `${number(inquiries.unanswered_over_48_hours)} inquiries need attention`,
-        finding: "These inquiries have no landlord response after more than 48 hours.",
-        action: "Notify the affected landlords and monitor their response performance.",
+        finding:
+          "These inquiries have no landlord response after more than 48 hours.",
+        action:
+          "Notify the affected landlords and monitor their response performance.",
       });
     }
 
@@ -428,8 +479,10 @@
       insights.push({
         type: "warning",
         title: `Response rate is ${percent(inquiries.response_rate)}`,
-        finding: "A significant share of renters did not receive a landlord reply in the selected period.",
-        action: "Introduce response reminders and a suggested 24-hour reply standard.",
+        finding:
+          "A significant share of renters did not receive a landlord reply in the selected period.",
+        action:
+          "Introduce response reminders and a suggested 24-hour reply standard.",
       });
     }
 
@@ -437,8 +490,10 @@
       insights.push({
         type: "warning",
         title: `${number(verification.pending_over_48_hours)} verification documents are delayed`,
-        finding: "These submissions have remained pending for longer than 48 hours.",
-        action: "Prioritize the oldest verification requests in the admin queue.",
+        finding:
+          "These submissions have remained pending for longer than 48 hours.",
+        action:
+          "Prioritize the oldest verification requests in the admin queue.",
       });
     }
 
@@ -447,39 +502,47 @@
         type: "warning",
         title: "Listing quality requires review",
         finding: `${number(listings.without_images)} listings have no image and ${number(listings.stale)} have not been updated for at least 60 days.`,
-        action: "Prompt landlords to improve incomplete listings and confirm current availability.",
+        action:
+          "Prompt landlords to improve incomplete listings and confirm current availability.",
       });
     }
 
     if (strongestDemand && strongestDemand.demand_score > 0) {
-      const supplyText = strongestDemand.available_listings > 0
-        ? `${number(strongestDemand.available_listings)} available listings`
-        : "no available listing";
+      const supplyText =
+        strongestDemand.available_listings > 0
+          ? `${number(strongestDemand.available_listings)} available listings`
+          : "no available listing";
 
       insights.push({
         type: strongestDemand.available_listings === 0 ? "critical" : "success",
         title: `${strongestDemand.barangay} has the strongest demand signal`,
         finding: `${number(strongestDemand.demand_score)} demand points compared with ${supplyText}.`,
-        action: "Use this demand signal when encouraging landlords to add or update rental supply.",
+        action:
+          "Use this demand signal when encouraging landlords to add or update rental supply.",
       });
     }
 
     if (reviews.negative > 0) {
-      const topTheme = reviews.themes?.find((theme) => theme.negative_mentions > 0);
+      const topTheme = reviews.themes?.find(
+        (theme) => theme.negative_mentions > 0,
+      );
       insights.push({
         type: "critical",
         title: `${number(reviews.negative)} negative customer reviews`,
         finding: topTheme
           ? `${topTheme.theme} is the most visible related feedback theme.`
           : "Review the comments to identify recurring renter concerns.",
-        action: "Open the customer feedback section and address repeated service issues.",
+        action:
+          "Open the customer feedback section and address repeated service issues.",
       });
     } else if (reviews.total > 0 && reviews.average_rating >= 4) {
       insights.push({
         type: "success",
         title: `Customer rating is ${reviews.average_rating.toFixed(1)} out of 5`,
-        finding: "Published customer feedback is generally positive for the selected period.",
-        action: "Maintain the current service quality and continue monitoring emerging themes.",
+        finding:
+          "Published customer feedback is generally positive for the selected period.",
+        action:
+          "Maintain the current service quality and continue monitoring emerging themes.",
       });
     }
 
@@ -487,7 +550,8 @@
       insights.push({
         type: "success",
         title: "No urgent operational issue detected",
-        finding: "The available report data does not show a critical threshold for this period.",
+        finding:
+          "The available report data does not show a critical threshold for this period.",
         action: "Continue monitoring activity and customer feedback regularly.",
       });
     }
@@ -501,8 +565,12 @@
     if (!container || !status) return;
 
     const insights = buildInsights(data);
-    const criticalCount = insights.filter((item) => item.type === "critical").length;
-    const warningCount = insights.filter((item) => item.type === "warning").length;
+    const criticalCount = insights.filter(
+      (item) => item.type === "critical",
+    ).length;
+    const warningCount = insights.filter(
+      (item) => item.type === "warning",
+    ).length;
 
     status.className = "report-status-pill";
     if (criticalCount > 0) {
@@ -559,7 +627,9 @@
     ];
     const maximum = Math.max(
       1,
-      ...points.flatMap((point) => metrics.map((metric) => Number(point[metric.key]) || 0)),
+      ...points.flatMap((point) =>
+        metrics.map((metric) => Number(point[metric.key]) || 0),
+      ),
     );
     const xAt = (index) =>
       points.length === 1
@@ -611,9 +681,8 @@
   function renderListingHealth(data) {
     const summary = data.listing_summary;
     const total = Number(summary.total) || 0;
-    const availableShare = total > 0
-      ? Math.min(100, (Number(summary.available) / total) * 100)
-      : 0;
+    const availableShare =
+      total > 0 ? Math.min(100, (Number(summary.available) / total) * 100) : 0;
     const donut = document.querySelector("#listing-health-donut");
 
     if (donut) {
@@ -640,7 +709,10 @@
       return;
     }
 
-    const maximum = Math.max(1, ...rows.map((row) => Number(row.demand_score) || 0));
+    const maximum = Math.max(
+      1,
+      ...rows.map((row) => Number(row.demand_score) || 0),
+    );
     visual.innerHTML = rows
       .slice(0, 8)
       .map(
@@ -658,9 +730,10 @@
 
     body.innerHTML = rows
       .map((row) => {
-        const ratio = row.demand_per_available_listing === null
-          ? "No available supply"
-          : Number(row.demand_per_available_listing).toFixed(2);
+        const ratio =
+          row.demand_per_available_listing === null
+            ? "No available supply"
+            : Number(row.demand_per_available_listing).toFixed(2);
         return `
           <tr>
             <td><span class="report-table-primary">${escapeHtml(row.barangay)}</span></td>
@@ -724,8 +797,14 @@
         statRow("Pending", number(inquiries.pending)),
         statRow("Closed", number(inquiries.closed)),
         statRow("Landlord response rate", percent(inquiries.response_rate)),
-        statRow("Average first response", `${Number(inquiries.average_response_hours).toFixed(1)} hours`),
-        statRow("Unanswered after 48 hours", number(inquiries.unanswered_over_48_hours)),
+        statRow(
+          "Average first response",
+          `${Number(inquiries.average_response_hours).toFixed(1)} hours`,
+        ),
+        statRow(
+          "Unanswered after 48 hours",
+          number(inquiries.unanswered_over_48_hours),
+        ),
       ].join("");
     }
 
@@ -735,8 +814,14 @@
         statRow("Approved", number(verification.approved)),
         statRow("Rejected", number(verification.rejected)),
         statRow("Current pending backlog", number(verification.pending)),
-        statRow("Pending after 48 hours", number(verification.pending_over_48_hours)),
-        statRow("Average review time", `${Number(verification.average_review_hours).toFixed(1)} hours`),
+        statRow(
+          "Pending after 48 hours",
+          number(verification.pending_over_48_hours),
+        ),
+        statRow(
+          "Average review time",
+          `${Number(verification.average_review_hours).toFixed(1)} hours`,
+        ),
       ].join("");
     }
 
@@ -804,12 +889,26 @@
     const negativeBody = document.querySelector("#negative-review-body");
     const total = Number(reviews.total) || 0;
 
-    setText("#review-average", total > 0 ? Number(reviews.average_rating).toFixed(1) : "—");
-    setText("#review-total", `${number(total)} published review${total === 1 ? "" : "s"}`);
-    setText("#review-average-badge", total > 0 ? `${Number(reviews.average_rating).toFixed(1)} / 5` : "No reviews");
+    setText(
+      "#review-average",
+      total > 0 ? Number(reviews.average_rating).toFixed(1) : "—",
+    );
+    setText(
+      "#review-total",
+      `${number(total)} published review${total === 1 ? "" : "s"}`,
+    );
+    setText(
+      "#review-average-badge",
+      total > 0
+        ? `${Number(reviews.average_rating).toFixed(1)} / 5`
+        : "No reviews",
+    );
 
     if (distribution) {
-      const maximum = Math.max(1, ...Object.values(reviews.distribution || {}).map(Number));
+      const maximum = Math.max(
+        1,
+        ...Object.values(reviews.distribution || {}).map(Number),
+      );
       distribution.innerHTML = [5, 4, 3, 2, 1]
         .map((score) => {
           const amount = Number(reviews.distribution?.[score] || 0);
@@ -969,7 +1068,9 @@
     if (!data) return;
     const workbook = window.SilipMuntiReportWorkbook;
     if (!workbook) {
-      showMessage("The Excel report generator is unavailable. Refresh the page and try again.");
+      showMessage(
+        "The Excel report generator is unavailable. Refresh the page and try again.",
+      );
       return;
     }
 
@@ -1029,7 +1130,9 @@
 
     const documentGenerator = window.SilipMuntiReportDocument;
     if (!documentGenerator) {
-      showMessage("The Word report generator is unavailable. Refresh the page and try again.");
+      showMessage(
+        "The Word report generator is unavailable. Refresh the page and try again.",
+      );
       return;
     }
 
@@ -1051,7 +1154,8 @@
       const keyword = elements.search.value.trim().toLowerCase();
 
       document.querySelectorAll(".report-section").forEach((section) => {
-        const searchable = `${section.dataset.reportSearch || ""} ${section.textContent || ""}`.toLowerCase();
+        const searchable =
+          `${section.dataset.reportSearch || ""} ${section.textContent || ""}`.toLowerCase();
         section.classList.toggle(
           "search-hidden",
           keyword !== "" && !searchable.includes(keyword),

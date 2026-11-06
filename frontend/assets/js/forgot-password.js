@@ -649,7 +649,8 @@ resetForm.addEventListener("submit", async (event) => {
         resetForm.reset();
         showEmailPanel();
         showMessage(
-          result.message || "Your verification expired. Please request a new code.",
+          result.message ||
+            "Your verification expired. Please request a new code.",
           "error",
         );
         return;
@@ -698,12 +699,7 @@ verifyForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  setButtonLoading(
-    verifyCodeButton,
-    true,
-    "Verifying code...",
-    "Verify Code",
-  );
+  setButtonLoading(verifyCodeButton, true, "Verifying code...", "Verify Code");
 
   try {
     const { response, result } = await requestJson(VERIFY_RESET_CODE_ENDPOINT, {

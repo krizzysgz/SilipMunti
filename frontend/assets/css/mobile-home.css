@@ -1,0 +1,192 @@
+/* =========================================================
+   SilipMunti – mobile home fixes (<= 640px only)
+   I-link ito PINAKAHULI, pagkatapos ng responsive.css:
+   <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/mobile-home.css?v=1" />
+   ========================================================= */
+
+@media (max-width: 640px) {
+  /* ---------- HERO: image strip sa taas, content sa baba ---------- */
+  .hero {
+    min-height: 0;
+    background-color: #f8f9fc;
+    background-repeat: no-repeat;
+    background-position: 68% top;
+    background-size: 100% 250px; /* visible na image strip */
+    animation: none !important; /* patayin ang pan animation sa mobile */
+  }
+
+  /* fade lang sa ilalim ng image para smooth ang transition sa text */
+  .hero-overlay {
+    inset: 0 0 auto 0;
+    height: 250px;
+    background: linear-gradient(
+      180deg,
+      rgb(248 249 252 / 0%) 0%,
+      rgb(248 249 252 / 0%) 45%,
+      rgb(248 249 252 / 85%) 85%,
+      rgb(248 249 252 / 100%) 100%
+    );
+  }
+
+  .hero-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: min(100% - 32px, 1660px);
+    min-height: 0;
+    padding: 190px 0 32px; /* overlap ng headline sa fade ng image */
+  }
+
+  .hero-content {
+    order: 1;
+    max-width: none;
+  }
+
+  .hero-content h1 {
+    font-size: 34px;
+    line-height: 1.08;
+    letter-spacing: -1px;
+  }
+
+  .hero-content p {
+    margin-top: 12px;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  /* ---------- "Hindi sigurado?" – compact, secondary ---------- */
+  .sm-ai-home-trigger {
+    order: 2;
+    position: static !important;
+    align-self: flex-start;
+    width: auto !important;
+    max-width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin: 0 !important;
+    padding: 10px 14px;
+    border: 1.5px solid #f9d84a;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #112bc1;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: left;
+    box-shadow: 0 6px 16px rgb(17 43 193 / 10%);
+  }
+
+  .sm-ai-home-trigger span {
+    text-align: left;
+  }
+
+  /* ---------- SEARCH PANEL: hindi na absolute, mas maikli ---------- */
+  .search-panel {
+    order: 3;
+    position: static;
+    width: 100%;
+    grid-template-columns: 1fr 1fr; /* Type + Budget magkatabi */
+    gap: 12px;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  /* Location at Search button = full width */
+  .search-panel .search-field:first-child,
+  .search-panel .search-button {
+    grid-column: 1 / -1;
+  }
+
+  .search-field label {
+    margin-bottom: 5px;
+    font-size: 13px;
+  }
+
+  .select-wrapper select {
+    height: 46px;
+    padding: 0 30px 0 38px;
+    font-size: 14px;
+  }
+
+  .select-wrapper > i:first-child {
+    left: 13px;
+    font-size: 15px;
+  }
+
+  .select-arrow {
+    right: 11px;
+    font-size: 11px;
+  }
+
+  .search-button {
+    height: 48px;
+  }
+
+  /* ---------- NEWLY ADDED UNITS ---------- */
+  .home-section {
+    padding: 30px 0 40px;
+  }
+
+  .hero + .home-section {
+    padding-top: 32px;
+  }
+
+  .section-heading {
+    gap: 14px;
+  }
+
+  .section-heading h2 {
+    font-size: 24px;
+  }
+
+  .section-heading > div p {
+    font-size: 13px;
+  }
+
+  /* arrows sa kaliwa, "View all" sa kanan, parehong line */
+  .section-actions {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .section-actions > a {
+    margin-left: auto;
+    padding-top: 0;
+    font-size: 13px;
+  }
+
+  .carousel-button {
+    width: 38px;
+    height: 38px;
+  }
+
+  /* peek carousel: kita ang gilid ng susunod na card */
+  #newly-added-listings {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: 82%;
+    gap: 14px;
+    margin-right: -16px; /* lumabas sa right gutter para obvious ang swipe */
+    padding: 4px 16px 18px 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #newly-added-listings::-webkit-scrollbar {
+    display: none;
+  }
+
+  #newly-added-listings > * {
+    scroll-snap-align: start;
+  }
+
+  .property-image-wrapper {
+    height: 210px;
+  }
+}

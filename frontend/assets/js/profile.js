@@ -60,16 +60,6 @@ const dropdownUserRole = document.querySelector("#dropdown-user-role");
 
 const favoritesMenuLink = document.querySelector("#favorites-menu-link");
 
-const profileMenuButton = document.querySelector("#profile-menu-button");
-
-const profileDropdown = document.querySelector("#profile-dropdown");
-
-const logoutButton = document.querySelector("#logout-button");
-
-const mobileMenuButton = document.querySelector("#mobile-menu-button");
-
-const mobileNavigation = document.querySelector("#mobile-navigation");
-
 const passwordModal = document.querySelector("#password-modal");
 
 const openPasswordModalButton = document.querySelector("#open-password-modal");
@@ -189,9 +179,9 @@ function updateDisplayedUser(user) {
 
   profileRole.textContent = user.role ?? "User";
 
-  dropdownUserName.textContent = fullName;
+  if (dropdownUserName) dropdownUserName.textContent = fullName;
 
-  dropdownUserRole.textContent = user.role ?? "User";
+  if (dropdownUserRole) dropdownUserRole.textContent = user.role ?? "User";
 
   if (favoritesMenuLink && user.role !== "renter") {
     favoritesMenuLink.classList.add("hidden");
@@ -698,44 +688,6 @@ document.querySelectorAll("[data-toggle-password]").forEach((button) => {
       willShow ? "Hide password" : "Show password",
     );
   });
-});
-
-profileMenuButton.addEventListener("click", (event) => {
-  event.stopPropagation();
-
-  const isHidden = profileDropdown.classList.toggle("hidden");
-
-  profileMenuButton.setAttribute("aria-expanded", String(!isHidden));
-});
-
-profileDropdown.addEventListener("click", (event) => {
-  event.stopPropagation();
-});
-
-document.addEventListener("click", () => {
-  profileDropdown.classList.add("hidden");
-
-  profileMenuButton.setAttribute("aria-expanded", "false");
-});
-
-mobileMenuButton.addEventListener("click", () => {
-  const isHidden = mobileNavigation.classList.toggle("hidden");
-
-  mobileMenuButton.setAttribute("aria-expanded", String(!isHidden));
-
-  mobileMenuButton.innerHTML = isHidden
-    ? '<i class="fa-solid fa-bars"></i>'
-    : '<i class="fa-solid fa-xmark"></i>';
-});
-
-logoutButton.addEventListener("click", async () => {
-  logoutButton.disabled = true;
-
-  try {
-    await SilipMuntiSession.logoutUser();
-  } finally {
-    logoutButton.disabled = false;
-  }
 });
 
 retryProfileButton.addEventListener("click", loadProfile);

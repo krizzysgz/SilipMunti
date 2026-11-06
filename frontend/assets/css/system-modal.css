@@ -206,7 +206,8 @@ textarea.sm-dialog__input {
 .sm-dialog__input:focus {
   border-color: var(--sm-dialog-accent);
   background: #ffffff;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--sm-dialog-accent) 13%, transparent);
+  box-shadow: 0 0 0 4px
+    color-mix(in srgb, var(--sm-dialog-accent) 13%, transparent);
 }
 
 .sm-dialog__input.is-invalid {
@@ -255,7 +256,8 @@ textarea.sm-dialog__input {
 .sm-dialog__button--primary {
   background: var(--sm-dialog-accent);
   color: #ffffff;
-  box-shadow: 0 9px 20px color-mix(in srgb, var(--sm-dialog-accent) 22%, transparent);
+  box-shadow: 0 9px 20px
+    color-mix(in srgb, var(--sm-dialog-accent) 22%, transparent);
 }
 
 .sm-dialog-layer--warning .sm-dialog__button--primary,
