@@ -1,0 +1,33 @@
+/* Create-listing image queue controls. */
+#create-listing-form .create-image-remove {
+  display: block;
+  margin: 0 10px 10px;
+  padding: 9px 12px;
+  min-height: 44px;
+  border: 1px solid #d9deeb;
+  border-radius: 6px;
+  background: #fff;
+  color: #1734c7;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+#create-listing-form .create-image-remove:hover {
+  background: #f3f5ff;
+  border-color: #1734c7;
+}
+#create-listing-form .create-image-remove:focus-visible {
+  outline: 2px solid #1734c7;
+  outline-offset: 3px;
+}
+#create-listing-form .create-image-remove:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+#create-listing-form .image-preview-card > span {
+  overflow-wrap: anywhere;
+}
+#create-listing-form .create-image-picker:focus-within {
+  outline: 2px solid #1734c7;
+  outline-offset: 3px;
+}

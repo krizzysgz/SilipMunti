@@ -25,9 +25,14 @@
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3"
     />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/admin-enterprise.css?v=3"
+      media="screen"
+    />
   </head>
 
-  <body>
+  <body class="admin-enterprise">
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <div class="admin-layout">
       <aside class="admin-sidebar" id="admin-sidebar">
@@ -195,6 +200,78 @@
             </div>
           </section>
 
+          <section
+            class="admin-chart-grid admin-trend-grid"
+            aria-label="Monthly platform analytics"
+          >
+            <article class="admin-panel">
+              <div class="admin-panel-header">
+                <div>
+                  <h2>Listing activity</h2>
+                  <p>New property listings · last 12 calendar months</p>
+                </div>
+              </div>
+              <div
+                id="listing-activity-chart"
+                class="admin-timeline-body"
+                aria-live="polite"
+              >
+                <p class="admin-chart-state">Loading listing activity…</p>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <div class="admin-panel-header">
+                <div>
+                  <h2>Verification submissions</h2>
+                  <p>Documents submitted · last 12 calendar months</p>
+                </div>
+              </div>
+              <div
+                id="verification-activity-chart"
+                class="admin-timeline-body"
+                aria-live="polite"
+              >
+                <p class="admin-chart-state">Loading submission activity…</p>
+              </div>
+            </article>
+          </section>
+
+          <section
+            class="admin-chart-grid"
+            aria-label="Platform status overview"
+          >
+            <article class="admin-panel">
+              <div class="admin-panel-header">
+                <div>
+                  <h2>Listing availability</h2>
+                  <p>Current availability of property listings.</p>
+                </div>
+              </div>
+              <div
+                id="listing-status-chart"
+                class="admin-chart-body"
+                aria-live="polite"
+              >
+                <p class="admin-chart-state">Loading listing availability…</p>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <div class="admin-panel-header">
+                <div>
+                  <h2>Document verification</h2>
+                  <p>Review status of submitted documents.</p>
+                </div>
+              </div>
+              <div
+                id="document-status-chart"
+                class="admin-chart-body"
+                aria-live="polite"
+              >
+                <p class="admin-chart-state">Loading verification status…</p>
+              </div>
+            </article>
+          </section>
+
           <section class="admin-dashboard-grid">
             <article class="admin-panel admin-dashboard-panel">
               <div class="admin-panel-header">
@@ -338,6 +415,6 @@
 
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=5"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-dashboard.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-dashboard.js?v=5"></script>
   </body>
 </html>

@@ -1,0 +1,1416 @@
+/* Screen-only admin presentation. No data, routes, events or print rules change. */
+.admin-enterprise {
+  --admin-muted: #596273;
+  --admin-panel-radius: 8px;
+  --admin-control-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.admin-enterprise *,
+.admin-enterprise *::before,
+.admin-enterprise *::after {
+  box-sizing: border-box;
+}
+.admin-enterprise .admin-content,
+.admin-enterprise .admin-topbar-left,
+.admin-enterprise .admin-panel,
+.admin-enterprise .admin-page-header > *,
+.admin-enterprise .admin-summary-card,
+.admin-enterprise .report-two-column > *,
+.admin-enterprise .report-filter-form > *,
+.admin-enterprise .report-kpi {
+  min-width: 0;
+}
+/* Keep the established 250px sidebar and 960px JavaScript breakpoint. */
+.admin-enterprise .admin-sidebar {
+  border-right: 1px solid #252a34;
+}
+.admin-enterprise .admin-sidebar-header {
+  min-height: 88px;
+  padding: 18px 20px;
+}
+.admin-enterprise .admin-logo {
+  width: 148px;
+  height: 50px;
+  padding: 7px 10px;
+
+  border-radius: 6px;
+}
+.admin-enterprise .admin-navigation {
+  gap: 4px;
+  padding: 20px 14px;
+  scrollbar-width: thin;
+}
+.admin-enterprise .admin-nav-label {
+  color: #a4acbb;
+  margin: 8px 14px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.admin-enterprise .account-label {
+  margin-top: 26px;
+}
+.admin-enterprise .admin-nav-link {
+  min-height: 46px;
+  padding: 11px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.admin-enterprise .admin-nav-link.active {
+  box-shadow: inset 3px 0 var(--admin-yellow);
+}
+.admin-enterprise .admin-sidebar-footer {
+  padding: 16px 18px;
+}
+.admin-enterprise .admin-sidebar-footer a {
+  min-height: 44px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+.admin-enterprise .admin-topbar {
+  min-height: 76px;
+  padding: 14px 32px;
+  gap: 20px;
+  background: #ffffff;
+  backdrop-filter: none;
+}
+.admin-enterprise .admin-search {
+  display: flex;
+  min-width: 0;
+  width: min(460px, 100%);
+  min-height: 44px;
+  padding: 0 14px;
+  background: #f5f7fb;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+}
+.admin-enterprise .admin-search input {
+  min-width: 0;
+  padding: 10px 0;
+  font-size: 13px;
+}
+.admin-enterprise .admin-search:focus-within {
+  border-color: var(--admin-blue);
+  box-shadow: 0 0 0 3px rgb(23 52 199 / 8%);
+}
+.admin-enterprise .admin-topbar-profile {
+  flex-shrink: 0;
+  gap: 10px;
+}
+.admin-enterprise .admin-topbar-profile strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.admin-enterprise .admin-topbar-profile > div > span {
+  font-size: 11px;
+}
+.admin-enterprise .admin-profile-avatar {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  border-width: 1px;
+}
+.admin-enterprise .admin-sidebar-toggle,
+.admin-enterprise .admin-sidebar-close {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 6px;
+}
+.admin-enterprise .admin-back-link {
+  min-height: 44px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.admin-enterprise .admin-main {
+  width: calc(100% - 64px);
+  max-width: 1600px;
+  padding: 32px 0 48px;
+}
+.admin-enterprise .admin-page-header {
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.admin-enterprise .admin-page-header h1 {
+  font-size: clamp(26px, 2.3vw, 34px);
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  overflow-wrap: anywhere;
+}
+.admin-enterprise .admin-page-header p {
+  margin-top: 10px;
+  max-width: 74ch;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.admin-enterprise .admin-eyebrow {
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+/* White KPI surfaces use the existing semantic colors as accents. */
+.admin-enterprise .admin-summary-grid {
+  gap: 18px;
+  margin-bottom: 26px;
+}
+.admin-enterprise .admin-summary-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto 1fr;
+  align-items: center;
+  gap: 16px 12px;
+  min-height: 138px;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-left: 3px solid var(--admin-blue);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(23 32 59 / 3%);
+}
+.admin-enterprise .admin-summary-card.yellow {
+  border-left-color: var(--admin-yellow);
+}
+.admin-enterprise .admin-summary-card.green {
+  border-left-color: var(--admin-green);
+}
+.admin-enterprise .admin-summary-card.red {
+  border-left-color: var(--admin-red);
+}
+.admin-enterprise .admin-summary-card > i {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  width: 40px;
+  height: 40px;
+  border-radius: 7px;
+  background: #f5f7fb;
+  font-size: 17px;
+}
+.admin-enterprise .admin-summary-card > span {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.admin-enterprise .admin-summary-card > strong {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: end;
+  font-size: 32px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+.admin-enterprise .admin-panel {
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(23 32 59 / 3%);
+}
+.admin-enterprise .admin-panel-header {
+  min-height: 80px;
+  padding: 20px 22px;
+  gap: 18px;
+}
+.admin-enterprise .admin-panel-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.admin-enterprise .admin-panel-header p {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.admin-enterprise .admin-panel-link {
+  min-height: 44px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.admin-enterprise .admin-dashboard-grid {
+  grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.3fr);
+  gap: 24px;
+  align-items: start;
+}
+.admin-enterprise .admin-action-grid {
+  padding: 16px;
+  gap: 10px;
+}
+.admin-enterprise .admin-action-card {
+  min-height: 86px;
+  padding: 16px;
+  gap: 14px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+.admin-enterprise .admin-action-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+.admin-enterprise .admin-action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 7px;
+}
+.admin-enterprise .admin-action-copy strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.admin-enterprise .admin-action-copy p {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+/* Preserve actual table columns and actions; scroll their containers on small screens. */
+.admin-enterprise .admin-table-wrapper {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #aeb7c7 #f5f7fb;
+}
+.admin-enterprise .admin-table {
+  font-variant-numeric: tabular-nums;
+}
+.admin-enterprise .admin-table th {
+  padding: 14px 18px;
+  color: #4b5565;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-transform: none;
+  letter-spacing: 0;
+  background: #f5f7fb;
+  white-space: nowrap;
+}
+.admin-enterprise .admin-table td {
+  padding: 16px 18px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.admin-enterprise .admin-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.admin-enterprise .admin-table tbody tr:hover {
+  background: #fafbfc;
+}
+.admin-enterprise .admin-table td strong,
+.admin-enterprise .admin-user-cell strong {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.admin-enterprise .admin-user-cell span,
+.admin-enterprise .admin-muted {
+  font-size: 11px;
+  line-height: 1.6;
+}
+.admin-enterprise .admin-status {
+  min-height: 26px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.admin-enterprise .admin-status.pending,
+.admin-enterprise .admin-status.occupied {
+  color: #755600;
+}
+.admin-enterprise .admin-status.rejected {
+  color: #a51e30;
+}
+.admin-enterprise .admin-row-actions {
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.admin-enterprise .admin-icon-button {
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.admin-enterprise .admin-filters {
+  grid-template-columns: repeat(3, minmax(0, 240px));
+  padding: 18px 22px;
+  gap: 16px;
+}
+.admin-enterprise .rental-type-filters,
+.admin-enterprise .verification-queue-panel .admin-filters {
+  grid-template-columns: minmax(0, 260px);
+}
+.admin-enterprise .admin-filters label {
+  min-width: 0;
+  gap: 8px;
+}
+.admin-enterprise .admin-filters span {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+}
+.admin-enterprise .admin-filters select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding-inline: 12px;
+  background: #ffffff;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.admin-enterprise .admin-refresh-button,
+.admin-enterprise .admin-primary-button,
+.admin-enterprise .admin-review-button,
+.admin-enterprise .admin-open-link,
+.admin-enterprise .modal-cancel-button,
+.admin-enterprise .modal-danger-button {
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.admin-enterprise button:disabled {
+  cursor: not-allowed;
+}
+.admin-enterprise button:disabled,
+.admin-enterprise select:disabled {
+  opacity: 0.55;
+}
+.admin-enterprise .admin-pagination {
+  min-height: 76px;
+  padding: 16px 22px;
+  gap: 16px;
+  border-radius: 0 0 8px 8px;
+}
+.admin-enterprise .admin-pagination-info {
+  font-size: 12px;
+}
+.admin-enterprise .admin-pagination-controls {
+  gap: 6px;
+}
+.admin-enterprise .admin-page-button {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.admin-enterprise .admin-page-button.active {
+  box-shadow: none;
+}
+.admin-enterprise .admin-page-button:hover:not(:disabled):not(.active) {
+  transform: none;
+}
+/* Existing loading, empty and error content remains dynamic. */
+.admin-enterprise .admin-message {
+  padding: 14px 18px;
+  border-radius: 6px;
+  box-shadow: none;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.admin-enterprise .admin-table-message,
+.admin-enterprise .admin-card-message,
+.admin-enterprise .admin-action-empty {
+  padding: 32px 20px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.admin-enterprise .admin-modal {
+  padding: 24px;
+}
+.admin-enterprise .admin-modal-dialog {
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  padding: 28px;
+  border-radius: 10px;
+  box-shadow: 0 16px 48px rgb(17 29 74 / 18%);
+}
+.admin-enterprise .admin-modal-dialog h2 {
+  padding-right: 42px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.admin-enterprise .admin-modal-dialog p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.admin-enterprise .modal-close {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 6px;
+  top: 18px;
+  right: 18px;
+}
+.admin-enterprise .admin-form label {
+  font-size: 13px;
+  font-weight: 500;
+}
+.admin-enterprise .admin-form input,
+.admin-enterprise .admin-form textarea,
+.admin-enterprise .admin-modal-dialog textarea {
+  min-height: 44px;
+  padding: 12px;
+  border-radius: 6px;
+  background: #ffffff;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.admin-enterprise .admin-form textarea,
+.admin-enterprise .admin-modal-dialog textarea {
+  min-height: 130px;
+}
+.admin-enterprise .admin-form label span {
+  font-size: 12px;
+}
+.admin-enterprise .admin-modal-actions {
+  margin-top: 24px;
+  gap: 12px;
+}
+/* Verification cards keep their existing document/review actions. */
+.admin-enterprise .admin-detail-hero {
+  grid-template-columns: minmax(0, 1.2fr) repeat(3, minmax(100px, 0.7fr));
+  gap: 16px;
+  padding: 22px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+.admin-enterprise .admin-detail-stat {
+  padding: 16px;
+  border-radius: 6px;
+}
+.admin-enterprise .admin-detail-stat span {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: none;
+}
+.admin-enterprise .admin-detail-stat strong {
+  font-size: 26px;
+  font-weight: 600;
+}
+.admin-enterprise .admin-document-detail-grid {
+  gap: 20px;
+}
+.admin-enterprise .admin-document-detail-card,
+.admin-enterprise .admin-document-tile,
+.admin-enterprise .admin-landlord-card {
+  border-radius: 8px;
+  box-shadow: none;
+}
+.admin-enterprise .admin-document-detail-card h3 {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.admin-enterprise .admin-document-detail-card p,
+.admin-enterprise .admin-document-detail-card em {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.admin-enterprise .admin-date-cell,
+.admin-enterprise .admin-progress-cell span {
+  font-size: 12px;
+}
+/* Existing report charts, data and export actions, with a readable scale. */
+.admin-enterprise .admin-reports-main {
+  gap: 24px;
+}
+.admin-enterprise .admin-reports-main .admin-panel {
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgb(23 32 59 / 3%);
+}
+.admin-enterprise .admin-reports-main .admin-panel-header {
+  padding: 20px 22px;
+  min-height: 80px;
+}
+.admin-enterprise .admin-reports-main .admin-panel-header h2 {
+  font-size: 16px;
+  line-height: 1.5;
+}
+.admin-enterprise .admin-reports-main .admin-panel-header p {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.admin-enterprise .admin-reports-main .admin-page-header {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.admin-enterprise .report-actions {
+  gap: 10px;
+  justify-content: flex-start;
+}
+.admin-enterprise .report-button {
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+}
+.admin-enterprise .report-button:hover {
+  transform: none;
+}
+.admin-enterprise .report-pdf-export {
+  min-width: 0;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.admin-enterprise .report-pdf-export select {
+  width: 250px;
+  min-width: 0;
+  min-height: 44px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.admin-enterprise .report-filter-form {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  padding: 22px;
+}
+.admin-enterprise .report-filter-form label {
+  min-width: 0;
+  gap: 8px;
+}
+.admin-enterprise .report-filter-form label > span {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.admin-enterprise .report-filter-form input,
+.admin-enterprise .report-filter-form select {
+  min-height: 44px;
+  min-width: 0;
+  padding-inline: 12px;
+  background: #ffffff;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.admin-enterprise .report-auto-update {
+  grid-column: 1 / -1;
+  justify-self: start;
+  min-width: 160px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 5px;
+}
+.admin-enterprise .report-period-banner {
+  gap: 20px;
+  padding: 22px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+.admin-enterprise .report-period-banner h2 {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.admin-enterprise .report-period-banner p {
+  font-size: 13px;
+  line-height: 1.65;
+}
+.admin-enterprise .report-kpi-grid {
+  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.admin-enterprise .report-kpi {
+  padding: 20px;
+  min-height: 128px;
+  border-radius: 8px;
+  border-top-width: 2px;
+  box-shadow: none;
+}
+.admin-enterprise .report-kpi span {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.admin-enterprise .report-kpi strong {
+  font-size: 29px;
+  font-weight: 600;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+.admin-enterprise .report-kpi small {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--admin-muted);
+}
+.admin-enterprise .report-two-column {
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+  gap: 24px;
+}
+.admin-enterprise .report-chart-panel,
+.admin-enterprise .report-metric-panel {
+  padding: 22px;
+}
+.admin-enterprise .report-chart-legend {
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.admin-enterprise .report-trend-label {
+  font-size: 11px;
+}
+.admin-enterprise .listing-health-layout {
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 20px;
+}
+.admin-enterprise .report-donut {
+  width: 150px;
+  height: 150px;
+}
+.admin-enterprise .report-donut span {
+  font-size: 11px;
+}
+.admin-enterprise .report-stat-list dt {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.admin-enterprise .report-stat-list dd {
+  font-size: 14px;
+  font-weight: 600;
+}
+.admin-enterprise .report-insights-grid {
+  gap: 16px;
+}
+.admin-enterprise .report-insight-card {
+  padding: 20px;
+  border-radius: 8px;
+}
+.admin-enterprise .report-insight-card h3 {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.admin-enterprise .report-insight-card p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.admin-enterprise .report-insight-action {
+  font-size: 11px;
+  line-height: 1.6;
+}
+.admin-enterprise .report-generated-pill,
+.admin-enterprise .report-status-pill,
+.admin-enterprise .report-rating-badge {
+  font-size: 11px;
+  line-height: 1.5;
+  border-radius: 5px;
+}
+.admin-enterprise .demand-bar-label,
+.admin-enterprise .demand-bar-value {
+  font-size: 11px;
+  line-height: 1.5;
+}
+.admin-enterprise .report-table th,
+.admin-enterprise .report-table td {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.admin-enterprise .review-insight-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+}
+.admin-enterprise .review-theme-panel {
+  grid-column: 1 / -1;
+}
+.admin-enterprise .review-rating-panel {
+  grid-template-columns: 120px minmax(0, 1fr);
+}
+.admin-enterprise .review-rating-panel p,
+.admin-enterprise .review-theme-item p,
+.admin-enterprise .review-theme-item span,
+.admin-enterprise .review-score-row,
+.admin-enterprise .report-note {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.admin-enterprise
+  :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--admin-blue) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px #ffffff !important;
+}
+.admin-enterprise .admin-sidebar :is(a, button):focus-visible {
+  outline-color: var(--admin-yellow) !important;
+  box-shadow: none !important;
+}
+.admin-enterprise :is(input, select, textarea) {
+  scroll-margin-block: 100px 24px;
+}
+@media (max-width: 1320px) {
+  .admin-enterprise .admin-dashboard-grid,
+  .admin-enterprise .report-two-column {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-enterprise .admin-summary-grid,
+  .admin-enterprise .report-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-enterprise .admin-document-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 1100px) {
+  .admin-enterprise .admin-detail-hero {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .admin-enterprise .admin-detail-hero > :first-child {
+    grid-column: 1 / -1;
+  }
+  .admin-enterprise .report-filter-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 960px) {
+  .admin-enterprise .admin-main {
+    width: calc(100% - 48px);
+    padding-top: 28px;
+  }
+  .admin-enterprise .admin-topbar {
+    padding-inline: 24px;
+  }
+  .admin-enterprise .admin-sidebar {
+    width: min(280px, calc(100vw - 40px));
+  }
+  .admin-enterprise .report-insights-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .admin-enterprise .admin-topbar {
+    min-height: 72px;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+  .admin-enterprise .admin-topbar-left {
+    gap: 10px;
+    min-width: 0;
+  }
+  .admin-enterprise .admin-search {
+    display: flex;
+    min-width: 0;
+    padding-inline: 10px;
+    gap: 8px;
+  }
+  .admin-enterprise .admin-search input {
+    font-size: 16px;
+  }
+  .admin-enterprise .admin-search i {
+    display: none;
+  }
+  .admin-enterprise .admin-topbar-profile > div {
+    display: none;
+  }
+  .admin-enterprise .admin-main {
+    width: calc(100% - 32px);
+    padding-top: 24px;
+    padding-bottom: 32px;
+  }
+  .admin-enterprise .admin-page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+  .admin-enterprise .admin-page-header h1 {
+    font-size: 27px;
+  }
+  .admin-enterprise .admin-page-header p {
+    font-size: 13px;
+  }
+  .admin-enterprise .admin-summary-grid {
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-bottom: 20px;
+  }
+  .admin-enterprise .rental-type-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .admin-enterprise .admin-summary-card {
+    min-height: 132px;
+    padding: 16px;
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-enterprise .admin-summary-card > i {
+    grid-column: 1;
+    grid-row: 1;
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+  .admin-enterprise .admin-summary-card > span {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 11px;
+  }
+  .admin-enterprise .admin-summary-card > strong {
+    grid-column: 1;
+    grid-row: 3;
+    font-size: 28px;
+  }
+  .admin-enterprise .admin-panel-header {
+    padding: 18px 16px;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .admin-enterprise .admin-panel-header h2 {
+    font-size: 16px;
+  }
+  .admin-enterprise .admin-panel-header p {
+    font-size: 12px;
+  }
+  .admin-enterprise .admin-action-grid {
+    padding: 12px;
+    gap: 8px;
+  }
+  .admin-enterprise .admin-action-card {
+    min-height: 88px;
+    padding: 14px;
+    gap: 12px;
+  }
+  .admin-enterprise .admin-action-copy p {
+    font-size: 12px;
+  }
+  .admin-enterprise .admin-filters,
+  .admin-enterprise .users-filters,
+  .admin-enterprise .listings-filters,
+  .admin-enterprise .rental-type-filters,
+  .admin-enterprise .verification-queue-panel .admin-filters {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+  }
+  .admin-enterprise .admin-filters select,
+  .admin-enterprise .admin-form input,
+  .admin-enterprise .admin-form textarea,
+  .admin-enterprise .admin-modal-dialog textarea {
+    font-size: 16px;
+  }
+  .admin-enterprise .admin-pagination {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+  }
+  .admin-enterprise .admin-pagination-controls {
+    justify-content: flex-start;
+  }
+  .admin-enterprise .admin-modal {
+    padding: 16px;
+  }
+  .admin-enterprise .admin-modal-dialog {
+    max-height: calc(100dvh - 32px);
+    padding: 24px 20px;
+  }
+  .admin-enterprise .admin-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .admin-enterprise .admin-modal-actions > button {
+    flex: 1;
+  }
+  .admin-enterprise .admin-detail-hero {
+    padding: 16px;
+    gap: 10px;
+  }
+  .admin-enterprise .admin-detail-stat {
+    padding: 12px;
+  }
+  .admin-enterprise .admin-detail-stat strong {
+    font-size: 24px;
+  }
+  .admin-enterprise .admin-detail-stat span {
+    font-size: 10px;
+  }
+  .admin-enterprise .report-actions {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .admin-enterprise .report-actions > button {
+    flex: 1 1 calc(50% - 10px);
+  }
+  .admin-enterprise .report-pdf-export {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .admin-enterprise .report-pdf-export select {
+    width: 100%;
+    flex: 1 1 100%;
+    font-size: 16px;
+  }
+  .admin-enterprise .report-pdf-export > button {
+    flex: 1;
+  }
+  .admin-enterprise .report-filter-form {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 16px;
+  }
+  .admin-enterprise .report-filter-form input,
+  .admin-enterprise .report-filter-form select {
+    font-size: 16px;
+    width: 100%;
+    max-width: 100%;
+  }
+  .admin-enterprise .report-auto-update {
+    grid-column: auto;
+    justify-self: stretch;
+  }
+  .admin-enterprise .report-period-banner {
+    padding: 18px;
+    gap: 16px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .admin-enterprise .report-period-banner h2 {
+    font-size: 20px;
+  }
+  .admin-enterprise .report-kpi-grid {
+    gap: 12px;
+  }
+  .admin-enterprise .report-kpi {
+    padding: 16px;
+  }
+  .admin-enterprise .report-kpi strong {
+    font-size: 26px;
+  }
+  .admin-enterprise .report-chart-panel,
+  .admin-enterprise .report-metric-panel {
+    padding: 16px;
+  }
+  .admin-enterprise .listing-health-layout,
+  .admin-enterprise .review-rating-panel {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch;
+  }
+  .admin-enterprise .report-donut {
+    margin-inline: auto;
+  }
+  .admin-enterprise .report-insights-grid,
+  .admin-enterprise .review-insight-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-enterprise .demand-bar-row {
+    grid-template-columns: 80px minmax(0, 1fr) 32px;
+    gap: 8px;
+  }
+  .admin-enterprise .demand-visual {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 380px) {
+  .admin-enterprise .rental-type-summary,
+  .admin-enterprise .admin-detail-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-enterprise .admin-detail-hero > :first-child {
+    grid-column: auto;
+  }
+  .admin-enterprise .report-kpi-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-enterprise .admin-back-link {
+    padding-inline: 8px;
+    gap: 6px;
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-enterprise *,
+  .admin-enterprise *::before,
+  .admin-enterprise *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (max-width: 960px) {
+  .admin-enterprise:not(.admin-sidebar-open) .admin-sidebar {
+    box-shadow: none;
+  }
+}
+@media (max-width: 720px) {
+  .admin-enterprise .report-trend-chart {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+  .admin-enterprise .report-trend-chart svg {
+    min-width: 640px;
+  }
+}
+.admin-enterprise .admin-table.compact {
+  width: 100%;
+  min-width: 0;
+}
+.admin-enterprise .admin-table.compact th,
+.admin-enterprise .admin-table.compact td {
+  padding-inline: 14px;
+}
+@media (max-width: 720px) {
+  .admin-enterprise .admin-table.compact tbody tr {
+    border-radius: 6px;
+  }
+  .admin-enterprise .admin-table.compact tbody td {
+    padding: 7px 0;
+  }
+  .admin-enterprise .admin-table.compact tbody td::before {
+    color: #596273;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: none;
+  }
+}
+
+/* Dashboard status visualizations use the already loaded records. */
+.admin-enterprise .admin-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.admin-enterprise .admin-chart-body {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  min-height: 230px;
+  padding: 24px;
+}
+.admin-enterprise .admin-status-donut {
+  width: 154px;
+  height: 154px;
+  flex: 0 0 154px;
+  border-radius: 50%;
+  background: var(--status-segments);
+  display: grid;
+  place-items: center;
+}
+.admin-enterprise .admin-status-donut > div {
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.admin-enterprise .admin-status-donut strong {
+  font-size: 28px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.admin-enterprise .admin-status-donut span {
+  color: var(--admin-muted);
+  font-size: 11px;
+}
+.admin-enterprise .admin-chart-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  min-width: 0;
+}
+.admin-enterprise .admin-chart-legend li {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--admin-border);
+  font-size: 12px;
+}
+.admin-enterprise .admin-chart-legend li:last-child {
+  border: 0;
+}
+.admin-enterprise .admin-chart-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.admin-enterprise .admin-chart-legend small {
+  color: var(--admin-muted);
+  font-size: 11px;
+  min-width: 32px;
+  text-align: right;
+}
+.admin-enterprise .admin-chart-state {
+  color: var(--admin-muted);
+  font-size: 13px;
+  margin: auto;
+  text-align: center;
+}
+@media (max-width: 1200px) {
+  .admin-enterprise .admin-chart-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .admin-enterprise .admin-chart-body {
+    flex-direction: column;
+    gap: 16px;
+    padding: 22px 16px;
+  }
+  .admin-enterprise .admin-chart-legend {
+    width: 100%;
+  }
+}
+
+/* Monthly analytics: responsive SVG plots and keyboard-accessible data tables. */
+.admin-enterprise .admin-timeline-body {
+  padding: 22px;
+  min-height: 360px;
+}
+.admin-enterprise .admin-trend-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+.admin-enterprise .admin-trend-summary span {
+  display: block;
+  color: var(--admin-muted);
+  font-size: 12px;
+}
+.admin-enterprise .admin-trend-summary strong {
+  display: block;
+  font-size: 25px;
+  font-weight: 600;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.admin-enterprise .admin-timeline-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.admin-enterprise .admin-timeline-scroll svg {
+  display: block;
+  width: 100%;
+  min-width: 480px;
+}
+.admin-enterprise .admin-timeline-scroll text {
+  fill: #596273;
+  font-size: 11px;
+}
+.admin-enterprise .admin-chart-gridline {
+  stroke: #e8ecf3;
+  stroke-width: 1;
+}
+.admin-enterprise .admin-trend-caption {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  color: var(--admin-muted);
+  font-size: 11px;
+}
+.admin-enterprise .admin-trend-caption i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #1734c7;
+  border-radius: 2px;
+  margin-right: 7px;
+}
+.admin-enterprise .admin-chart-data {
+  margin-top: 18px;
+  border-top: 1px solid var(--admin-border);
+}
+.admin-enterprise .admin-chart-data summary {
+  padding: 12px 0;
+  min-height: 44px;
+  color: #1734c7;
+  font-size: 12px;
+  cursor: pointer;
+}
+.admin-enterprise .admin-chart-data table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.admin-enterprise .admin-chart-data th,
+.admin-enterprise .admin-chart-data td {
+  padding: 8px;
+  border-bottom: 1px solid var(--admin-border);
+  text-align: left;
+  font-weight: 400;
+}
+.admin-enterprise .admin-chart-data thead th {
+  font-weight: 600;
+}
+.admin-enterprise .admin-chart-data caption {
+  text-align: left;
+  padding: 8px;
+  font-weight: 600;
+}
+.admin-enterprise .admin-trend-note {
+  font-size: 12px;
+  color: var(--admin-muted);
+  margin-top: 12px;
+}
+@media (max-width: 720px) {
+  .admin-enterprise .admin-timeline-body {
+    padding: 16px;
+  }
+}
+
+/* Reports: clear analytics hierarchy and exact values below the charts. */
+.admin-enterprise .report-trend-health-section {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.admin-enterprise .report-health-panel {
+  grid-column: 1 / -1;
+}
+.admin-enterprise .report-health-panel .listing-health-layout {
+  grid-template-columns: 150px minmax(0, 1fr);
+}
+.admin-enterprise .report-health-panel .report-stat-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 24px;
+}
+.admin-enterprise .report-comparison-chart {
+  padding: 20px 0;
+}
+.admin-enterprise .report-comparison-plot {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  padding: 8px 12px;
+}
+.admin-enterprise .report-comparison-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-size: 12px;
+  text-align: center;
+}
+.admin-enterprise .report-comparison-column strong {
+  font-size: 18px;
+  font-weight: 600;
+}
+.admin-enterprise .report-comparison-track {
+  height: 190px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  border-bottom: 1px solid var(--admin-border);
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0,
+    transparent 46px,
+    #edf0f6 47px,
+    transparent 48px
+  );
+}
+.admin-enterprise .report-comparison-track > span {
+  display: block;
+  width: min(48px, 70%);
+  border-radius: 3px 3px 0 0;
+}
+.admin-enterprise .report-comparison-chart > .report-note {
+  margin-top: 18px;
+  color: var(--admin-muted);
+}
+.admin-enterprise .report-activity-detail-section tbody th {
+  background: #fff;
+  color: #273245;
+  font-weight: 500;
+  font-size: 12px;
+}
+@media (max-width: 1200px) {
+  .admin-enterprise .report-trend-health-section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .admin-enterprise .report-health-panel .listing-health-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-enterprise .report-health-panel .report-stat-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-enterprise .report-comparison-plot {
+    gap: 10px;
+    padding-inline: 0;
+  }
+  .admin-enterprise .report-comparison-column {
+    font-size: 11px;
+  }
+}
+.admin-enterprise .report-health-panel .listing-health-layout {
+  min-height: 0;
+  padding-block: 20px;
+}
+
+/* Keep a single focus indicator around compound search controls. */
+.admin-enterprise .admin-search input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.admin-enterprise .admin-search:focus-within {
+  border-color: #1734c7;
+  box-shadow: 0 0 0 3px rgb(23 52 199 / 10%);
+}
+.admin-enterprise .admin-topbar-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #596273;
+}
+.admin-enterprise .admin-topbar-context > span {
+  color: #a7afbd;
+}
+.admin-enterprise .admin-topbar-context strong {
+  color: #273245;
+  font-weight: 500;
+}
+.admin-users-page .users-filters {
+  grid-template-columns: minmax(240px, 1.5fr) repeat(3, minmax(0, 1fr));
+  align-items: end;
+}
+.admin-users-page .admin-user-search-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.admin-users-page .admin-user-search-filter .admin-search {
+  width: 100%;
+  min-height: 44px;
+  background: #fff;
+}
+.admin-users-page .admin-user-search-filter .admin-search input {
+  width: 100%;
+}
+@media (max-width: 1200px) {
+  .admin-users-page .users-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .admin-users-page .users-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-users-page .admin-user-search-filter .admin-search i {
+    display: block;
+  }
+}

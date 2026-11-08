@@ -589,3 +589,118 @@ tfoot {
 .report-section.print-excluded {
   display: none !important;
 }
+
+/* Corporate analytics export: restrained print colors and readable figures. */
+.report-trend-health-section {
+  display: block !important;
+}
+.report-trend-health-section > article {
+  margin-bottom: 5mm;
+  break-inside: avoid;
+}
+.report-comparison-chart {
+  padding: 3mm 0;
+}
+.report-comparison-plot {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6mm;
+  padding: 2mm 8mm;
+}
+.report-comparison-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2mm;
+  font-size: 9pt;
+}
+.report-comparison-column strong {
+  font-size: 12pt;
+}
+.report-comparison-track {
+  height: 35mm;
+  width: 70%;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  border-bottom: 0.5pt solid #d9e0eb;
+}
+.report-comparison-track > span {
+  display: block;
+  width: 12mm;
+}
+.report-activity-detail-section {
+  break-inside: auto;
+}
+.report-activity-detail-section th {
+  background: #f3f6fc !important;
+}
+.report-activity-detail-section tbody th {
+  background: #fff !important;
+  font-weight: 400;
+}
+.report-activity-detail-section tr:nth-child(even) td,
+.report-activity-detail-section tr:nth-child(even) th {
+  background: #f8f9fc !important;
+}
+.report-table th {
+  font-size: 8.5pt;
+}
+.report-table td {
+  font-size: 8pt;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.report-note {
+  font-size: 8pt;
+  line-height: 1.5;
+}
+@page {
+  @bottom-left {
+    content: "SilipMunti | Administrative Analytics";
+    font: 8pt Arial;
+    color: #556174;
+  }
+  @bottom-right {
+    content: "Page " counter(page) " of " counter(pages);
+    font: 8pt Arial;
+    color: #556174;
+  }
+}
+.report-activity-detail-section {
+  order: 4;
+}
+.report-trend-health-section {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  break-inside: auto;
+  gap: 5mm !important;
+}
+.report-health-panel {
+  grid-column: 1 / -1;
+}
+.report-health-panel .listing-health-layout {
+  min-height: 0;
+  padding: 3mm;
+  grid-template-columns: 35mm minmax(0, 1fr);
+}
+.report-health-panel .report-stat-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2mm 5mm;
+}
+.report-print-meta dt,
+.report-print-footer,
+.report-insight-action {
+  font-size: 7pt;
+}
+.report-insight-card p {
+  font-size: 8pt;
+  line-height: 1.4;
+}
+.report-comparison-plot {
+  min-height: 0;
+}
+.skip-link {
+  display: none !important;
+}

@@ -30,6 +30,8 @@
   const cityInput = form?.elements.city;
 
   let selectedImages = [];
+  let previewUrls = [];
+  let imagesLocked = false;
   let mapPickerController = null;
 
   function showMessage(message, type = "error") {
@@ -49,6 +51,11 @@
   function setSubmitting(isSubmitting, text = "Create listing") {
     if (!submitButton) return;
 
+    imagesLocked = isSubmitting;
+    if (imageInput) imageInput.disabled = isSubmitting;
+    imagePreviewGrid?.querySelectorAll("button").forEach((button) => {
+      button.disabled = isSubmitting;
+    });
     submitButton.disabled = isSubmitting;
     submitButton.querySelector("span").textContent = text;
   }
@@ -168,6 +175,8 @@
   function updateImagePreview() {
     if (!imagePreviewGrid) return;
 
+    previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    previewUrls = [];
     imagePreviewGrid.innerHTML = "";
     imagePreviewGrid.classList.toggle("hidden", selectedImages.length < 1);
 
@@ -178,18 +187,28 @@
 
     imagePickerHelp.textContent =
       selectedImages.length > 0
-        ? "Click the image area again to replace selected photos."
+        ? "Choose more photos to add to your selection (up to 10 total)."
         : "JPG, PNG, or WebP only, maximum 10 images.";
 
-    selectedImages.forEach((file) => {
+    selectedImages.forEach((file, index) => {
       const preview = document.createElement("div");
       preview.className = "image-preview-card";
 
       const imageUrl = URL.createObjectURL(file);
+      previewUrls.push(imageUrl);
       preview.innerHTML = `
         <img src="${imageUrl}" alt="${escapeHtml(file.name)}" />
         <span>${escapeHtml(file.name)}</span>
+        <button type="button" class="create-image-remove" aria-label="Remove ${escapeHtml(file.name)}" ${imagesLocked ? "disabled" : ""}>Remove photo</button>
       `;
+      preview.querySelector("button").addEventListener("click", () => {
+        if (imagesLocked) return;
+        selectedImages.splice(index, 1);
+        hideMessage();
+        updateImagePreview();
+        const buttons = imagePreviewGrid.querySelectorAll("button");
+        (buttons[Math.min(index, buttons.length - 1)] || imageInput)?.focus();
+      });
 
       const image = preview.querySelector("img");
       image.addEventListener("load", () => URL.revokeObjectURL(imageUrl), {
@@ -202,30 +221,36 @@
 
   function setupImageInput() {
     imageInput?.addEventListener("change", () => {
+      if (imagesLocked) return;
       const files = Array.from(imageInput.files || []);
+      // Keep the queue independent of the native picker so later selections append.
+      imageInput.value = "";
+      if (!files.length) return;
       const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-
-      if (files.length > 10) {
-        imageInput.value = "";
-        selectedImages = [];
-        updateImagePreview();
-        showMessage("You can upload up to 10 images only.", "error");
+      if (files.some((file) => !allowedTypes.includes(file.type))) {
+        showMessage(
+          "Only JPG, PNG, and WebP images are allowed. Your selected photos were kept.",
+          "error",
+        );
         return;
       }
-
-      const invalidFile = files.find(
-        (file) => !allowedTypes.includes(file.type),
-      );
-
-      if (invalidFile) {
-        imageInput.value = "";
-        selectedImages = [];
-        updateImagePreview();
-        showMessage("Only JPG, PNG, and WebP images are allowed.", "error");
+      const key = (file) =>
+        JSON.stringify([file.name, file.size, file.lastModified, file.type]);
+      const seen = new Set(selectedImages.map(key));
+      const additions = files.filter((file) => {
+        const identity = key(file);
+        if (seen.has(identity)) return false;
+        seen.add(identity);
+        return true;
+      });
+      if (selectedImages.length + additions.length > 10) {
+        showMessage(
+          `You can select up to 10 images. You already have ${selectedImages.length}; choose up to ${10 - selectedImages.length} more. Your selected photos were kept.`,
+          "error",
+        );
         return;
       }
-
-      selectedImages = files;
+      selectedImages.push(...additions);
       hideMessage();
       updateImagePreview();
     });

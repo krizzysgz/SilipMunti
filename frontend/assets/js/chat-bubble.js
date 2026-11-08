@@ -304,9 +304,13 @@
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
   }
 
-  function getOtherUserPicture(inquiry) {
+  function getOtherUserPicture(inquiry, otherUser = inquiry.other_user || {}) {
     const profilePicture =
-      inquiry.other_user?.profile_picture || inquiry.other_user_profile_picture;
+      otherUser.profile_picture_url ||
+      otherUser.profile_picture ||
+      inquiry.other_user?.profile_picture_url ||
+      inquiry.other_user?.profile_picture ||
+      inquiry.other_user_profile_picture;
 
     return createProfileUrl(profilePicture);
   }
@@ -477,11 +481,7 @@
         ".silip-chat-preview",
       );
 
-      setSafeImage(
-        image,
-        getOtherUserPicture(inquiry),
-        inquiry.primary_image || DEFAULT_PROFILE,
-      );
+      setSafeImage(image, getOtherUserPicture(inquiry), DEFAULT_PROFILE);
 
       userName.textContent = inquiry.other_user?.name || "SilipMunti user";
 
@@ -850,8 +850,8 @@
 
     setSafeImage(
       userImage,
-      createProfileUrl(otherUser.profile_picture),
-      getOtherUserPicture(selectedInquiry),
+      getOtherUserPicture(selectedInquiry, otherUser),
+      DEFAULT_PROFILE,
     );
 
     setSafeImage(

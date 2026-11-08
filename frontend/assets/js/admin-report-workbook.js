@@ -134,14 +134,15 @@
   <sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>
   <dimension ref="A1:${lastColumn}${lastRow}"/>
   <sheetViews><sheetView showGridLines="0" workbookViewId="0">${freeze}</sheetView></sheetViews>
-  <sheetFormatPr defaultRowHeight="15"/>
+  <sheetFormatPr defaultRowHeight="20"/>
   <cols>${columns}</cols>
   <sheetData>${rows}</sheetData>
   ${autoFilter}
   ${mergeCells}
   <printOptions horizontalCentered="1"/>
-  <pageMargins left="0.35" right="0.35" top="0.5" bottom="0.5" header="0.2" footer="0.2"/>
+  <pageMargins left="0.4" right="0.4" top="0.6" bottom="0.6" header="0.25" footer="0.25"/>
   <pageSetup orientation="landscape" paperSize="9" fitToWidth="1" fitToHeight="${sheet.fitToHeight ?? 0}"/>
+  <headerFooter><oddHeader>${xml("&L&BSILIPMUNTI&B&C" + sheet.name + "&RAdministrative Analytics")}</oddHeader><oddFooter>${xml("&LFor administrative use&CPage &P of &N&R&A")}</oddFooter></headerFooter>
 </worksheet>`;
   }
 
@@ -218,6 +219,16 @@
         `<sheet name="${xml(sheet.name)}" sheetId="${index + 1}" r:id="rId${index + 1}"/>`,
     )
     .join("")}</sheets>
+  <definedNames>${sheets
+    .map((sheet, index) => {
+      const name = "'" + sheet.name.replaceAll("'", "''") + "'";
+      const area = `${name}!$A$1:$${columnName(sheet.widths.length - 1)}$${sheet.rows.length}`;
+      const titles = sheet.freezeRow
+        ? `<definedName name="_xlnm.Print_Titles" localSheetId="${index}">${xml(`${name}!$${sheet.freezeRow}:$${sheet.freezeRow}`)}</definedName>`
+        : "";
+      return `<definedName name="_xlnm.Print_Area" localSheetId="${index}">${xml(area)}</definedName>${titles}`;
+    })
+    .join("")}</definedNames>
   <calcPr calcId="191029" fullCalcOnLoad="1"/>
 </workbook>`;
   }
@@ -308,7 +319,7 @@
             text("Scope", "metaLabel"),
             text(scope, "metaValue"),
           ],
-          18,
+          32,
         ),
         row(
           [
@@ -321,13 +332,15 @@
             text("Generated on", "metaLabel"),
             text(context.generatedLabel || data.generated_at, "metaValue"),
           ],
-          18,
+          32,
         ),
         row([], 10),
       ],
       merges: [
         `A2:${columns}2`,
         `A3:${columns}3`,
+        "B5:C5",
+        "B6:C6",
         `E5:${columns}5`,
         `E6:${columns}6`,
       ],

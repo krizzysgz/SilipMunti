@@ -317,9 +317,13 @@ function capitalize(value) {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function getOtherUserPicture(inquiry) {
+function getOtherUserPicture(inquiry, otherUser = inquiry.other_user || {}) {
   const picture =
-    inquiry.other_user?.profile_picture || inquiry.other_user_profile_picture;
+    otherUser.profile_picture_url ||
+    otherUser.profile_picture ||
+    inquiry.other_user?.profile_picture_url ||
+    inquiry.other_user?.profile_picture ||
+    inquiry.other_user_profile_picture;
 
   return createProfileUrl(picture);
 }
@@ -416,11 +420,7 @@ function renderConversations() {
     item.classList.toggle("unread", count > 0);
     item.classList.toggle("active", isActive);
 
-    setSafeImage(
-      image,
-      getOtherUserPicture(inquiry),
-      inquiry.primary_image || DEFAULT_PROFILE,
-    );
+    setSafeImage(image, getOtherUserPicture(inquiry), DEFAULT_PROFILE);
 
     userName.textContent = inquiry.other_user?.name || "SilipMunti user";
 
@@ -572,7 +572,7 @@ function updateChatInformation(messageData = null) {
 
   const detailsUrl = `/SilipMunti/frontend/pages/properties/details.html?id=${listingId}`;
 
-  const userPicture = getOtherUserPicture(activeInquiry);
+  const userPicture = getOtherUserPicture(activeInquiry, otherUser);
 
   chatUserName.textContent = otherUser.name || "SilipMunti user";
 
@@ -734,7 +734,7 @@ function renderMessages(messages) {
 
     setSafeImage(
       avatar,
-      createProfileUrl(message.profile_picture),
+      createProfileUrl(message.profile_picture_url || message.profile_picture),
       DEFAULT_PROFILE,
     );
 

@@ -22,7 +22,7 @@
     />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/admin-reports-print.css?v=6"
+      href="/SilipMunti/frontend/assets/css/admin-reports-print.css?v=7"
       media="print"
     />
     <link
@@ -30,10 +30,18 @@
       href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
     />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
-    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3" />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/admin-enterprise.css?v=4"
+      media="screen"
+    />
   </head>
 
-  <body>
+  <body class="admin-enterprise">
     <a class="skip-link" href="#report-document">Skip to main content</a>
     <div class="admin-layout">
       <admin-sidebar active-page="reports"></admin-sidebar>
@@ -75,7 +83,11 @@
           </div>
         </header>
 
-        <main class="admin-main admin-reports-main" id="report-document">
+        <main
+          class="admin-main admin-reports-main"
+          id="report-document"
+          tabindex="-1"
+        >
           <header class="report-print-header">
             <div class="report-print-brand">
               <img
@@ -330,7 +342,29 @@
               </div>
             </article>
 
-            <article class="admin-panel report-chart-panel">
+            <article
+              class="admin-panel report-chart-panel report-comparison-panel"
+            >
+              <div class="admin-panel-header">
+                <div>
+                  <h2>Activity comparison</h2>
+                  <p>
+                    Total recorded activity within the selected reporting
+                    period.
+                  </p>
+                </div>
+              </div>
+              <div
+                id="report-activity-comparison"
+                class="report-comparison-chart"
+                aria-live="polite"
+              >
+                <div class="report-empty-state">
+                  Loading activity comparison…
+                </div>
+              </div>
+            </article>
+            <article class="admin-panel report-chart-panel report-health-panel">
               <div class="admin-panel-header">
                 <div>
                   <h2>Listing health</h2>
@@ -371,6 +405,45 @@
           </section>
 
           <section
+            class="admin-panel report-section report-activity-detail-section"
+            data-report-search="activity timeline figures users listings inquiries reviews"
+          >
+            <div class="admin-panel-header">
+              <div>
+                <h2>Activity detail</h2>
+                <p>
+                  Exact figures behind the trend chart for the selected period.
+                </p>
+              </div>
+            </div>
+            <div
+              class="admin-table-wrapper"
+              tabindex="0"
+              role="region"
+              aria-label="Activity timeline table"
+            >
+              <table class="admin-table report-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">New users</th>
+                    <th scope="col">Listings</th>
+                    <th scope="col">Inquiries</th>
+                    <th scope="col">Reviews</th>
+                  </tr>
+                </thead>
+                <tbody id="report-activity-detail-body">
+                  <tr>
+                    <td colspan="5" class="admin-table-message">
+                      Loading activity detail…
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section
             class="admin-panel report-section report-insights-section"
             data-report-search="executive findings recommendations actions attention"
           >
@@ -401,7 +474,12 @@
               </div>
             </div>
             <div class="demand-visual" id="demand-visual"></div>
-            <div class="admin-table-wrapper report-table-wrapper" tabindex="0" role="region" aria-label="Scrollable table">
+            <div
+              class="admin-table-wrapper report-table-wrapper"
+              tabindex="0"
+              role="region"
+              aria-label="Scrollable table"
+            >
               <table class="admin-table report-table">
                 <thead>
                   <tr>
@@ -435,7 +513,12 @@
                 <p>Properties receiving the strongest renter engagement.</p>
               </div>
             </div>
-            <div class="admin-table-wrapper report-table-wrapper" tabindex="0" role="region" aria-label="Scrollable table">
+            <div
+              class="admin-table-wrapper report-table-wrapper"
+              tabindex="0"
+              role="region"
+              aria-label="Scrollable table"
+            >
               <table class="admin-table report-table wide">
                 <thead>
                   <tr>
@@ -501,7 +584,12 @@
                 </p>
               </div>
             </div>
-            <div class="admin-table-wrapper report-table-wrapper" tabindex="0" role="region" aria-label="Scrollable table">
+            <div
+              class="admin-table-wrapper report-table-wrapper"
+              tabindex="0"
+              role="region"
+              aria-label="Scrollable table"
+            >
               <table class="admin-table report-table wide">
                 <thead>
                   <tr>
@@ -561,7 +649,12 @@
                 <p>Customer names are abbreviated in administrative reports.</p>
               </div>
             </div>
-            <div class="admin-table-wrapper report-table-wrapper" tabindex="0" role="region" aria-label="Scrollable table">
+            <div
+              class="admin-table-wrapper report-table-wrapper"
+              tabindex="0"
+              role="region"
+              aria-label="Scrollable table"
+            >
               <table class="admin-table report-table review-table">
                 <thead>
                   <tr>
@@ -593,8 +686,8 @@
 
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=5"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-report-workbook.js?v=1"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-report-document.js?v=1"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-reports.js?v=6"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-report-workbook.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-report-document.js?v=2"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-reports.js?v=7"></script>
   </body>
 </html>

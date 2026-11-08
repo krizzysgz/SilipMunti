@@ -172,7 +172,7 @@
   function table(headers, rows, widths, centerColumns = []) {
     const borders = `<w:tblBorders><w:top w:val="single" w:sz="4" w:color="${BORDER}"/><w:left w:val="single" w:sz="4" w:color="${BORDER}"/><w:bottom w:val="single" w:sz="4" w:color="${BORDER}"/><w:right w:val="single" w:sz="4" w:color="${BORDER}"/><w:insideH w:val="single" w:sz="4" w:color="${BORDER}"/><w:insideV w:val="single" w:sz="4" w:color="${BORDER}"/></w:tblBorders>`;
     const grid = widths.map((width) => `<w:gridCol w:w="${width}"/>`).join("");
-    const header = `<w:tr><w:trPr><w:tblHeader/></w:trPr>${headers
+    const header = `<w:tr><w:trPr><w:tblHeader/><w:cantSplit/></w:trPr>${headers
       .map((item, index) =>
         tableCell(item, widths[index], {
           fill: BLUE,
@@ -185,7 +185,7 @@
     const bodyRows = rows
       .map(
         (row, rowIndex) =>
-          `<w:tr>${row
+          `<w:tr><w:trPr><w:cantSplit/></w:trPr>${row
             .map((item, columnIndex) =>
               tableCell(item, widths[columnIndex], {
                 fill: rowIndex % 2 ? PALE : "FFFFFF",
@@ -300,14 +300,20 @@
     if (!trend.length) {
       parts.push(body("No activity was recorded for the selected period."));
     } else {
-      trend.forEach((point) => {
-        parts.push(
-          bullet(
+      parts.push(
+        table(
+          ["Date", "New users", "Listings", "Inquiries", "Reviews"],
+          trend.map((point) => [
             point.date,
-            `${number(point.users)} users, ${number(point.listings)} listings, ${number(point.inquiries)} inquiries, and ${number(point.reviews)} reviews`,
-          ),
-        );
-      });
+            number(point.users),
+            number(point.listings),
+            number(point.inquiries),
+            number(point.reviews),
+          ]),
+          [2400, 1740, 1740, 1740, 1740],
+          [1, 2, 3, 4],
+        ),
+      );
     }
     return parts.join("");
   }
@@ -535,6 +541,10 @@
         keepNext: true,
         after: 220,
       }),
+      paragraph(
+        "Prepared for administrative review and operational decision making.",
+        { after: 180 },
+      ),
       table(
         ["Report detail", "Value"],
         [
@@ -546,7 +556,7 @@
         [2500, 6860],
       ),
     ].join("");
-    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${intro}${content}<w:sectPr><w:headerReference w:type="default" r:id="rId1"/><w:footerReference w:type="default" r:id="rId2"/><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="900" w:right="1080" w:bottom="900" w:left="1080" w:header="420" w:footer="420"/><w:cols w:space="720"/><w:docGrid w:linePitch="360"/></w:sectPr></w:body></w:document>`;
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${intro}${paragraph("Reporting basis: Figures reflect the selected filters and available platform records at generation time. Current supply measures and period activity are presented separately.", { after: 180 })}${content}<w:sectPr><w:headerReference w:type="default" r:id="rId1"/><w:footerReference w:type="default" r:id="rId2"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="900" w:right="1273" w:bottom="1080" w:left="1273" w:header="420" w:footer="420"/><w:cols w:space="720"/><w:docGrid w:linePitch="360"/></w:sectPr></w:body></w:document>`;
   }
 
   function stylesXml() {
@@ -562,7 +572,7 @@
   }
 
   function footerXml() {
-    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="80" w:after="0"/></w:pPr>${run("Confidential - For administrative use only   |   Page ", { color: SLATE, size: 16 })}<w:fldSimple w:instr="PAGE"><w:r><w:rPr><w:color w:val="${SLATE}"/><w:sz w:val="16"/></w:rPr><w:t>1</w:t></w:r></w:fldSimple></w:p></w:ftr>`;
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="80" w:after="0"/></w:pPr>${run("Confidential - For administrative use only   |   Page ", { color: SLATE, size: 16 })}<w:fldSimple w:instr="PAGE"><w:r><w:rPr><w:color w:val="${SLATE}"/><w:sz w:val="16"/></w:rPr><w:t>1</w:t></w:r></w:fldSimple>${run(" of ", { color: SLATE, size: 16 })}<w:fldSimple w:instr="NUMPAGES"><w:r><w:t>1</w:t></w:r></w:fldSimple></w:p></w:ftr>`;
   }
 
   function relationshipsXml() {

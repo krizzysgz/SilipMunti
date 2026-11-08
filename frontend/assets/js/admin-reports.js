@@ -23,7 +23,10 @@
     activity: {
       title: "Platform Activity and Listing Health Report",
       filename: "Activity-and-Listing-Health",
-      selectors: [".report-trend-health-section"],
+      selectors: [
+        ".report-trend-health-section",
+        ".report-activity-detail-section",
+      ],
     },
     demand: {
       title: "Rental Demand and Supply Report",
@@ -626,21 +629,24 @@
       { key: "reviews", color: "#d6a900" },
     ];
     const maximum = Math.max(
-      1,
+      4,
       ...points.flatMap((point) =>
         metrics.map((metric) => Number(point[metric.key]) || 0),
       ),
     );
+    const axisMaximum = Math.ceil(maximum / 4) * 4;
     const xAt = (index) =>
       points.length === 1
         ? padding.left + plotWidth / 2
         : padding.left + (index / (points.length - 1)) * plotWidth;
     const yAt = (value) =>
-      padding.top + plotHeight - ((Number(value) || 0) / maximum) * plotHeight;
+      padding.top +
+      plotHeight -
+      ((Number(value) || 0) / axisMaximum) * plotHeight;
     const grid = [0, 0.25, 0.5, 0.75, 1]
       .map((ratio) => {
         const y = padding.top + plotHeight - ratio * plotHeight;
-        const value = Math.round(maximum * ratio);
+        const value = Math.round(axisMaximum * ratio);
         return `
           <line class="report-trend-grid-line" x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"></line>
           <text class="report-trend-label" x="${padding.left - 9}" y="${y + 3}" text-anchor="end">${value}</text>
@@ -658,7 +664,7 @@
               `<circle cx="${xAt(index)}" cy="${yAt(point[metric.key])}" r="2.8" fill="${metric.color}"></circle>`,
           )
           .join("");
-        return `<polyline class="report-trend-path" points="${coordinates}" stroke="${metric.color}"></polyline>${dots}`;
+        return `<polygon points="${xAt(0)},${padding.top + plotHeight} ${coordinates} ${xAt(points.length - 1)},${padding.top + plotHeight}" fill="${metric.color}" fill-opacity="0.06"></polygon><polyline class="report-trend-path" points="${coordinates}" stroke="${metric.color}"></polyline>${dots}`;
       })
       .join("");
     const labelStep = Math.max(1, Math.ceil(points.length / 7));
@@ -676,6 +682,42 @@
         ${labels}
       </svg>
     `;
+  }
+
+  function renderActivityDetail(data) {
+    const points = Array.isArray(data.trend) ? data.trend : [];
+    const metrics = [
+      { key: "users", label: "New users", color: "#1734c7" },
+      { key: "listings", label: "Listings", color: "#168b57" },
+      { key: "inquiries", label: "Inquiries", color: "#7159d9" },
+      { key: "reviews", label: "Reviews", color: "#d6a900" },
+    ];
+    const body = document.querySelector("#report-activity-detail-body");
+    if (body)
+      body.innerHTML = points.length
+        ? points
+            .map(
+              (point) =>
+                `<tr><th scope="row">${escapeHtml(formatDate(point.date))}</th>${metrics.map((metric) => `<td>${number(point[metric.key])}</td>`).join("")}</tr>`,
+            )
+            .join("")
+        : '<tr><td colspan="5" class="admin-table-message">No activity was recorded for this period.</td></tr>';
+    const container = document.querySelector("#report-activity-comparison");
+    if (!container) return;
+    if (!points.length) {
+      container.innerHTML =
+        '<div class="report-empty-state">No activity was recorded for this period.</div>';
+      return;
+    }
+    const values = metrics.map((metric) => ({
+      ...metric,
+      total: points.reduce(
+        (sum, point) => sum + (Number(point[metric.key]) || 0),
+        0,
+      ),
+    }));
+    const ceiling = Math.max(1, ...values.map((item) => item.total));
+    container.innerHTML = `<div class="report-comparison-plot" role="img" aria-label="${escapeHtml(values.map((item) => `${item.label}: ${item.total}`).join("; "))}">${values.map((item) => `<div class="report-comparison-column"><strong>${number(item.total)}</strong><div class="report-comparison-track"><span style="height:${(item.total / ceiling) * 100}%;background:${item.color}"></span></div><span>${item.label}</span></div>`).join("")}</div><p class="report-note">Totals are summed from the activity timeline. Listing health shows current supply separately.</p>`;
   }
 
   function renderListingHealth(data) {
@@ -985,6 +1027,7 @@
     renderPrintSummary(data);
     renderInsights(data);
     renderTrend(data);
+    renderActivityDetail(data);
     renderListingHealth(data);
     renderDemand(data);
     renderTopListings(data);

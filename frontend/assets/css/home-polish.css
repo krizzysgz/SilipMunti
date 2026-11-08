@@ -397,3 +397,36 @@
     gap: 10px;
   }
 }
+/* Separate landlord and renter feedback sections without changing the palette. */
+.home-page .reviews-section {
+  position: relative;
+  padding-top: 56px;
+}
+.home-page .reviews-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(calc(100% - 64px), 1440px);
+  height: 1px;
+  background: #ccd4e9;
+}
+.home-page .reviews-section .review-top > span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.home-page .reviews-section .review-top > span > strong::before {
+  content: ": ";
+  color: #112bc1;
+  font-weight: 500;
+}
+@media (max-width: 640px) {
+  .home-page .reviews-section {
+    padding-top: 36px;
+  }
+  .home-page .reviews-section::before {
+    width: calc(100% - 32px);
+  }
+}

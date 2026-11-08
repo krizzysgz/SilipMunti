@@ -28,8 +28,10 @@ $sql = "
         l.availability_status,
         renter.id AS renter_id,
         CONCAT(renter.first_name, ' ', renter.last_name) AS renter_name,
+        renter.profile_picture AS renter_profile_picture,
         landlord.id AS landlord_id,
         CONCAT(landlord.first_name, ' ', landlord.last_name) AS landlord_name,
+        landlord.profile_picture AS landlord_profile_picture,
         (
             SELECT m.message_text
             FROM messages m
@@ -92,6 +94,17 @@ $imageStmt = $pdo->prepare("
     LIMIT 1
 ");
 
+$profilePictureUrl = static function ($path) {
+    $path = trim((string) $path);
+    if ($path === '') {
+        return null;
+    }
+    if (preg_match('~^https?://~i', $path) || strpos($path, '/') === 0) {
+        return $path;
+    }
+    return '/SilipMunti/backend/' . $path;
+};
+
 foreach ($inquiries as &$inquiry) {
     $imageStmt->execute([
         'listing_id' => $inquiry['listing_id']
@@ -107,16 +120,23 @@ foreach ($inquiries as &$inquiry) {
         $inquiry['other_user'] = [
             'id' => $inquiry['landlord_id'],
             'name' => $inquiry['landlord_name'],
-            'role' => 'landlord'
+            'role' => 'landlord',
+            'profile_picture' => $inquiry['landlord_profile_picture'],
+            'profile_picture_url' => $profilePictureUrl($inquiry['landlord_profile_picture'])
         ];
     } else {
         $inquiry['other_user'] = [
             'id' => $inquiry['renter_id'],
             'name' => $inquiry['renter_name'],
-            'role' => 'renter'
+            'role' => 'renter',
+            'profile_picture' => $inquiry['renter_profile_picture'],
+            'profile_picture_url' => $profilePictureUrl($inquiry['renter_profile_picture'])
         ];
     }
+
+    unset($inquiry['renter_profile_picture'], $inquiry['landlord_profile_picture']);
 }
+unset($inquiry);
 
 echo json_encode([
     'success' => true,
