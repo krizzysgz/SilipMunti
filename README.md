@@ -171,4 +171,4 @@ Before deployment, validate HTTPS, secure session cookies, database privileges, 
 
 ## Project ownership
 
-SilipMunti is an academic capstone project. Add the approved authors, institution, adviser, and usage/license terms before public distribution. No open-source license is granted by this README.
+SilipMunti is an academic capstone project developed by Krizzy Shane T. Gozo, Andrey Kurt L. La Torre, and Edrian Nazareth P. Pagobo in partial fulfillment of the requirements for the Bachelor of Science in Information Technology (BSIT) program at Pamantasan ng Lungsod ng Muntinlupa. This README does not grant an open-source license.
