@@ -7,6 +7,7 @@ require_once __DIR__ . '/../config/database.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
+
     echo json_encode([
         'success' => false,
         'message' => 'Method not allowed.',
@@ -41,6 +42,7 @@ try {
             ON u.id = l.landlord_id
         WHERE l.deleted_at IS NULL
           AND u.deleted_at IS NULL
+          AND u.landlord_status = 'approved'
           AND l.verification_status = 'verified'
           AND l.availability_status = 'available'
           AND l.barangay IS NOT NULL
@@ -60,6 +62,7 @@ try {
         WHERE rt.deleted_at IS NULL
           AND l.deleted_at IS NULL
           AND u.deleted_at IS NULL
+          AND u.landlord_status = 'approved'
           AND l.verification_status = 'verified'
           AND l.availability_status = 'available'
         ORDER BY rt.name ASC
@@ -72,6 +75,7 @@ try {
             ON u.id = l.landlord_id
         WHERE l.deleted_at IS NULL
           AND u.deleted_at IS NULL
+          AND u.landlord_status = 'approved'
           AND l.verification_status = 'verified'
           AND l.availability_status = 'available'
           AND l.amenities IS NOT NULL
@@ -79,7 +83,10 @@ try {
 
     $amenityCounts = [];
 
-    foreach ($amenityStatement->fetchAll(PDO::FETCH_COLUMN) as $storedAmenities) {
+    foreach (
+        $amenityStatement->fetchAll(PDO::FETCH_COLUMN)
+        as $storedAmenities
+    ) {
         foreach (parseRecommendationList($storedAmenities) as $amenity) {
             $amenity = trim((string) $amenity);
 
@@ -118,7 +125,9 @@ try {
         'success' => true,
         'message' => 'Recommendation options retrieved successfully.',
         'data' => [
-            'barangays' => $barangayStatement->fetchAll(PDO::FETCH_COLUMN),
+            'barangays' => $barangayStatement->fetchAll(
+                PDO::FETCH_COLUMN
+            ),
             'rental_types' => $rentalTypes,
             'amenities' => array_values(array_map(
                 static fn (array $item): string => $item['label'],
@@ -129,9 +138,9 @@ try {
 } catch (PDOException $exception) {
     error_log($exception->getMessage());
     http_response_code(500);
+
     echo json_encode([
         'success' => false,
         'message' => 'Unable to load recommendation options.',
     ]);
 }
-

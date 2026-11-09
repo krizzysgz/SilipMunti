@@ -1,5 +1,7 @@
 <?php
+require_once __DIR__ . '/error-pages.php';
 
+silip_enable_browser_error_pages();
 function env_value(string $key, ?string $default = null): ?string
 {
     static $variables = null;
@@ -42,3 +44,4 @@ function env_value(string $key, ?string $default = null): ?string
 
     return trim((string) $value);
 }
+

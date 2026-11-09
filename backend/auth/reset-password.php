@@ -14,13 +14,11 @@ function password_reset_session_invalid(): never
 
     echo json_encode([
         'success' => false,
-        'message' =>
-            'Your verification expired. Please request a new code.',
+        'message' => 'Your verification expired. Please request a new code.',
         'data' => [
             'restart' => true
         ]
     ]);
-
     exit;
 }
 
@@ -31,23 +29,30 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'success' => false,
         'message' => 'Method not allowed.'
     ]);
-
     exit;
 }
 
-$data = json_decode(
-    file_get_contents('php://input'),
-    true
-);
+$data = json_decode(file_get_contents('php://input'), true);
 
 if (!is_array($data)) {
     $data = $_POST;
 }
 
-$email = strtolower(trim($data['email'] ?? ''));
-$resetToken = trim((string) ($data['reset_token'] ?? ''));
-$newPassword = $data['new_password'] ?? '';
-$confirmPassword = $data['confirm_password'] ?? '';
+$email = is_string($data['email'] ?? null)
+    ? strtolower(trim($data['email']))
+    : '';
+
+$resetToken = is_string($data['reset_token'] ?? null)
+    ? trim($data['reset_token'])
+    : '';
+
+$newPassword = is_string($data['new_password'] ?? null)
+    ? $data['new_password']
+    : '';
+
+$confirmPassword = is_string($data['confirm_password'] ?? null)
+    ? $data['confirm_password']
+    : '';
 
 $errors = [];
 
@@ -67,21 +72,20 @@ if ($newPassword === '') {
 } elseif (strlen($newPassword) > 255) {
     $errors['new_password'] = 'New password is too long.';
 } elseif (
-    !preg_match('/[A-Z]/', $newPassword) ||
-    !preg_match('/[a-z]/', $newPassword) ||
-    !preg_match('/[0-9]/', $newPassword) ||
-    !preg_match('/[\W_]/', $newPassword)
+    !preg_match('/[A-Z]/', $newPassword)
+    || !preg_match('/[a-z]/', $newPassword)
+    || !preg_match('/[0-9]/', $newPassword)
+    || !preg_match('/[\W_]/', $newPassword)
 ) {
     $errors['new_password'] =
-        'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.';
+        'Password must include at least one uppercase letter, '
+        . 'one lowercase letter, one number, and one special character.';
 }
 
 if ($confirmPassword === '') {
-    $errors['confirm_password'] =
-        'Password confirmation is required.';
+    $errors['confirm_password'] = 'Password confirmation is required.';
 } elseif ($newPassword !== $confirmPassword) {
-    $errors['confirm_password'] =
-        'Passwords do not match.';
+    $errors['confirm_password'] = 'Passwords do not match.';
 }
 
 if ($errors !== []) {
@@ -92,11 +96,9 @@ if ($errors !== []) {
         'message' => 'Validation failed.',
         'errors' => $errors
     ]);
-
     exit;
 }
 
-// Walang saysay na mag-query kung mali na ang itsura ng token.
 if (!preg_match('/^[a-f0-9]{64}$/', $resetToken)) {
     password_reset_session_invalid();
 }
@@ -143,11 +145,7 @@ try {
 
     $otpRecord = $getOtp->fetch();
 
-    // Walang record, hindi pa na-verify ang code, o expired na.
-    if (
-        !$otpRecord
-        || $otpRecord['reset_token_hash'] === null
-    ) {
+    if (!$otpRecord || $otpRecord['reset_token_hash'] === null) {
         $pdo->commit();
         password_reset_session_invalid();
     }
@@ -177,21 +175,17 @@ try {
     }
 
     if (password_verify($newPassword, $user['password'])) {
-        // Hindi ginagalaw ang token para makapili ulit ng ibang password.
         $pdo->rollBack();
-
         http_response_code(422);
 
         echo json_encode([
             'success' => false,
-            'message' =>
-                'Choose a password different from your current password.',
+            'message' => 'Choose a password different from your current password.',
             'errors' => [
                 'new_password' =>
                     'New password must be different from your current password.'
             ]
         ]);
-
         exit;
     }
 
@@ -201,15 +195,17 @@ try {
     );
 
     if ($hashedPassword === false) {
-        throw new RuntimeException(
-            'Unable to secure the new password.'
-        );
+        throw new RuntimeException('Unable to secure the new password.');
     }
 
+    // Password update and session revocation commit together.
     $updatePassword = $pdo->prepare('
         UPDATE users
-        SET password = :password
+        SET
+            password = :password,
+            session_version = session_version + 1
         WHERE id = :user_id
+            AND deleted_at IS NULL
     ');
 
     $updatePassword->execute([
@@ -230,8 +226,7 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' =>
-            'Password reset successfully. You can now sign in.'
+        'message' => 'Password reset successfully. You can now sign in.'
     ]);
 } catch (Throwable $exception) {
     if ($pdo->inTransaction()) {
@@ -239,12 +234,10 @@ try {
     }
 
     error_log($exception->getMessage());
-
     http_response_code(500);
 
     echo json_encode([
         'success' => false,
-        'message' =>
-            'Unable to reset the password.'
+        'message' => 'Unable to reset the password.'
     ]);
 }

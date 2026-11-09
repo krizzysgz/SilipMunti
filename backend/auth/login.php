@@ -16,22 +16,26 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         'success' => false,
         'message' => 'Method not allowed.'
     ]);
-
     exit;
 }
 
-$data = json_decode(
-    file_get_contents('php://input'),
-    true
-);
+$data = json_decode(file_get_contents('php://input'), true);
 
 if (!is_array($data)) {
     $data = $_POST;
 }
 
-$email = strtolower(trim($data['email'] ?? ''));
-$password = $data['password'] ?? '';
-$turnstileToken = trim($data['turnstile_token'] ?? '');
+$email = is_string($data['email'] ?? null)
+    ? strtolower(trim($data['email']))
+    : '';
+
+$password = is_string($data['password'] ?? null)
+    ? $data['password']
+    : '';
+
+$turnstileToken = is_string($data['turnstile_token'] ?? null)
+    ? trim($data['turnstile_token'])
+    : '';
 
 $errors = [];
 
@@ -57,7 +61,6 @@ if ($errors !== []) {
         'message' => 'Validation failed.',
         'errors' => $errors
     ]);
-
     exit;
 }
 
@@ -69,23 +72,18 @@ try {
     );
 
     if ($rateLimitState['blocked']) {
-        $retryAfter = max(
-            1,
-            (int) $rateLimitState['retry_after']
-        );
+        $retryAfter = max(1, (int) $rateLimitState['retry_after']);
 
         header('Retry-After: ' . $retryAfter);
         http_response_code(429);
 
         echo json_encode([
             'success' => false,
-            'message' =>
-                'Too many login attempts. Try again later.',
+            'message' => 'Too many login attempts. Try again later.',
             'data' => [
                 'retry_after' => $retryAfter
             ]
         ]);
-
         exit;
     }
 
@@ -108,7 +106,6 @@ try {
                     ? 'Security verification is temporarily unavailable.'
                     : 'Please complete the security verification again.'
             ]);
-
             exit;
         }
     }
@@ -116,6 +113,7 @@ try {
     $getUser = $pdo->prepare('
         SELECT
             id,
+            session_version,
             first_name,
             last_name,
             email,
@@ -161,23 +159,18 @@ try {
         usleep(random_int(150000, 300000));
 
         if ($failureState['blocked']) {
-            $retryAfter = max(
-                1,
-                (int) $failureState['retry_after']
-            );
+            $retryAfter = max(1, (int) $failureState['retry_after']);
 
             header('Retry-After: ' . $retryAfter);
             http_response_code(429);
 
             echo json_encode([
                 'success' => false,
-                'message' =>
-                    'Too many login attempts. Try again later.',
+                'message' => 'Too many login attempts. Try again later.',
                 'data' => [
                     'retry_after' => $retryAfter
                 ]
             ]);
-
             exit;
         }
 
@@ -187,7 +180,6 @@ try {
             'success' => false,
             'message' => 'Invalid email or password.'
         ]);
-
         exit;
     }
 
@@ -197,33 +189,39 @@ try {
         $email
     );
 
-    if (
-        password_needs_rehash(
-            $user['password'],
-            PASSWORD_DEFAULT
-        )
-    ) {
-        $newHash = password_hash(
-            $password,
-            PASSWORD_DEFAULT
-        );
+    if (password_needs_rehash($user['password'], PASSWORD_DEFAULT)) {
+        $newHash = password_hash($password, PASSWORD_DEFAULT);
 
         if ($newHash === false) {
-            throw new RuntimeException(
-                'Unable to secure the password.'
-            );
+            throw new RuntimeException('Unable to secure the password.');
         }
 
+        // Do not overwrite a password changed by a concurrent reset.
         $rehashStatement = $pdo->prepare('
             UPDATE users
             SET password = :password
             WHERE id = :user_id
+                AND session_version = :session_version
+                AND password = :previous_password
+                AND deleted_at IS NULL
         ');
 
         $rehashStatement->execute([
             'password' => $newHash,
-            'user_id' => $user['id']
+            'user_id' => $user['id'],
+            'session_version' => $user['session_version'],
+            'previous_password' => $user['password']
         ]);
+
+        if ($rehashStatement->rowCount() !== 1) {
+            http_response_code(401);
+
+            echo json_encode([
+                'success' => false,
+                'message' => 'Account security changed. Please sign in again.'
+            ]);
+            exit;
+        }
     }
 
     if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -234,6 +232,7 @@ try {
 
     $_SESSION = [];
     $_SESSION['user_id'] = (int) $user['id'];
+    $_SESSION['session_version'] = (int) $user['session_version'];
     $_SESSION['logged_in_at'] = time();
     $_SESSION['last_activity'] = time();
     $_SESSION['session_started_at'] = time();
@@ -254,7 +253,7 @@ try {
         );
     }
 
-    unset($user['password']);
+    unset($user['password'], $user['session_version']);
 
     echo json_encode([
         'success' => true,

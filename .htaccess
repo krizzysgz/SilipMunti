@@ -1,19 +1,30 @@
 Options -Indexes
 
+# Block direct access to hidden files and sensitive artifacts.
+<FilesMatch "(?i)(^\.|^composer\.(json|lock)$|\.(sql|sqlite|sqlite3|db|bak|old|orig|save|swp|log|zip|tar|tgz|gz|7z)$)">
+    Require all denied
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Keep local XAMPP development on HTTP. Redirect non-local hosts to HTTPS.
+    # Block hidden directories/files, including .git, .env and .agents.
+    # Keep .well-known available for certificate/domain verification.
+    RewriteRule "(^|/)\.(?!well-known(?:/|$))" - [F,L,NC]
+
+    # Block database dumps, backup files, logs and archives.
+    RewriteRule "\.(sql|sqlite|sqlite3|db|bak|old|orig|save|swp|log|zip|tar|tgz|gz|7z)$" - [F,L,NC]
+
+    # Allow HTTP for local XAMPP development.
+    # Require HTTPS for non-local hosts.
     RewriteCond %{HTTP_HOST} !^localhost(?::[0-9]+)?$ [NC]
     RewriteCond %{HTTP_HOST} !^127\.0\.0\.1(?::[0-9]+)?$ [NC]
     RewriteCond %{HTTP_HOST} !^\[::1\](?::[0-9]+)?$ [NC]
     RewriteCond %{HTTPS} !=on
-    RewriteCond %{HTTP:X-Forwarded-Proto} !^https$ [NC]
     RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,NE]
 
-    # Mark direct HTTPS and trusted-proxy HTTPS responses for HSTS.
-    RewriteCond %{HTTPS} =on [OR]
-    RewriteCond %{HTTP:X-Forwarded-Proto} ^https$ [NC]
+    # Enable HSTS only when Apache receives HTTPS directly.
+    RewriteCond %{HTTPS} =on
     RewriteRule ^ - [E=SILIPMUNTI_HTTPS:1]
 </IfModule>
 
@@ -23,5 +34,16 @@ Options -Indexes
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
     Header always unset X-Powered-By
+
     Header always set Strict-Transport-Security "max-age=31536000" env=SILIPMUNTI_HTTPS
 </IfModule>
+
+# Shared error pages for Apache-generated errors.
+ErrorDocument 400 /SilipMunti/backend/error.php?status=400
+ErrorDocument 401 /SilipMunti/backend/error.php?status=401
+ErrorDocument 403 /SilipMunti/backend/error.php?status=403
+ErrorDocument 404 /SilipMunti/backend/error.php?status=404
+ErrorDocument 405 /SilipMunti/backend/error.php?status=405
+ErrorDocument 429 /SilipMunti/backend/error.php?status=429
+ErrorDocument 500 /SilipMunti/backend/error.php?status=500
+ErrorDocument 503 /SilipMunti/backend/error.php?status=503

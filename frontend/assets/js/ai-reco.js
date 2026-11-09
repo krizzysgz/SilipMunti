@@ -660,8 +660,10 @@
       : [];
     const preferences = result.data?.preferences || {};
 
-    document.querySelector("#sm-ai-results-title").textContent =
-      "Properties selected for you";
+    document.querySelector("#sm-ai-results-title").textContent = result.data
+      ?.listing_results
+      ? "Properties from our conversation"
+      : "Properties selected for you";
     appendChatMessage("assistant", result.message, {
       sourceLabel: result.data?.ai_generated
         ? "Gemini explanation · SilipMunti database"
@@ -680,8 +682,11 @@
     if (!recommendations.length) {
       resultList.innerHTML = `
         <div class="sm-ai-empty">
-          <strong>No exact matches yet.</strong><br />
-          Try again with a higher budget or fewer preferences.
+          ${
+            result.data?.listing_results
+              ? "No property cards to display for this request. See the assistant's response above."
+              : "<strong>No exact matches yet.</strong><br />Try again with a higher budget or fewer preferences."
+          }
         </div>
       `;
       showView("results");
@@ -692,7 +697,16 @@
       .map((listing) => {
         const reasons = Array.isArray(listing.match_reasons)
           ? listing.match_reasons
-          : [];
+          : result.data?.listing_results
+            ? [
+                listing.availability_status === "available"
+                  ? "Verified and currently available"
+                  : `Current status: ${listing.availability_status || "Not specified"}`,
+                ...(listing.landlord_name
+                  ? [`Listed by ${listing.landlord_name}`]
+                  : []),
+              ]
+            : [];
         const bedroomLabel =
           listing.bedroom_no === null
             ? "Bedrooms not specified"
@@ -712,7 +726,13 @@
                 alt="${escapeHtml(listing.title)}"
                 loading="lazy"
               />
-              <span class="sm-ai-match">${escapeHtml(listing.match_percentage)}% match</span>
+              <span class="sm-ai-match">${
+                Number.isFinite(listing.match_percentage)
+                  ? `${escapeHtml(listing.match_percentage)}% match`
+                  : listing.availability_status === "available"
+                    ? "Available"
+                    : "Verified listing"
+              }</span>
             </div>
             <div class="sm-ai-property-content">
               <div class="sm-ai-property-meta">
@@ -835,6 +855,15 @@
           </div>
         `;
         showView("results");
+        return;
+      }
+
+      if (interpretation.data?.listing_results === true) {
+        retryAction = null;
+        renderResults(interpretation);
+        window.setTimeout(() => {
+          document.querySelector("#sm-ai-chat-input")?.focus();
+        }, 80);
         return;
       }
 

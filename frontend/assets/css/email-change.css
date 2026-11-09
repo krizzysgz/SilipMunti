@@ -1,0 +1,118 @@
+.profile-email-change {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #dce2ef;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.profile-email-change [hidden] {
+  display: none !important;
+}
+
+.profile-email-change h2 {
+  margin: 0;
+  color: #1734c7;
+  font-size: 20px;
+}
+
+.profile-email-change p {
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.profile-email-change .email-change-heading > p {
+  margin: 8px 0 20px;
+  color: #596273;
+}
+
+.profile-email-change form {
+  display: grid;
+  gap: 16px;
+}
+
+.profile-email-change label {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.profile-email-change input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 11px 12px;
+  border: 1px solid #dce2ef;
+  border-radius: 6px;
+  background: #fff;
+  color: #182033;
+  font: inherit;
+}
+
+.profile-email-change input:focus-visible,
+.profile-email-change button:focus-visible {
+  outline: 2px solid #1734c7;
+  outline-offset: 3px;
+}
+
+.profile-email-change button {
+  min-height: 44px;
+  padding: 11px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.profile-email-change form > button {
+  justify-self: start;
+}
+
+.profile-email-change button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.profile-email-change .email-change-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+#email-change-start-again {
+  border: 1px solid #dce2ef;
+  background: #fff;
+  color: #1734c7;
+  font: inherit;
+}
+
+.profile-email-change .email-change-message {
+  margin: 16px 0 0;
+}
+
+.profile-email-change .email-change-message:empty {
+  display: none;
+}
+
+.profile-email-change .email-change-message[data-type="error"] {
+  color: #a51d32;
+}
+
+.profile-email-change .email-change-message[data-type="success"] {
+  color: #185c3b;
+}
+
+@media (max-width: 640px) {
+  .profile-email-change {
+    padding: 18px;
+  }
+
+  .profile-email-change input {
+    font-size: 16px;
+  }
+
+  .profile-email-change form > button,
+  .profile-email-change .email-change-actions > button {
+    width: 100%;
+  }
+}

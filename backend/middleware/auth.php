@@ -5,8 +5,11 @@ require_once __DIR__ . '/../config/session.php';
 require_once __DIR__ . '/../config/landlord-verification.php';
 require_once __DIR__ . '/../security/csrf.php';
 
-function authentication_error(string $message, int $status, array $data = []): never
-{
+function authentication_error(
+    string $message,
+    int $status,
+    array $data = []
+): never {
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
@@ -64,6 +67,7 @@ function current_user(PDO $pdo): ?array
     $getUser = $pdo->prepare("
         SELECT
             id,
+            session_version,
             first_name,
             last_name,
             email,
@@ -90,6 +94,18 @@ function current_user(PDO $pdo): ?array
         clear_user_session();
         return null;
     }
+
+    $sessionVersion = $_SESSION['session_version'] ?? null;
+
+    if (
+        !is_int($sessionVersion)
+        || $sessionVersion !== (int) $user['session_version']
+    ) {
+        clear_user_session();
+        return null;
+    }
+
+    unset($user['session_version']);
 
     $user['id'] = (int) $user['id'];
 
@@ -118,10 +134,7 @@ function require_login(PDO $pdo): array
     $user = current_user($pdo);
 
     if (!$user) {
-        authentication_error(
-            'You must log in first.',
-            401
-        );
+        authentication_error('You must log in first.', 401);
     }
 
     require_csrf_token();
@@ -149,12 +162,9 @@ function require_approved_landlord(PDO $pdo): array
 
     if (($landlord['account_status'] ?? 'pending') !== 'approved') {
         $messages = [
-            'pending' =>
-                'Your landlord account is awaiting admin approval.',
-            'rejected' =>
-                'Your landlord account was not approved.',
-            'suspended' =>
-                'Your landlord account is currently suspended.'
+            'pending' => 'Your landlord account is awaiting admin approval.',
+            'rejected' => 'Your landlord account was not approved.',
+            'suspended' => 'Your landlord account is currently suspended.'
         ];
 
         $accountStatus = $landlord['account_status'] ?? 'pending';

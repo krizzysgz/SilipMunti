@@ -1,6 +1,6 @@
 Options -Indexes
 
-<FilesMatch "(^\.|composer\.(json|lock)$|\.example$)">
+<FilesMatch "(?i)(^\.|^composer\.(json|lock)$|\.example$)">
     Require all denied
 </FilesMatch>
 
@@ -10,18 +10,27 @@ Options -Indexes
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
     Header always unset X-Powered-By
-    Header always set Content-Security-Policy "default-src 'none'; base-uri 'none'; object-src 'none'; frame-ancestors 'self'; form-action 'none'"
+
+    Header always set Content-Security-Policy "default-src 'none'; style-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'self'; form-action 'none'"
 </IfModule>
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    RewriteRule ^config(?:/|$) - [F,L,NC]
-    RewriteRule ^middleware(?:/|$) - [F,L,NC]
-    RewriteRule ^setup(?:/|$) - [F,L,NC]
-    RewriteRule ^vendor(?:/|$) - [F,L,NC]
-    RewriteRule ^auth/make-admin\.php$ - [F,L,NC]
-    RewriteRule ^ai/(?:config|gemini-client|test-gemini)\.php$ - [F,L,NC]
+    # Block direct browser access to internal directories.
+    RewriteRule ^(?:config|middleware|setup|vendor)(?:/|$) - [F,L,NC]
+
+    # Block internal security helpers.
+    # Keep security/turnstile-config.php accessible.
+    RewriteRule ^security/(?:csrf|turnstile|ai-rate-limit)\.php(?:/|$) - [F,L,NC]
+
+    # Block development/bootstrap endpoints.
+    RewriteRule ^auth/make-admin\.php(?:/|$) - [F,L,NC]
+    RewriteRule ^ai/(?:config|gemini-client|test-gemini)\.php(?:/|$) - [F,L,NC]
+
+    # Protect private verification documents.
     RewriteRule ^storage/verification-documents(?:/|$) - [F,L,NC]
-    RewriteRule ^storage/.*\.(?:php[0-9]*|phtml|phar|cgi|pl|py|sh)$ - [F,L,NC]
+
+    # Block executable files inside upload storage.
+    RewriteRule ^storage/.*\.(?:php[0-9]*|phtml|phar|cgi|pl|py|sh)(?:/|$) - [F,L,NC]
 </IfModule>

@@ -8,6 +8,7 @@ require_once __DIR__ . '/gemini-client.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
+
     echo json_encode([
         'success' => false,
         'message' => 'Method not allowed.',
@@ -15,9 +16,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-function recommendationError(string $message, int $status = 422): void
-{
+function recommendationError(
+    string $message,
+    int $status = 422
+): void {
     http_response_code($status);
+
     echo json_encode([
         'success' => false,
         'message' => $message,
@@ -52,7 +56,10 @@ function recommendationImageUrl(?string $path): ?string
         return null;
     }
 
-    if (preg_match('/^(https?:)?\/\//i', $path) || str_starts_with($path, '/')) {
+    if (
+        preg_match('/^(https?:)?\/\//i', $path)
+        || str_starts_with($path, '/')
+    ) {
         return $path;
     }
 
@@ -71,6 +78,7 @@ function recommendationKeywords(string $value): array
         'for', 'from', 'good', 'have', 'house', 'lang', 'near', 'need',
         'property', 'rental', 'show', 'that', 'the', 'this', 'with', 'yung',
     ];
+
     $words = preg_split(
         '/[^\p{L}\p{N}]+/u',
         normalizeRecommendationText($value)
@@ -199,6 +207,7 @@ try {
             ON rt.id = l.rental_type_id
         WHERE l.deleted_at IS NULL
           AND u.deleted_at IS NULL
+          AND u.landlord_status = 'approved'
           AND rt.deleted_at IS NULL
           AND l.verification_status = 'verified'
           AND l.availability_status = 'available'
@@ -209,6 +218,7 @@ try {
     $listings = $statement->fetchAll(PDO::FETCH_ASSOC);
     $ranked = [];
     $selectedRentalType = null;
+
     $normalizedRequestedAmenities = array_map(
         'normalizeRecommendationText',
         $requestedAmenities
@@ -216,6 +226,7 @@ try {
 
     foreach ($listings as $listing) {
         $price = (float) $listing['price'];
+
         $listingOccupancy = $listing['occupancy_limit'] !== null
             ? (int) $listing['occupancy_limit']
             : null;
@@ -273,8 +284,13 @@ try {
         if ($bedroomNumber !== null) {
             $possibleScore += 12;
 
-            if ($listingBedrooms !== null && $listingBedrooms >= $bedroomNumber) {
-                $earnedScore += $listingBedrooms === $bedroomNumber ? 12 : 10;
+            if (
+                $listingBedrooms !== null
+                && $listingBedrooms >= $bedroomNumber
+            ) {
+                $earnedScore +=
+                    $listingBedrooms === $bedroomNumber ? 12 : 10;
+
                 $reasons[] = $bedroomNumber === 0
                     ? 'Studio-friendly layout'
                     : 'Has enough bedrooms';
@@ -294,29 +310,46 @@ try {
 
         if ($normalizedRequestedAmenities !== []) {
             $possibleScore += 15;
+
             $normalizedListingAmenities = array_map(
                 'normalizeRecommendationText',
                 $listingAmenities
             );
+
             $matchedAmenities = [];
 
-            foreach ($normalizedRequestedAmenities as $index => $requestedAmenity) {
-                if (in_array($requestedAmenity, $normalizedListingAmenities, true)) {
+            foreach (
+                $normalizedRequestedAmenities
+                as $index => $requestedAmenity
+            ) {
+                if (
+                    in_array(
+                        $requestedAmenity,
+                        $normalizedListingAmenities,
+                        true
+                    )
+                ) {
                     $matchedAmenities[] = $requestedAmenities[$index];
                 }
             }
 
-            $amenityRatio = count($matchedAmenities) / count($requestedAmenities);
+            $amenityRatio =
+                count($matchedAmenities) / count($requestedAmenities);
+
             $earnedScore += 15 * $amenityRatio;
 
             if ($matchedAmenities !== []) {
-                $reasons[] = 'Includes ' . implode(', ', array_slice($matchedAmenities, 0, 2));
+                $reasons[] = 'Includes ' . implode(
+                    ', ',
+                    array_slice($matchedAmenities, 0, 2)
+                );
             }
         }
 
         if ($note !== '') {
             $possibleScore += 10;
             $noteKeywords = recommendationKeywords($note);
+
             $searchableText = normalizeRecommendationText(implode(' ', [
                 (string) $listing['title'],
                 (string) $listing['description'],
@@ -326,19 +359,23 @@ try {
                 (string) $listing['transport_routes'],
                 implode(' ', $listingAmenities),
             ]));
+
             $matchedKeywords = array_values(array_filter(
                 $noteKeywords,
                 static fn (string $keyword): bool =>
                     str_contains($searchableText, $keyword)
             ));
+
             $transportRequested = preg_match(
                 '/transport|commute|jeep|bus|train|route/i',
                 $note
             ) === 1;
+
             $nearbyRequested = preg_match(
                 '/school|hospital|market|mall|establishment/i',
                 $note
             ) === 1;
+
             $specialMatch = (
                 $transportRequested
                 && trim((string) $listing['transport_routes']) !== ''
@@ -351,7 +388,10 @@ try {
                 $keywordRatio = $noteKeywords !== []
                     ? count($matchedKeywords) / count($noteKeywords)
                     : 0;
-                $earnedScore += 10 * max(0.65, min(1, $keywordRatio));
+
+                $earnedScore +=
+                    10 * max(0.65, min(1, $keywordRatio));
+
                 $reasons[] = 'Matches your additional preference';
             }
         }
@@ -359,6 +399,7 @@ try {
         $matchRatio = $possibleScore > 0
             ? $earnedScore / $possibleScore
             : 0.7;
+
         $matchPercentage = (int) round(55 + (44 * $matchRatio));
 
         if ($reasons === []) {
@@ -368,7 +409,11 @@ try {
         $ranked[] = [
             'id' => (int) $listing['id'],
             'title' => $listing['title'],
-            'description' => mb_substr((string) $listing['description'], 0, 220),
+            'description' => mb_substr(
+                (string) $listing['description'],
+                0,
+                220
+            ),
             'price' => $price,
             'barangay' => $listing['barangay'],
             'city' => $listing['city'],
@@ -382,7 +427,9 @@ try {
                 : null,
             'amenities' => $listingAmenities,
             'landlord_name' => $listing['landlord_name'],
-            'primary_image' => recommendationImageUrl($listing['primary_image_path']),
+            'primary_image' => recommendationImageUrl(
+                $listing['primary_image_path']
+            ),
             'match_percentage' => min(99, max(55, $matchPercentage)),
             'match_reasons' => array_slice($reasons, 0, 3),
             '_score' => $matchRatio,
@@ -392,7 +439,8 @@ try {
     usort(
         $ranked,
         static function (array $first, array $second): int {
-            $scoreComparison = $second['_score'] <=> $first['_score'];
+            $scoreComparison =
+                $second['_score'] <=> $first['_score'];
 
             if ($scoreComparison !== 0) {
                 return $scoreComparison;
@@ -428,7 +476,8 @@ try {
     if ($recommendations === []) {
         echo json_encode([
             'success' => true,
-            'message' => 'No exact matches were found. Try increasing your budget or skipping one preference.',
+            'message' =>
+                'No exact matches were found. Try increasing your budget or skipping one preference.',
             'data' => [
                 'ai_generated' => false,
                 'preferences' => $preferences,
@@ -443,7 +492,9 @@ try {
         $preferences,
         $recommendations
     );
+
     $topRecommendation = $recommendations[0];
+
     $fallbackMessage = sprintf(
         'I found %d verified %s based on your preferences. %s is the strongest match, but you can compare all the options below before deciding.',
         count($recommendations),
@@ -464,6 +515,7 @@ try {
 } catch (PDOException $exception) {
     error_log($exception->getMessage());
     http_response_code(500);
+
     echo json_encode([
         'success' => false,
         'message' => 'Unable to generate property recommendations.',
@@ -471,6 +523,7 @@ try {
 } catch (Throwable $exception) {
     error_log($exception->getMessage());
     http_response_code(500);
+
     echo json_encode([
         'success' => false,
         'message' => 'The recommendation service is temporarily unavailable.',

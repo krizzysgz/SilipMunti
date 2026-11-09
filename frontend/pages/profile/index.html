@@ -41,6 +41,10 @@
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3"
     />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/email-change.css?v=1"
+    />
   </head>
 
   <body>
@@ -196,7 +200,10 @@
                       <input id="email" name="email" type="email" disabled />
                     </div>
 
-                    <small> Your email address cannot be changed. </small>
+                    <small
+                      >Use the verified email-change form below to change your
+                      email.</small
+                    >
                   </div>
 
                   <div class="form-group form-group-full">
@@ -240,7 +247,88 @@
                 </div>
               </form>
             </section>
+            <section
+              class="profile-email-change"
+              aria-labelledby="email-change-heading"
+            >
+              <div class="email-change-heading">
+                <h2 id="email-change-heading">Change email address</h2>
+                <p>
+                  Confirm your password and verify your new email. Your current
+                  email stays active until verification is complete.
+                </p>
+              </div>
 
+              <form id="email-change-request-form">
+                <label for="email-change-new-email">
+                  New email address
+                  <input
+                    id="email-change-new-email"
+                    name="new_email"
+                    type="email"
+                    maxlength="150"
+                    autocomplete="email"
+                    required
+                  />
+                </label>
+
+                <label for="email-change-password">
+                  Current password
+                  <input
+                    id="email-change-password"
+                    name="current_password"
+                    type="password"
+                    maxlength="255"
+                    autocomplete="current-password"
+                    required
+                  />
+                </label>
+
+                <button class="button button-blue" type="submit">
+                  Send verification code
+                </button>
+              </form>
+
+              <form id="email-change-verify-form" hidden>
+                <p>
+                  Enter the code sent to
+                  <strong id="email-change-pending-address"></strong>. The code
+                  expires in 10 minutes.
+                </p>
+
+                <label for="email-change-otp">
+                  Verification code
+                  <input
+                    id="email-change-otp"
+                    name="otp"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    pattern="[0-9]{6}"
+                    minlength="6"
+                    maxlength="6"
+                    required
+                  />
+                </label>
+
+                <div class="email-change-actions">
+                  <button class="button button-blue" type="submit">
+                    Verify and update email
+                  </button>
+
+                  <button id="email-change-start-again" type="button">
+                    Start again
+                  </button>
+                </div>
+              </form>
+
+              <p
+                id="email-change-message"
+                class="email-change-message"
+                role="status"
+                aria-live="polite"
+              ></p>
+            </section>
             <section class="security-card">
               <div class="security-information">
                 <span class="security-icon">
@@ -423,6 +511,7 @@
     <!-- CHANGED: v=2 -> v=3 -->
     <script src="../../assets/js/site-navbar.js?v=7"></script>
     <script src="../../assets/js/profile.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/email-change.js?v=1"></script>
     <script src="/SilipMunti/frontend/assets/js/chat-bubble.js?v=2"></script>
   </body>
 </html>
