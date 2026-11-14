@@ -272,6 +272,12 @@ try {
         ($exception->errorInfo[0] ?? null) === '23000' &&
         (int) ($exception->errorInfo[1] ?? 0) === 1062) {
         try {
+            $checkEmail = $pdo->prepare(" 
+                SELECT id
+                FROM users
+                WHERE LOWER(email) = :email
+                LIMIT 1
+            ");
             $checkEmail->execute(['email' => $values['email']]);
 
             if ($checkEmail->fetch()) {

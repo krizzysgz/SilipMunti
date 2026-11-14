@@ -65,10 +65,10 @@ function validatePasswordStrength(password) {
     symbol: document.getElementById("req-symbol"),
   };
 
-  const iconValid =
-    '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i>';
+  const iconValid = '<i class="fa-solid fa-circle-check password-valid"></i>';
+
   const iconInvalid =
-    '<i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i>';
+    '<i class="fa-solid fa-circle-xmark password-invalid"></i>';
 
   for (const key in reqs) {
     if (reqElements[key]) {

@@ -997,17 +997,21 @@
 }
 
 .password-requirements span {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .password-requirements i {
-  color: #ef4444 !important;
+  color: #ef4444;
 }
 
-.password-requirements span.valid i {
-  color: #10b981 !important;
+.password-requirements i.password-valid {
+  color: #10b981;
+}
+
+.password-requirements i.password-invalid {
+  color: #ef4444;
 }
 
 @media (max-width: 600px) {
