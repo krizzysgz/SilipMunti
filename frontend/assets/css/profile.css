@@ -11,15 +11,12 @@
   --danger: #dc2944;
   --success: #13783a;
 }
-
 * {
   box-sizing: border-box;
 }
-
 html {
   scroll-behavior: smooth;
 }
-
 body {
   min-height: 100vh;
   margin: 0;
@@ -28,25 +25,20 @@ body {
   color: var(--text);
   font-family: "Poppins", sans-serif;
 }
-
 body.modal-open {
   overflow: hidden;
 }
-
 button,
 input {
   font: inherit;
 }
-
 button,
 a {
   -webkit-tap-highlight-color: transparent;
 }
-
 .hidden {
   display: none !important;
 }
-
 body > .site-header {
   position: sticky;
   top: 0;
@@ -55,7 +47,6 @@ body > .site-header {
   border-bottom: 1px solid #eeeeee;
   background: var(--white);
 }
-
 body > body > .site-header .header-container {
   width: min(100% - 48px, 1660px);
   min-height: 92px;
@@ -65,20 +56,17 @@ body > body > .site-header .header-container {
   justify-content: space-between;
   gap: 42px;
 }
-
 body > .site-header .brand-link {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
 }
-
 body > .site-header .brand-logo {
   width: 165px;
   height: 64px;
   display: block;
   object-fit: contain;
 }
-
 body > body > .site-header .desktop-navigation {
   display: flex;
   align-items: center;
@@ -86,7 +74,6 @@ body > body > .site-header .desktop-navigation {
   margin-right: auto;
   margin-left: auto;
 }
-
 body > body > .site-header .desktop-navigation a,
 body > body > .site-header .mobile-navigation a {
   color: #181818;
@@ -94,11 +81,9 @@ body > body > .site-header .mobile-navigation a {
   font-weight: 500;
   text-decoration: none;
 }
-
 body > body > .site-header .desktop-navigation a {
   position: relative;
 }
-
 body > body > .site-header .desktop-navigation a:hover,
 body > body > .site-header .desktop-navigation a.active,
 body > body > .site-header .mobile-navigation a:hover,
@@ -106,7 +91,6 @@ body > body > .site-header .mobile-navigation a.active {
   color: var(--blue);
   font-weight: 700;
 }
-
 body > body > .site-header .desktop-navigation a.active::after {
   position: absolute;
   right: 0;
@@ -116,13 +100,11 @@ body > body > .site-header .desktop-navigation a.active::after {
   background: var(--blue);
   content: "";
 }
-
 body > body > .site-header .header-actions {
   display: flex;
   align-items: center;
   gap: 18px;
 }
-
 body > body > .site-header .notification-button {
   position: relative;
   padding: 8px;
@@ -130,7 +112,6 @@ body > body > .site-header .notification-button {
   font-size: 25px;
   text-decoration: none;
 }
-
 body > body > .site-header .notification-count {
   position: absolute;
   top: 1px;
@@ -147,11 +128,9 @@ body > body > .site-header .notification-count {
   line-height: 14px;
   text-align: center;
 }
-
 body > body > .site-header .user-menu-wrapper {
   position: relative;
 }
-
 body > body > .site-header .profile-menu-button {
   width: 47px;
   height: 47px;
@@ -162,14 +141,12 @@ body > body > .site-header .profile-menu-button {
   background: var(--white);
   cursor: pointer;
 }
-
 body > body > .site-header .profile-menu-button img {
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
 }
-
 body > body > .site-header .profile-dropdown {
   position: absolute;
   top: calc(100% + 16px);
@@ -181,7 +158,6 @@ body > body > .site-header .profile-dropdown {
   background: var(--white);
   box-shadow: 0 18px 45px rgb(21 38 114 / 18%);
 }
-
 body > body > .site-header body > body > .site-header .profile-dropdown-header {
   display: flex;
   align-items: center;
@@ -189,7 +165,6 @@ body > body > .site-header body > body > .site-header .profile-dropdown-header {
   padding: 19px;
   border-bottom: 1px solid #eeeeee;
 }
-
 body
   > body
   > .site-header
@@ -205,7 +180,6 @@ body
   border-radius: 50%;
   object-fit: cover;
 }
-
 body
   > body
   > .site-header
@@ -224,7 +198,6 @@ body
   span {
   display: block;
 }
-
 body
   > body
   > .site-header
@@ -240,7 +213,6 @@ body
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
 body
   > body
   > .site-header
@@ -254,7 +226,6 @@ body
   font-size: 12px;
   text-transform: capitalize;
 }
-
 body > body > .site-header .profile-dropdown > a,
 body > body > .site-header .profile-dropdown > button {
   width: 100%;
@@ -272,27 +243,22 @@ body > body > .site-header .profile-dropdown > button {
   text-decoration: none;
   cursor: pointer;
 }
-
 body > body > .site-header .profile-dropdown > a:hover,
 body > body > .site-header .profile-dropdown > button:hover,
 body > body > .site-header .profile-dropdown > a.active {
   background: #f5f7ff;
 }
-
 body > body > .site-header .profile-dropdown > a.active {
   font-weight: 700;
 }
-
 body > body > .site-header .profile-dropdown > button {
   border-bottom: 0;
   color: var(--danger);
 }
-
 body > body > .site-header .profile-dropdown i {
   width: 19px;
   text-align: center;
 }
-
 body > body > .site-header .mobile-menu-button {
   display: none;
   padding: 8px;
@@ -302,18 +268,15 @@ body > body > .site-header .mobile-menu-button {
   font-size: 24px;
   cursor: pointer;
 }
-
 body > body > .site-header .mobile-navigation {
   padding: 8px 24px 20px;
   border-top: 1px solid #eeeeee;
   background: var(--white);
 }
-
 body > body > .site-header .mobile-navigation a {
   display: block;
   padding: 12px 4px;
 }
-
 .button {
   min-height: 45px;
   display: inline-flex;
@@ -333,45 +296,36 @@ body > body > .site-header .mobile-navigation a {
     color 0.2s ease,
     transform 0.2s ease;
 }
-
 .button:hover {
   transform: translateY(-1px);
 }
-
 .button:disabled {
   cursor: wait;
   opacity: 0.65;
   transform: none;
 }
-
 .button-blue {
   background: var(--blue);
   color: var(--white);
 }
-
 .button-blue:hover {
   background: var(--blue-dark);
 }
-
 .button-yellow {
   background: var(--yellow);
   color: #111111;
 }
-
 .button-outline {
   border-color: var(--blue);
   background: var(--white);
   color: var(--blue);
 }
-
 .button-outline:hover {
   background: var(--blue-soft);
 }
-
 .profile-main {
   min-height: calc(100vh - 92px);
 }
-
 .profile-status {
   width: min(100% - 48px, 650px);
   min-height: 500px;
@@ -384,33 +338,27 @@ body > body > .site-header .mobile-navigation a {
   padding: 60px 20px;
   text-align: center;
 }
-
 .profile-status > i {
   color: var(--blue);
   font-size: 45px;
 }
-
 .profile-status h1 {
   margin: 8px 0 0;
   color: var(--blue);
   font-size: 29px;
 }
-
 .profile-status p {
   margin: 0;
   color: var(--muted);
 }
-
 .profile-status .button {
   margin-top: 10px;
 }
-
 .profile-container {
   width: min(100% - 48px, 1400px);
   margin: 0 auto;
   padding: 55px 0 90px;
 }
-
 .profile-heading {
   display: flex;
   align-items: flex-end;
@@ -418,7 +366,6 @@ body > body > .site-header .mobile-navigation a {
   gap: 30px;
   margin-bottom: 35px;
 }
-
 .profile-label {
   display: inline-flex;
   align-items: center;
@@ -430,11 +377,9 @@ body > body > .site-header .mobile-navigation a {
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
-
 .profile-label i {
   color: var(--blue);
 }
-
 .profile-heading h1 {
   margin: 0 0 7px;
   color: var(--blue);
@@ -442,13 +387,11 @@ body > body > .site-header .mobile-navigation a {
   font-weight: 800;
   line-height: 1.1;
 }
-
 .profile-heading p {
   margin: 0;
   color: var(--muted);
   font-size: 14px;
 }
-
 .role-badge {
   display: inline-flex;
   align-items: center;
@@ -461,14 +404,12 @@ body > body > .site-header .mobile-navigation a {
   font-weight: 800;
   text-transform: capitalize;
 }
-
 .profile-layout {
   display: grid;
   grid-template-columns: 350px minmax(0, 1fr);
   align-items: start;
   gap: 25px;
 }
-
 .profile-picture-card,
 .profile-information-card,
 .security-card {
@@ -477,7 +418,6 @@ body > body > .site-header .mobile-navigation a {
   background: var(--white);
   box-shadow: 0 10px 30px rgb(0 0 0 / 6%);
 }
-
 .profile-picture-card {
   position: sticky;
   top: 120px;
@@ -485,14 +425,12 @@ body > body > .site-header .mobile-navigation a {
   padding: 35px 28px;
   text-align: center;
 }
-
 .profile-picture-wrapper {
   position: relative;
   width: 205px;
   height: 205px;
   margin: 0 auto 22px;
 }
-
 .profile-picture-wrapper > img {
   width: 100%;
   height: 100%;
@@ -503,7 +441,6 @@ body > body > .site-header .mobile-navigation a {
   object-fit: cover;
   box-shadow: 0 10px 28px rgb(17 43 193 / 15%);
 }
-
 .verified-account-badge {
   position: absolute;
   right: 12px;
@@ -518,36 +455,30 @@ body > body > .site-header .mobile-navigation a {
   color: var(--yellow);
   font-size: 15px;
 }
-
 .profile-picture-card h2 {
   margin: 0;
   color: var(--blue);
   font-size: 20px;
 }
-
 .profile-picture-card > p {
   margin: 7px 0 25px;
   overflow-wrap: anywhere;
   color: var(--muted);
   font-size: 13px;
 }
-
 .picture-button {
   width: 100%;
   margin-bottom: 11px;
 }
-
 .upload-guide {
   margin: 8px 0 0 !important;
   color: #858585 !important;
   font-size: 10px !important;
   line-height: 1.5;
 }
-
 .profile-information-card {
   padding: 32px;
 }
-
 .card-heading {
   display: flex;
   align-items: flex-start;
@@ -557,38 +488,31 @@ body > body > .site-header .mobile-navigation a {
   padding-bottom: 22px;
   border-bottom: 1px solid #eceef5;
 }
-
 .card-heading h2 {
   margin: 0 0 6px;
   color: var(--blue);
   font-size: 22px;
 }
-
 .card-heading p {
   margin: 0;
   color: var(--muted);
   font-size: 12px;
 }
-
 .card-heading > i {
   color: var(--blue);
   font-size: 31px;
 }
-
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 21px 18px;
 }
-
 .form-group {
   min-width: 0;
 }
-
 .form-group-full {
   grid-column: 1 / -1;
 }
-
 .form-group label {
   display: block;
   margin-bottom: 8px;
@@ -596,13 +520,11 @@ body > body > .site-header .mobile-navigation a {
   font-size: 12px;
   font-weight: 700;
 }
-
 .input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
-
 .input-wrapper > i {
   position: absolute;
   left: 15px;
@@ -611,7 +533,6 @@ body > body > .site-header .mobile-navigation a {
   font-size: 14px;
   pointer-events: none;
 }
-
 .input-wrapper input {
   width: 100%;
   min-height: 52px;
@@ -626,30 +547,25 @@ body > body > .site-header .mobile-navigation a {
     border-color 0.2s ease,
     box-shadow 0.2s ease;
 }
-
 .input-wrapper input:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 3px rgb(17 43 193 / 10%);
 }
-
 .input-wrapper input.invalid {
   border-color: var(--danger);
   background: #fff9fa;
 }
-
 .disabled-input input {
   background: #f1f3f8;
   color: #797979;
   cursor: not-allowed;
 }
-
 .form-group small {
   display: block;
   margin-top: 6px;
   color: #858585;
   font-size: 10px;
 }
-
 .field-error {
   min-height: 17px;
   display: block;
@@ -657,30 +573,25 @@ body > body > .site-header .mobile-navigation a {
   color: var(--danger);
   font-size: 10px;
 }
-
 .form-actions {
   display: flex;
   justify-content: flex-end;
   margin-top: 25px;
 }
-
 .form-message {
   margin-top: 20px;
   padding: 12px 14px;
   border-radius: 9px;
   font-size: 12px;
 }
-
 .form-message.error {
   background: #ffe9ed;
   color: #bd1832;
 }
-
 .form-message.success {
   background: #e4f8eb;
   color: #126b35;
 }
-
 .security-card {
   display: flex;
   align-items: center;
@@ -688,13 +599,11 @@ body > body > .site-header .mobile-navigation a {
   gap: 25px;
   padding: 27px 31px;
 }
-
 .security-information {
   display: flex;
   align-items: center;
   gap: 15px;
 }
-
 .security-icon {
   width: 52px;
   height: 52px;
@@ -706,20 +615,17 @@ body > body > .site-header .mobile-navigation a {
   color: var(--blue);
   font-size: 20px;
 }
-
 .security-information h2 {
   margin: 0 0 5px;
   color: var(--blue);
   font-size: 18px;
 }
-
 .security-information p {
   margin: 0;
   color: var(--muted);
   font-size: 11px;
   line-height: 1.6;
 }
-
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -729,7 +635,6 @@ body > body > .site-header .mobile-navigation a {
   padding: 20px;
   background: rgb(0 0 0 / 62%);
 }
-
 .password-modal-card {
   position: relative;
   width: min(100%, 520px);
@@ -740,7 +645,6 @@ body > body > .site-header .mobile-navigation a {
   background: var(--white);
   box-shadow: 0 25px 65px rgb(0 0 0 / 30%);
 }
-
 .modal-close-button {
   position: absolute;
   top: 15px;
@@ -756,7 +660,6 @@ body > body > .site-header .mobile-navigation a {
   color: var(--blue);
   cursor: pointer;
 }
-
 .password-modal-icon {
   width: 60px;
   height: 60px;
@@ -767,24 +670,20 @@ body > body > .site-header .mobile-navigation a {
   color: var(--yellow);
   font-size: 23px;
 }
-
 .password-modal-card h2 {
   margin: 20px 0 7px;
   color: var(--blue);
   font-size: 27px;
 }
-
 .password-modal-card > p {
   margin: 0 0 24px;
   color: var(--muted);
   font-size: 12px;
   line-height: 1.6;
 }
-
 .password-modal-card .form-group {
   margin-bottom: 15px;
 }
-
 .password-toggle {
   position: absolute;
   right: 8px;
@@ -798,68 +697,54 @@ body > body > .site-header .mobile-navigation a {
   color: var(--blue);
   cursor: pointer;
 }
-
 .password-toggle:hover {
   background: var(--blue-soft);
 }
-
 .password-modal-card .input-wrapper input {
   padding-right: 52px;
 }
-
 .password-submit-button {
   width: 100%;
   margin-top: 6px;
 }
-
 @media (max-width: 1050px) {
   body > body > .site-header .desktop-navigation {
     gap: 36px;
   }
-
   .profile-layout {
     grid-template-columns: 310px minmax(0, 1fr);
   }
-
   .profile-picture-wrapper {
     width: 180px;
     height: 180px;
   }
 }
-
 @media (max-width: 850px) {
   body > body > .site-header .header-container {
     min-height: 78px;
   }
-
   body > .site-header .brand-logo {
     width: 130px;
     height: 54px;
   }
-
   body > body > .site-header .desktop-navigation {
     display: none;
   }
-
   body > body > .site-header .mobile-menu-button {
     display: block;
   }
-
   .profile-layout {
     grid-template-columns: 1fr;
   }
-
   .profile-picture-card {
     position: static;
     grid-row: auto;
   }
-
   .profile-picture-card,
   .profile-information-card,
   .security-card {
     width: 100%;
   }
-
   .profile-picture-card {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
@@ -867,114 +752,91 @@ body > body > .site-header .mobile-navigation a {
     gap: 15px 25px;
     text-align: left;
   }
-
   .profile-picture-wrapper {
     grid-row: span 4;
     width: 155px;
     height: 155px;
     margin: 0;
   }
-
   .profile-picture-card h2,
   .profile-picture-card > p,
   .profile-picture-card .button,
   .upload-guide {
     grid-column: 2;
   }
-
   .profile-picture-card > p {
     margin: -12px 0 4px;
   }
 }
-
 @media (max-width: 640px) {
   body > body > .site-header .header-container,
   .profile-container {
     width: min(100% - 28px, 1400px);
   }
-
   body > body > .site-header .header-container {
     gap: 12px;
   }
-
   body > .site-header .brand-logo {
     width: 105px;
     height: 48px;
   }
-
   body > body > .site-header .notification-button {
     font-size: 21px;
   }
-
   body > body > .site-header .profile-menu-button {
     width: 40px;
     height: 40px;
   }
-
   .profile-container {
     padding: 35px 0 65px;
   }
-
   .profile-heading {
     align-items: flex-start;
     flex-direction: column;
     margin-bottom: 25px;
   }
-
   .profile-heading h1 {
     font-size: 36px;
   }
-
   .profile-picture-card {
     display: block;
     padding: 28px 20px;
     text-align: center;
   }
-
   .profile-picture-wrapper {
     width: 165px;
     height: 165px;
     margin: 0 auto 20px;
   }
-
   .profile-picture-card > p {
     margin: 7px 0 22px;
   }
-
   .profile-information-card {
     padding: 24px 19px;
   }
-
   .form-grid {
     grid-template-columns: 1fr;
   }
-
   .form-group-full {
     grid-column: auto;
   }
-
   .card-heading > i {
     display: none;
   }
-
   .form-actions .button {
     width: 100%;
   }
-
   .security-card {
     align-items: flex-start;
     flex-direction: column;
     padding: 23px 20px;
   }
-
   .security-card > .button {
     width: 100%;
   }
-
   .password-modal-card {
     padding: 27px 20px 22px;
   }
-
   body > body > .site-header .profile-dropdown {
     right: -48px;
     width: 260px;
@@ -993,68 +855,55 @@ body > body > .site-header .mobile-navigation a {
   --danger: #c73546;
   --success: #287451;
 }
-
 body {
   background: var(--background);
   color: var(--text);
 }
-
 body > .site-header {
   border-bottom: 1px solid #e5e7eb;
   box-shadow: 0 1px 4px rgb(15 23 42 / 4%);
 }
-
 body > body > .site-header .header-container {
   min-height: 78px;
 }
-
 body > .site-header .brand-logo {
   width: 140px;
   height: 56px;
 }
-
 body > body > .site-header .desktop-navigation {
   gap: 45px;
 }
-
 body > body > .site-header .desktop-navigation a,
 body > body > .site-header .mobile-navigation a {
   color: #353b48;
   font-size: 14px;
 }
-
 body > body > .site-header .desktop-navigation a:hover,
 body > body > .site-header .desktop-navigation a.active,
 body > body > .site-header .mobile-navigation a:hover,
 body > body > .site-header .mobile-navigation a.active {
   color: var(--blue);
 }
-
 body > body > .site-header .desktop-navigation a.active::after {
   bottom: -10px;
   height: 2px;
 }
-
 body > body > .site-header .notification-button {
   font-size: 21px;
 }
-
 body > body > .site-header .profile-menu-button {
   width: 42px;
   height: 42px;
   border-width: 1px;
 }
-
 body > body > .site-header .profile-dropdown {
   width: 265px;
   border-radius: 10px;
   box-shadow: 0 12px 30px rgb(15 23 42 / 12%);
 }
-
 body > body > .site-header body > body > .site-header .profile-dropdown-header {
   padding: 17px;
 }
-
 body
   > body
   > .site-header
@@ -1067,47 +916,39 @@ body
   height: 45px;
   border-width: 1px;
 }
-
 body > body > .site-header .profile-dropdown > a,
 body > body > .site-header .profile-dropdown > button {
   padding: 13px 17px;
   font-size: 13px;
 }
-
 .profile-container {
   width: min(100% - 48px, 1250px);
   padding: 45px 0 80px;
 }
-
 .profile-heading {
   align-items: center;
   margin-bottom: 28px;
   padding-bottom: 24px;
   border-bottom: 1px solid var(--border);
 }
-
 .profile-label {
   margin-bottom: 8px;
   color: var(--blue);
   font-size: 10px;
   letter-spacing: 1px;
 }
-
 .profile-label i {
   color: var(--yellow);
 }
-
 .profile-heading h1 {
   margin-bottom: 5px;
   color: var(--text);
   font-size: clamp(31px, 3vw, 42px);
   letter-spacing: -1px;
 }
-
 .profile-heading p {
   font-size: 13px;
 }
-
 .role-badge {
   padding: 7px 14px;
   border: 1px solid #ccd5e5;
@@ -1118,10 +959,21 @@ body > body > .site-header .profile-dropdown > button {
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
-
 .profile-layout {
   grid-template-columns: 290px minmax(0, 1fr);
   gap: 20px;
+}
+
+.profile-layout > .profile-picture-card {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+}
+
+.profile-layout > .profile-information-card,
+.profile-layout > .profile-email-change,
+.profile-layout > .security-card {
+  grid-column: 2;
+  min-width: 0;
 }
 
 .profile-picture-card,
@@ -1131,23 +983,19 @@ body > body > .site-header .profile-dropdown > button {
   border-radius: 10px;
   box-shadow: 0 3px 12px rgb(15 23 42 / 5%);
 }
-
 .profile-picture-card {
   top: 100px;
   padding: 29px 24px;
 }
-
 .profile-picture-wrapper {
   width: 145px;
   height: 145px;
   margin-bottom: 18px;
 }
-
 .profile-picture-wrapper > img {
   border: 3px solid #edf0f5;
   box-shadow: none;
 }
-
 .verified-account-badge {
   right: 5px;
   bottom: 8px;
@@ -1158,82 +1006,66 @@ body > body > .site-header .profile-dropdown > button {
   color: #ffffff;
   font-size: 11px;
 }
-
 .profile-picture-card h2 {
   color: var(--text);
   font-size: 17px;
   font-weight: 700;
 }
-
 .profile-picture-card > p {
   margin: 5px 0 22px;
   font-size: 11px;
 }
-
 .button {
   min-height: 42px;
   padding: 10px 18px;
   border-radius: 7px;
   font-size: 12px;
 }
-
 .button:hover {
   transform: none;
 }
-
 .button-blue {
   background: var(--blue);
 }
-
 .button-yellow {
   border: 1px solid var(--blue);
   background: var(--blue);
   color: #ffffff;
 }
-
 .button-yellow:hover {
   background: var(--blue-dark);
 }
-
 .button-outline {
   border-color: #c7cdd8;
   background: #ffffff;
   color: #475066;
 }
-
 .button-outline:hover {
   border-color: var(--blue);
   background: var(--blue-soft);
   color: var(--blue);
 }
-
 .picture-button {
   margin-bottom: 9px;
 }
-
 .upload-guide {
   margin-top: 10px !important;
   font-size: 9px !important;
 }
-
 .profile-information-card {
   padding: 28px 30px;
 }
-
 .card-heading {
   margin-bottom: 25px;
   padding-bottom: 19px;
 }
-
 .card-heading h2 {
   color: var(--text);
   font-size: 18px;
 }
-
 .card-heading p {
   font-size: 11px;
 }
-
 .card-heading > i {
   width: 40px;
   height: 40px;
@@ -1244,22 +1076,18 @@ body > body > .site-header .profile-dropdown > button {
   color: var(--blue);
   font-size: 17px;
 }
-
 .form-grid {
   gap: 19px 17px;
 }
-
 .form-group label {
   color: #303747;
   font-size: 11px;
 }
-
 .input-wrapper > i {
   left: 14px;
   color: #65708a;
   font-size: 12px;
 }
-
 .input-wrapper input {
   min-height: 47px;
   padding-left: 41px;
@@ -1268,28 +1096,22 @@ body > body > .site-header .profile-dropdown > button {
   color: var(--text);
   font-size: 12px;
 }
-
 .input-wrapper input:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 2px rgb(18 48 107 / 10%);
 }
-
 .disabled-input input {
   background: #f4f5f7;
 }
-
 .form-actions {
   margin-top: 22px;
 }
-
 .form-message {
   border-radius: 6px;
 }
-
 .security-card {
   padding: 23px 27px;
 }
-
 .security-icon {
   width: 44px;
   height: 44px;
@@ -1297,28 +1119,23 @@ body > body > .site-header .profile-dropdown > button {
   background: var(--blue-soft);
   font-size: 16px;
 }
-
 .security-information h2 {
   color: var(--text);
   font-size: 15px;
 }
-
 .security-information p {
   font-size: 10px;
 }
-
 .password-modal-card {
   width: min(100%, 480px);
   padding: 29px;
   border-radius: 11px;
 }
-
 .modal-close-button {
   width: 34px;
   height: 34px;
   border-radius: 6px;
 }
-
 .password-modal-icon {
   width: 48px;
   height: 48px;
@@ -1327,30 +1144,32 @@ body > body > .site-header .profile-dropdown > button {
   color: #ffffff;
   font-size: 17px;
 }
-
 .password-modal-card h2 {
   margin: 17px 0 6px;
   color: var(--text);
   font-size: 22px;
 }
-
 .password-modal-card > p {
   font-size: 11px;
 }
-
 .password-toggle {
   color: #59647b;
 }
-
 @media (max-width: 850px) {
   body > body > .site-header .header-container {
     min-height: 70px;
   }
-
   .profile-layout {
     grid-template-columns: 1fr;
   }
 
+  .profile-layout > .profile-picture-card,
+  .profile-layout > .profile-information-card,
+  .profile-layout > .profile-email-change,
+  .profile-layout > .security-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
   .profile-picture-card {
     position: static;
     display: grid;
@@ -1359,14 +1178,12 @@ body > body > .site-header .profile-dropdown > button {
     gap: 10px 22px;
     text-align: left;
   }
-
   .profile-picture-wrapper {
     grid-row: span 5;
     width: 130px;
     height: 130px;
     margin: 0;
   }
-
   .profile-picture-card h2,
   .profile-picture-card > p,
   .profile-picture-card .button,
@@ -1374,71 +1191,53 @@ body > body > .site-header .profile-dropdown > button {
     grid-column: 2;
   }
 }
-
 @media (max-width: 640px) {
   .profile-container {
     width: min(100% - 28px, 1250px);
     padding-top: 28px;
   }
-
   .profile-heading {
     align-items: flex-start;
     flex-direction: column;
   }
-
   .profile-heading h1 {
     font-size: 31px;
   }
-
   .profile-picture-card {
     display: block;
     padding: 25px 19px;
     text-align: center;
   }
-
   .profile-picture-wrapper {
     width: 135px;
     height: 135px;
     margin: 0 auto 17px;
   }
-
   .profile-picture-card > p {
     margin: 5px 0 20px;
   }
-
   .profile-information-card {
     padding: 23px 18px;
   }
-
   .form-grid {
     grid-template-columns: 1fr;
   }
-
   .form-group-full {
     grid-column: auto;
   }
-
   .form-actions .button,
   .security-card > .button {
     width: 100%;
   }
-
   .security-card {
     align-items: flex-start;
     flex-direction: column;
     padding: 21px 18px;
   }
-
   .password-modal-card {
     padding: 25px 18px 20px;
   }
 }
-/* =====================================================
-   Password requirements checklist (Change Password modal)
-   Idikit sa PINAKADULO ng profile.css
-   Gumagamit ng theme variables mo (--blue-soft, --border, --success, --danger)
-   ===================================================== */
-
 .password-requirements {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1452,14 +1251,12 @@ body > body > .site-header .profile-dropdown > button {
   font-size: 11px;
   text-align: left;
 }
-
 .password-requirements span {
   display: flex;
   align-items: center;
   gap: 7px;
   transition: color 0.2s ease;
 }
-
 .password-requirements i {
   flex-shrink: 0;
   color: var(--danger);
@@ -1468,34 +1265,18 @@ body > body > .site-header .profile-dropdown > button {
     color 0.2s ease,
     transform 0.2s ease;
 }
-
 .password-requirements span.valid {
   color: var(--success);
 }
-
 .password-requirements span.valid i {
   color: var(--success);
   transform: scale(1.15);
 }
-
 @media (max-width: 480px) {
   .password-requirements {
     grid-template-columns: 1fr;
   }
 }
-/* ===== Itago ang built-in na eye icon ng Edge/Chromium ===== */
-input[type="password"]::-ms-reveal,
-input[type="password"]::-ms-clear {
-  display: none;
-}
-
-input[type="password"]::-webkit-credentials-auto-fill-button {
-  visibility: hidden;
-  display: none !important;
-  pointer-events: none;
-}
-
-/* Ayusin ang alignment ng checklist sa forgot password (naka-center kasi ang .otp-panel) */
-#reset-panel .password-requirements {
+.password-requirements {
   text-align: left;
 }

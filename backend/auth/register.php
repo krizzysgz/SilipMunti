@@ -6,20 +6,32 @@ header('Cache-Control: no-store');
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/registration-validation.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
+function registration_error(int $status, string $message, array $errors = [], array $data = []): void
+{
+    http_response_code($status);
 
-    echo json_encode([
+    $response = [
         'success' => false,
-        'message' => 'Method not allowed.'
-    ]);
+        'message' => $message,
+    ];
+
+    if ($errors !== []) {
+        $response['errors'] = $errors;
+    }
+
+    if ($data !== []) {
+        $response['data'] = $data;
+    }
+
+    echo json_encode($response);
     exit;
 }
 
-$data = json_decode(
-    file_get_contents('php://input'),
-    true
-);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    registration_error(405, 'Method not allowed.');
+}
+
+$data = json_decode(file_get_contents('php://input'), true);
 
 if (!is_array($data)) {
     $data = $_POST;
@@ -29,58 +41,46 @@ $validation = validate_registration_data($data);
 $values = $validation['values'];
 $errors = $validation['errors'];
 
-$otp = preg_replace(
-    '/\s+/',
-    '',
-    (string) ($data['otp'] ?? '')
-);
+$otp = preg_replace('/\s+/', '', (string) ($data['otp'] ?? ''));
 
 if (!preg_match('/^\d{6}$/', $otp)) {
-    $errors['otp'] =
-        'Enter the 6-digit verification code.';
+    $errors['otp'] = 'Enter the 6-digit verification code.';
 }
 
 if ($errors !== []) {
-    http_response_code(422);
-
-    echo json_encode([
-        'success' => false,
-        'message' => 'Validation failed.',
-        'errors' => $errors
-    ]);
-    exit;
+    registration_error(422, 'Validation failed.', $errors);
 }
+
+$phoneNumber = $values['phone_number'] !== ''
+    ? $values['phone_number']
+    : null;
 
 try {
     $pdo->beginTransaction();
 
-    $checkUser = $pdo->prepare("
+    $checkEmail = $pdo->prepare("
         SELECT id
         FROM users
-        WHERE email = :email
+        WHERE LOWER(email) = :email
         LIMIT 1
-        FOR UPDATE
     ");
 
-    $checkUser->execute([
-        'email' => $values['email']
+    $checkEmail->execute([
+        'email' => $values['email'],
     ]);
 
-    if ($checkUser->fetch()) {
+    if ($checkEmail->fetch()) {
         $pdo->rollBack();
-
-        http_response_code(409);
-
-        echo json_encode([
-            'success' => false,
-            'message' =>
-                'Email address is already registered.',
-            'errors' => [
-                'email' =>
-                    'Email address is already registered.'
-            ]
+        registration_error(409, 'Email address is already registered.', [
+            'email' => 'Email address is already registered.',
         ]);
-        exit;
+    }
+
+    if ($phoneNumber !== null && registration_phone_exists($pdo, $phoneNumber)) {
+        $pdo->rollBack();
+        registration_error(409, 'Phone number is already registered.', [
+            'phone_number' => 'Phone number is already registered.',
+        ]);
     }
 
     $getOtp = $pdo->prepare("
@@ -96,26 +96,18 @@ try {
     ");
 
     $getOtp->execute([
-        'email' => $values['email']
+        'email' => $values['email'],
     ]);
 
     $otpRecord = $getOtp->fetch();
 
     if (!$otpRecord) {
         $pdo->rollBack();
-
-        http_response_code(422);
-
-        echo json_encode([
-            'success' => false,
-            'message' =>
-                'Request a verification code before creating your account.',
-            'errors' => [
-                'otp' =>
-                    'Request a new verification code.'
-            ]
-        ]);
-        exit;
+        registration_error(
+            422,
+            'Request a verification code before creating your account.',
+            ['otp' => 'Request a new verification code.']
+        );
     }
 
     if ((bool) $otpRecord['is_expired']) {
@@ -125,31 +117,17 @@ try {
         ");
 
         $deleteExpiredOtp->execute([
-            'id' => $otpRecord['id']
+            'id' => $otpRecord['id'],
         ]);
 
         $pdo->commit();
-
-        http_response_code(410);
-
-        echo json_encode([
-            'success' => false,
-            'message' =>
-                'The verification code has expired. ' .
-                'Request a new code.',
-            'errors' => [
-                'otp' => 'Verification code expired.'
-            ]
+        registration_error(410, 'The verification code has expired. Request a new code.', [
+            'otp' => 'Verification code expired.',
         ]);
-        exit;
     }
 
-    if (!password_verify(
-        $otp,
-        $otpRecord['otp_hash']
-    )) {
-        $newAttemptCount =
-            (int) $otpRecord['attempts'] + 1;
+    if (!password_verify($otp, $otpRecord['otp_hash'])) {
+        $newAttemptCount = (int) $otpRecord['attempts'] + 1;
 
         if ($newAttemptCount >= 5) {
             $deleteFailedOtp = $pdo->prepare("
@@ -158,24 +136,15 @@ try {
             ");
 
             $deleteFailedOtp->execute([
-                'id' => $otpRecord['id']
+                'id' => $otpRecord['id'],
             ]);
 
             $pdo->commit();
-
-            http_response_code(429);
-
-            echo json_encode([
-                'success' => false,
-                'message' =>
-                    'Too many incorrect attempts. ' .
-                    'Request a new code.',
-                'errors' => [
-                    'otp' =>
-                        'Request a new verification code.'
-                ]
-            ]);
-            exit;
+            registration_error(
+                429,
+                'Too many incorrect attempts. Request a new code.',
+                ['otp' => 'Request a new verification code.']
+            );
         }
 
         $updateAttempts = $pdo->prepare("
@@ -186,38 +155,22 @@ try {
 
         $updateAttempts->execute([
             'attempts' => $newAttemptCount,
-            'id' => $otpRecord['id']
+            'id' => $otpRecord['id'],
         ]);
 
         $pdo->commit();
-
-        http_response_code(422);
-
-        echo json_encode([
-            'success' => false,
-            'message' =>
-                'The verification code is incorrect.',
-            'errors' => [
-                'otp' =>
-                    'Incorrect verification code.'
-            ],
-            'data' => [
-                'attempts_remaining' =>
-                    5 - $newAttemptCount
-            ]
-        ]);
-        exit;
+        registration_error(
+            422,
+            'The verification code is incorrect.',
+            ['otp' => 'Incorrect verification code.'],
+            ['attempts_remaining' => 5 - $newAttemptCount]
+        );
     }
 
-    $hashedPassword = password_hash(
-        $values['password'],
-        PASSWORD_DEFAULT
-    );
+    $hashedPassword = password_hash($values['password'], PASSWORD_DEFAULT);
 
     if ($hashedPassword === false) {
-        throw new RuntimeException(
-            'Unable to secure the password.'
-        );
+        throw new RuntimeException('Unable to secure the password.');
     }
 
     $insertUser = $pdo->prepare("
@@ -246,15 +199,9 @@ try {
         'last_name' => $values['last_name'],
         'email' => $values['email'],
         'password' => $hashedPassword,
-        'phone_number' =>
-            $values['phone_number'] !== ''
-                ? $values['phone_number']
-                : null,
+        'phone_number' => $phoneNumber,
         'role' => $values['role'],
-        'landlord_status' =>
-            $values['role'] === 'landlord'
-                ? 'pending'
-                : null
+        'landlord_status' => $values['role'] === 'landlord' ? 'pending' : null,
     ]);
 
     $userId = (int) $pdo->lastInsertId();
@@ -281,9 +228,8 @@ try {
 
         $insertNotification->execute([
             'user_id' => $userId,
-            'message' =>
-                'Your landlord account is awaiting admin approval. ' .
-                'You may upload verification documents while waiting.'
+            'message' => 'Your landlord account is awaiting admin approval. ' .
+                'You may upload verification documents while waiting.',
         ]);
     }
 
@@ -293,50 +239,60 @@ try {
     ");
 
     $deleteUsedOtp->execute([
-        'id' => $otpRecord['id']
+        'id' => $otpRecord['id'],
     ]);
 
     $pdo->commit();
 
     http_response_code(201);
-
     echo json_encode([
         'success' => true,
-        'message' =>
-            $values['role'] === 'landlord'
-                ? 'Email verified and account created successfully. ' .
-                    'Your landlord account is now awaiting admin approval.'
-                : 'Email verified and account created successfully.',
+        'message' => $values['role'] === 'landlord'
+            ? 'Email verified and account created successfully. ' .
+                'Your landlord account is now awaiting admin approval.'
+            : 'Email verified and account created successfully.',
         'data' => [
             'user_id' => $userId,
             'first_name' => $values['first_name'],
             'last_name' => $values['last_name'],
             'email' => $values['email'],
-            'phone_number' =>
-                $values['phone_number'] !== ''
-                    ? $values['phone_number']
-                    : null,
+            'phone_number' => $phoneNumber,
             'role' => $values['role'],
-            'admin_approval_required' =>
-                $values['role'] === 'landlord',
-            'landlord_status' =>
-                $values['role'] === 'landlord'
-                    ? 'pending'
-                    : null
-        ]
+            'admin_approval_required' => $values['role'] === 'landlord',
+            'landlord_status' => $values['role'] === 'landlord' ? 'pending' : null,
+        ],
     ]);
 } catch (Throwable $exception) {
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
 
+    // SQLSTATE 23000 / MySQL 1062 means a unique index rejected a duplicate.
+    if ($exception instanceof PDOException &&
+        ($exception->errorInfo[0] ?? null) === '23000' &&
+        (int) ($exception->errorInfo[1] ?? 0) === 1062) {
+        try {
+            $checkEmail->execute(['email' => $values['email']]);
+
+            if ($checkEmail->fetch()) {
+                registration_error(409, 'Email address is already registered.', [
+                    'email' => 'Email address is already registered.',
+                ]);
+            }
+
+            if ($phoneNumber !== null && registration_phone_exists($pdo, $phoneNumber)) {
+                registration_error(409, 'Phone number is already registered.', [
+                    'phone_number' => 'Phone number is already registered.',
+                ]);
+            }
+
+        } catch (Throwable $lookupException) {
+            error_log($lookupException->getMessage());
+        }
+
+        registration_error(409, 'Account information is already registered.');
+    }
+
     error_log($exception->getMessage());
-
-    http_response_code(500);
-
-    echo json_encode([
-        'success' => false,
-        'message' =>
-            'Unable to create account.'
-    ]);
+    registration_error(500, 'Unable to create account.');
 }
