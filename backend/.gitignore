@@ -1,25 +1,59 @@
-# Environment and secrets
-.env
-**/.env
-.env.*
-!.env.example
+# =========================================
+# SILIPMUNTI BACKEND .GITIGNORE
+# =========================================
 
-# PHP dependencies
+# 1. Environment variables and secrets
+/.env
+/.env.*
+!/.env.example
+
+# 2. Composer dependencies
 /vendor/
-**/vendor/
 
-# Private documents
+# 3. Private documents
+# Government IDs, ownership documents, etc.
 /private_uploads/
-**/private_uploads/
 
-# Uploaded listing images
+# 4. Public property photos
+# Uploaded files are stored on the server,
+# not committed to GitHub.
 /storage/listing-images/*
 !/storage/listing-images/.htaccess
+!/storage/listing-images/.gitkeep
 
-# Uploaded profile pictures
+# 5. Profile pictures
 /storage/profile-pictures/*
 !/storage/profile-pictures/.htaccess
+!/storage/profile-pictures/.gitkeep
 
-# Verification documents
+# 6. Private verification documents
 /storage/verification-documents/*
 !/storage/verification-documents/.htaccess
+!/storage/verification-documents/.gitkeep
+
+# 7. Runtime logs
+*.log
+/logs/
+/tmp/
+/temp/
+/cache/
+
+# 8. Database exports and backups
+*.sql.gz
+*.sql.zip
+*.dump
+*.bak
+*.backup
+*.old
+*.orig
+
+# 9. Local editor and OS files
+/.vscode/
+/.idea/
+.DS_Store
+Thumbs.db
+
+# 10. Temporary uploaded files
+*.tmp
+*.temp
+*.part
