@@ -1,13 +1,25 @@
+# Environment and secrets
 .env
+**/.env
+.env.*
+!.env.example
 
-/.env
+# PHP dependencies
 /vendor/
+**/vendor/
 
+# Private documents
+/private_uploads/
+**/private_uploads/
+
+# Uploaded listing images
 /storage/listing-images/*
 !/storage/listing-images/.htaccess
 
+# Uploaded profile pictures
 /storage/profile-pictures/*
 !/storage/profile-pictures/.htaccess
 
+# Verification documents
 /storage/verification-documents/*
 !/storage/verification-documents/.htaccess
