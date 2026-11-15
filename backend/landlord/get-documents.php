@@ -22,6 +22,7 @@ try {
         'SELECT
             id,
             document_type,
+            id_type,
             verification_status,
             reviewed_at,
             rejection_reason,

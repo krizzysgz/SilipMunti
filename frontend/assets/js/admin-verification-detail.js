@@ -257,6 +257,21 @@
           <p>
             ${optional ? "Optional document" : "Required document"}
           </p>
+          ${
+            type === "valid_id"
+              ? `<p><strong>Landlord selected ID type:</strong> ${escapeHtml(
+                  {
+                    national_id: "National ID / PhilID / ePhilID",
+                    drivers_license: "LTO Driver's License",
+                    passport: "Philippine Passport",
+                    prc_id: "PRC Professional ID",
+                    umid: "UMID",
+                    postal_id: "Postal ID",
+                  }[record.id_type] || "Not recorded (older submission)",
+                )}</p>
+          <p><strong>Admin check:</strong> Compare this selection with the original document. Reject with reason "ID Type Mismatch" if they differ. OCR is advisory only.</p>`
+              : ""
+          }
 
           <p>
             Submitted ${escapeHtml(formatDate(record.created_at))}

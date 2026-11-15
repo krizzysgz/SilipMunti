@@ -214,12 +214,38 @@
                 listings.
               </p>
             </div>
+
             <a href="/SilipMunti/frontend/pages/landlord/index.html">
               View all landlords
               <i class="fa-solid fa-chevron-right"></i>
             </a>
           </div>
-          <div class="landlord-grid" id="verified-landlords"></div>
+
+          <!-- Verified Landlords Carousel -->
+          <div class="landlord-carousel">
+            <!-- Previous Arrow -->
+            <button
+              type="button"
+              class="landlord-arrow landlord-arrow-prev"
+              id="landlord-prev"
+              aria-label="Previous landlords"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <!-- Landlord Cards -->
+            <div class="landlord-grid" id="verified-landlords"></div>
+
+            <!-- Next Arrow -->
+            <button
+              type="button"
+              class="landlord-arrow landlord-arrow-next"
+              id="landlord-next"
+              aria-label="Next landlords"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
         </div>
       </section>
 
@@ -298,5 +324,46 @@
     <script src="/SilipMunti/frontend/assets/js/home-animations.js?v=2"></script>
     <script src="/SilipMunti/frontend/assets/js/ai-reco.js?v=3"></script>
     <script src="/SilipMunti/frontend/assets/js/chat-bubble.js?v=3"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const rail = document.getElementById("verified-landlords");
+        const prev = document.getElementById("landlord-prev");
+        const next = document.getElementById("landlord-next");
+
+        if (!rail || !prev || !next) return;
+
+        function updateArrows() {
+          const maxScroll = rail.scrollWidth - rail.clientWidth;
+
+          prev.disabled = rail.scrollLeft <= 2;
+          next.disabled = rail.scrollLeft >= maxScroll - 2;
+        }
+
+        function scrollLandlords(direction) {
+          const card = rail.querySelector(".home-landlord-card");
+          if (!card) return;
+
+          const gap = parseFloat(getComputedStyle(rail).gap) || 18;
+          const distance = card.getBoundingClientRect().width + gap;
+
+          rail.scrollBy({
+            left: direction * distance,
+            behavior: "smooth",
+          });
+        }
+
+        prev.addEventListener("click", () => scrollLandlords(-1));
+        next.addEventListener("click", () => scrollLandlords(1));
+
+        rail.addEventListener("scroll", updateArrows, { passive: true });
+        window.addEventListener("resize", updateArrows);
+
+        new MutationObserver(updateArrows).observe(rail, {
+          childList: true,
+        });
+
+        updateArrows();
+      });
+    </script>
   </body>
 </html>

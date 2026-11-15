@@ -270,22 +270,77 @@
                   enctype="multipart/form-data"
                 >
                   <input type="hidden" name="document_type" value="valid_id" />
+                  <label for="government-id-type" class="ocr-field-label"
+                    >Government ID type <span aria-hidden="true">*</span></label
+                  >
+                  <select
+                    id="government-id-type"
+                    name="id_type"
+                    class="ocr-id-select"
+                    required
+                  >
+                    <option value="">Select the ID you will upload</option>
+                    <option value="national_id">
+                      National ID / PhilID / ePhilID
+                    </option>
+                    <option value="drivers_license">
+                      LTO Driver's License
+                    </option>
+                    <option value="passport">Philippine Passport</option>
+                    <option value="prc_id">PRC Professional ID</option>
+                    <option value="umid">UMID Card</option>
+                    <option value="sss_id">SSS ID</option>
+                    <option value="gsis_id">GSIS e-Card</option>
+                    <option value="postal_id">Philippine Postal ID</option>
+                    <option value="voters_id">
+                      COMELEC Voter&#8217;s ID / Certificate
+                    </option>
+                    <option value="senior_citizen_id">Senior Citizen ID</option>
+                    <option value="pwd_id">PWD ID</option>
+                    <option value="solo_parent_id">Solo Parent ID</option>
+                    <option value="philhealth_id">PhilHealth ID</option>
+                    <option value="tin_id">BIR TIN ID</option>
+                    <option value="owwa_id">OWWA e-Card / OFW ID</option>
+                    <option value="seafarer_id">
+                      MARINA Seafarer&#8217;s ID / Record Book
+                    </option>
+                    <option value="ibp_id">
+                      Integrated Bar of the Philippines (IBP) ID
+                    </option>
+                    <option value="pagibig_id">Pag-IBIG / HDMF ID</option>
+                  </select>
+                  <p class="ocr-id-hint">
+                    Choose the exact government ID shown in your photo. If OCR
+                    identifies a different ID type, upload will be blocked until
+                    you correct the selection or photo. Inconclusive scans
+                    require manual admin review.
+                  </p>
 
                   <label class="file-picker">
                     <input
                       type="file"
                       name="document"
-                      accept=".pdf,.jpg,.jpeg,.png"
+                      accept=".jpg,.jpeg,.png"
                       required
                     />
 
                     <i class="fa-solid fa-cloud-arrow-up"></i>
 
                     <span data-file-label="valid_id">
-                      Choose PDF, JPG, or PNG
+                      Choose JPG or PNG (for ID type pre-check)
                     </span>
                   </label>
 
+                  <div
+                    id="id-ocr-result"
+                    class="ocr-result"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    Select the ID type and a clear JPG/PNG photo. OCR scans the
+                    image before upload. If a mismatch is detected, you cannot
+                    submit until corrected.
+                  </div>
                   <button type="submit" class="upload-button">
                     <i class="fa-solid fa-upload"></i>
                     <span>Upload document</span>
@@ -392,6 +447,18 @@
 
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/landlord-sidebar.js?v=3"></script>
-    <script src="/SilipMunti/frontend/assets/js/landlord-verification.js?v=10"></script>
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/landlord-id-ocr.css?v=2"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js"
+    ></script>
+    <script
+      defer
+      src="/SilipMunti/frontend/assets/js/landlord-id-ocr.js?v=2"
+    ></script>
+    <script src="/SilipMunti/frontend/assets/js/landlord-verification.js?v=11"></script>
   </body>
 </html>

@@ -44,6 +44,25 @@ if (
     exit;
 }
 
+// Valid ID type must match the selection reviewed by the administrator.
+$allowedIdTypes = [
+    'national_id', 'drivers_license', 'passport',
+    'prc_id', 'umid', 'sss_id', 'gsis_id', 'postal_id',
+    'voters_id', 'senior_citizen_id', 'pwd_id', 'solo_parent_id',
+    'philhealth_id', 'tin_id', 'owwa_id', 'seafarer_id',
+    'ibp_id', 'pagibig_id'
+];
+$idType = trim((string)($_POST['id_type'] ?? ''));
+if ($documentType === 'valid_id' && !in_array($idType, $allowedIdTypes, true)) {
+    http_response_code(422);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Please select a supported government ID type.'
+    ]);
+    exit;
+}
+$idType = $documentType === 'valid_id' ? $idType : null;
+
 if (!isset($_FILES['document'])) {
     http_response_code(422);
 
@@ -118,6 +137,15 @@ if (
         'message' => 'Only PDF, JPG, and PNG files are allowed.'
     ]);
 
+    exit;
+}
+
+if ($documentType === 'valid_id' && $mimeType === 'application/pdf') {
+    http_response_code(422);
+    echo json_encode([
+        'success' => false,
+        'message' => 'For government ID type checking, upload a JPG or PNG photo instead of a PDF.'
+    ]);
     exit;
 }
 
@@ -254,12 +282,14 @@ try {
                 landlord_id,
                 document_type,
                 document_path,
+                id_type,
                 verification_status
             )
             VALUES (
                 :landlord_id,
                 :document_type,
                 :document_path,
+                :id_type,
                 'pending'
             )
         ");
@@ -267,7 +297,8 @@ try {
         $insertDocument->execute([
             'landlord_id' => $user['id'],
             'document_type' => $documentType,
-            'document_path' => $databasePath
+            'document_path' => $databasePath,
+            'id_type' => $idType
         ]);
     } catch (Throwable $exception) {
         if (is_file($absolutePath)) {
@@ -287,6 +318,7 @@ try {
                 (int) $pdo->lastInsertId(),
             'document_type' =>
                 $documentType,
+            'id_type' => $idType,
             'verification_status' =>
                 'pending'
         ]

@@ -120,7 +120,11 @@ function updateDocumentCard(documentType) {
 
   statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
 
-  detailsElement.textContent = `Submitted ${formatDate(documentRecord.created_at)}`;
+  const typeLabel =
+    documentType === "valid_id" && documentRecord.id_type
+      ? ` · ID type: ${documentRecord.id_type.replaceAll("_", " ")}`
+      : "";
+  detailsElement.textContent = `Submitted ${formatDate(documentRecord.created_at)}${typeLabel}`;
 
   detailsElement.classList.remove("hidden");
 
@@ -337,6 +341,40 @@ function setupUploadForms() {
         return;
       }
 
+      if (documentType === "valid_id") {
+        const idType = uploadForm.querySelector('select[name="id_type"]');
+        if (!idType?.value) {
+          showMessage("Please select the government ID type first.", "error");
+          return;
+        }
+        if (
+          !["image/jpeg", "image/png"].includes(file.type) ||
+          /\.pdf$/i.test(file.name)
+        ) {
+          showMessage(
+            "Upload a JPG or PNG image for the ID type OCR check.",
+            "error",
+          );
+          return;
+        }
+        if (!window.SilipMuntiIdOcr?.validateBeforeUpload) {
+          showMessage(
+            "The ID type checker is still loading. Refresh the page and try again.",
+            "error",
+          );
+          return;
+        }
+        const check = await window.SilipMuntiIdOcr.validateBeforeUpload();
+        if (!check.allowed) {
+          showMessage(
+            check.message ||
+              "Please correct the selected ID type or uploaded image.",
+            "error",
+          );
+          return;
+        }
+      }
+
       const buttonText = uploadButton.querySelector("span");
 
       const originalButtonText = buttonText.textContent;
@@ -371,7 +409,10 @@ function setupUploadForms() {
 
         document.querySelector(
           `[data-file-label="${documentType}"]`,
-        ).textContent = "Choose PDF, JPG, or PNG";
+        ).textContent =
+          documentType === "valid_id"
+            ? "Choose JPG or PNG (for ID type pre-check)"
+            : "Choose PDF, JPG, or PNG";
 
         await loadDocuments();
       } catch (error) {

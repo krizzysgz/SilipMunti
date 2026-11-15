@@ -118,6 +118,8 @@ const SilipMuntiLandlordShell = (() => {
   let initialized = false;
   let refreshPromise = null;
   let refreshTimer = null;
+  let authorizationBlocked = false;
+  let authorizationPromise = null;
 
   function getInitials(firstName, lastName) {
     const initials = `${String(firstName ?? "").charAt(0)}${String(
@@ -237,53 +239,125 @@ const SilipMuntiLandlordShell = (() => {
     setCount("#sidebar-message-count", counts.messages, true);
   }
 
+  // Stop sidebar polling when the server rejects the session or user role.
+  // A new login/reload will create a fresh sidebar instance.
+  function stopUnauthorizedRequests() {
+    authorizationBlocked = true;
+    if (refreshTimer) {
+      window.clearInterval(refreshTimer);
+      refreshTimer = null;
+    }
+    try {
+      sessionStorage.removeItem(COUNT_CACHE_KEY);
+    } catch (_error) {
+      // Storage can be disabled; no action is necessary.
+    }
+    applyCounts({ listings: 0, messages: 0 });
+  }
+
+  async function hasLandlordSession() {
+    if (authorizationBlocked) return false;
+    if (authorizationPromise) return authorizationPromise;
+
+    authorizationPromise = (async () => {
+      const sessionManager = window.SilipMuntiSession;
+      if (!sessionManager?.getCurrentUser) {
+        // Do not send privileged API requests before session.js is ready.
+        return false;
+      }
+      try {
+        const user = await sessionManager.getCurrentUser();
+        if (!user || user.role !== "landlord") {
+          stopUnauthorizedRequests();
+          return false;
+        }
+        return true;
+      } catch (_error) {
+        // Session could not be verified: no privileged requests.
+        return false;
+      }
+    })();
+
+    try {
+      return await authorizationPromise;
+    } finally {
+      authorizationPromise = null;
+    }
+  }
+
   async function fetchJson(url) {
     const response = await fetch(url, {
       credentials: "include",
       cache: "no-store",
     });
-    const result = await response.json();
-    if (!response.ok || !result.success) {
-      throw new Error(result.message || "Unable to load sidebar counters.");
+
+    // Do not repeatedly retry endpoints that deny this session.
+    if (response.status === 401 || response.status === 403) {
+      stopUnauthorizedRequests();
+      return null;
     }
-    return result;
+
+    if (!response.ok) {
+      return null;
+    }
+
+    try {
+      const result = await response.json();
+      return result?.success ? result : null;
+    } catch (_error) {
+      return null;
+    }
   }
 
   async function refreshCounts(options = {}) {
     const { useCache = true } = options;
-    if (useCache) {
-      const cached = readCachedCounts();
-      if (cached) applyCounts(cached);
-    }
+    if (authorizationBlocked) return null;
 
     if (refreshPromise) return refreshPromise;
-
     refreshPromise = (async () => {
+      const authorized = await hasLandlordSession();
+      if (!authorized || authorizationBlocked) return null;
+
+      if (useCache) {
+        const cached = readCachedCounts();
+        if (cached) applyCounts(cached);
+      }
+
       const [listingsResult, inquiriesResult] = await Promise.allSettled([
         fetchJson(endpoints.listings),
         fetchJson(endpoints.inquiries),
       ]);
 
+      // One endpoint may reject the session while the other is still in flight.
+      if (authorizationBlocked) return null;
+
       const previous = readCachedCounts() || { listings: 0, messages: 0 };
       const counts = { ...previous };
+      let updated = false;
 
-      if (listingsResult.status === "fulfilled") {
-        const listings = listingsResult.value.data?.listings;
-        counts.listings = Array.isArray(listings) ? listings.length : 0;
+      if (listingsResult.status === "fulfilled" && listingsResult.value) {
+        const listingData = listingsResult.value.data?.listings;
+        if (Array.isArray(listingData)) {
+          counts.listings = listingData.length;
+          updated = true;
+        }
       }
 
-      if (inquiriesResult.status === "fulfilled") {
-        const inquiries = inquiriesResult.value.data?.inquiries;
-        counts.messages = Array.isArray(inquiries)
-          ? inquiries.reduce(
+      if (inquiriesResult.status === "fulfilled" && inquiriesResult.value) {
+        const inquiryData = inquiriesResult.value.data?.inquiries;
+        counts.messages = Array.isArray(inquiryData)
+          ? inquiryData.reduce(
               (total, inquiry) => total + Number(inquiry.unread_count || 0),
               0,
             )
           : Number(inquiriesResult.value.data?.unread_count || 0);
+        updated = true;
       }
 
-      applyCounts(counts);
-      saveCachedCounts(counts);
+      if (updated) {
+        applyCounts(counts);
+        saveCachedCounts(counts);
+      }
       return counts;
     })().finally(() => {
       refreshPromise = null;
@@ -293,9 +367,11 @@ const SilipMuntiLandlordShell = (() => {
   }
 
   function startCountRefresh() {
-    if (refreshTimer) window.clearInterval(refreshTimer);
+    if (authorizationBlocked || refreshTimer) return;
     refreshTimer = window.setInterval(() => {
-      if (!document.hidden) refreshCounts({ useCache: false });
+      if (!document.hidden && !authorizationBlocked) {
+        void refreshCounts({ useCache: false });
+      }
     }, COUNT_REFRESH_INTERVAL);
   }
 
@@ -365,8 +441,9 @@ const SilipMuntiLandlordShell = (() => {
     ensureBackdrop();
     if (initialized) return;
     initialized = true;
-    refreshCounts();
-    startCountRefresh();
+    void refreshCounts().then(() => {
+      if (!authorizationBlocked) startCountRefresh();
+    });
 
     document.addEventListener("click", (event) => {
       const target = event.target;

@@ -48,6 +48,7 @@ $sql = "
         vd.id,
         vd.landlord_id,
         vd.document_type,
+        vd.id_type,
         vd.verification_status,
         vd.rejection_reason,
         vd.reviewed_at,
