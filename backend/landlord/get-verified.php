@@ -89,9 +89,7 @@ $verificationJoin = "
         WHERE verification_status = 'approved'
           AND deleted_at IS NULL
           AND document_type IN (
-              'valid_id',
-              'barangay_clearance',
-              'land_title'
+'valid_id'
         )
         GROUP BY landlord_id
     ) verification
@@ -251,7 +249,7 @@ try {
         $landlord['approved_document_count'] =
             (int) $landlord['approved_document_count'];
         $landlord['verification_level'] =
-            $landlord['approved_document_count'] === 3
+            $landlord['approved_document_count'] === 1
                 ? 'fully_verified'
                 : 'verified';
 

@@ -21,19 +21,9 @@
       href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
     />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
-    <link
-      rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3"
-    />
-    <link
-      rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/admin-enterprise.css?v=1"
-      media="screen"
-    />
   </head>
 
-  <body class="admin-enterprise">
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+  <body>
     <div class="admin-layout">
       <admin-sidebar active-page="verifications"></admin-sidebar>
       <div class="admin-content">
@@ -74,14 +64,14 @@
           </div>
         </header>
 
-        <main id="main-content" tabindex="-1" class="admin-main">
+        <main class="admin-main">
           <div class="admin-page-header">
             <div>
               <span class="admin-eyebrow">Document review</span>
               <h1>Landlord verifications</h1>
               <p>
-                Select a landlord to review their required verification
-                documents.
+                Track all registered landlords and review their required Valid
+                ID when submitted.
               </p>
             </div>
           </div>
@@ -90,13 +80,18 @@
 
           <section class="admin-summary-grid">
             <div class="admin-summary-card blue">
+              <i class="fa-solid fa-user-clock"></i>
+              <span>Not Submitted</span>
+              <strong id="not-submitted-landlords">0</strong>
+            </div>
+            <div class="admin-summary-card blue">
               <i class="fa-solid fa-folder-open"></i>
               <span>Total Landlords</span>
               <strong id="total-landlords">0</strong>
             </div>
             <div class="admin-summary-card yellow">
               <i class="fa-solid fa-clock"></i>
-              <span>Pending</span>
+              <span>Pending Review</span>
               <strong id="pending-documents">0</strong>
             </div>
             <div class="admin-summary-card green">
@@ -106,7 +101,7 @@
             </div>
             <div class="admin-summary-card red">
               <i class="fa-solid fa-circle-xmark"></i>
-              <span>Needs Action</span>
+              <span>Needs Resubmission</span>
               <strong id="rejected-documents">0</strong>
             </div>
           </section>
@@ -132,11 +127,10 @@
                 <span>Status</span>
                 <select id="status-filter">
                   <option value="">All statuses</option>
-                  <option value="pending">Pending</option>
+                  <option value="not_submitted">Not Submitted</option>
+                  <option value="pending">Pending Review</option>
                   <option value="approved">Verified</option>
-                  <option value="pending">For review</option>
-                  <option value="rejected">Needs resubmission</option>
-                  <option value="incomplete">Incomplete</option>
+                  <option value="rejected">Needs Resubmission</option>
                 </select>
               </label>
             </div>
@@ -158,6 +152,6 @@
 
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=5"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-verifications.js?v=3"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-verifications.js?v=10"></script>
   </body>
 </html>

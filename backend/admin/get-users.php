@@ -137,18 +137,13 @@ try {
             landlord_status,
             landlord_reviewed_at,
             landlord_rejection_reason,
-            (
-                SELECT COUNT(DISTINCT vd.document_type)
+            COALESCE((
+                SELECT CASE WHEN vd.verification_status = "approved" THEN 1 ELSE 0 END
                 FROM verification_documents vd
-                WHERE vd.landlord_id = users.id
-                  AND vd.verification_status = "approved"
-                  AND vd.deleted_at IS NULL
-                  AND vd.document_type IN (
-                      "valid_id",
-                      "barangay_clearance",
-                      "land_title"
-                  )
-            ) AS approved_document_count,
+                WHERE vd.landlord_id = users.id AND vd.deleted_at IS NULL
+                  AND vd.document_type = "valid_id"
+                ORDER BY vd.created_at DESC, vd.id DESC LIMIT 1
+            ), 0) AS approved_document_count,
             profile_picture,
             created_at,
             updated_at,
@@ -177,10 +172,8 @@ try {
             $user['landlord_status'] =
                 $user['landlord_status'] ?: 'pending';
             $user['verification_level'] =
-                $user['landlord_status'] === 'approved'
-                    ? ($approvedCount === 3
-                        ? 'fully_verified'
-                        : 'verified')
+                $user['landlord_status'] === 'approved' && $approvedCount === 1
+                    ? 'verified'
                     : 'unverified';
         } else {
             $user['approved_document_count'] = 0;

@@ -1,0 +1,63 @@
+/* Listing-document verification status — independent of listing approval. */
+.property-image-wrapper {
+  position: relative;
+}
+.sm-property-verification {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 7px 11px;
+  max-width: calc(100% - 20px);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.15);
+  pointer-events: none;
+}
+.sm-property-verification.is-verified {
+  background: #ecfdf3;
+  color: #146c3b;
+  border: 1px solid #a5e3bc;
+}
+.sm-property-verification.is-unverified {
+  background: #fff8eb;
+  color: #925a09;
+  border: 1px solid #f5dba4;
+}
+#property-proof-verification-label.is-property-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #ecfdf3;
+  color: #146c3b;
+  border: 1px solid #a5e3bc;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-size: 12px;
+  font-weight: 700;
+}
+#property-proof-verification-label.is-property-unverified {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #fff8eb;
+  color: #925a09;
+  border: 1px solid #f5dba4;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-size: 12px;
+  font-weight: 700;
+}
+@media (max-width: 480px) {
+  .sm-property-verification {
+    font-size: 10px;
+    padding: 6px 9px;
+  }
+}

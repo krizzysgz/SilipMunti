@@ -104,6 +104,21 @@ try {
     }
 
     if ($action === 'approved') {
+        // Property cannot be publicly approved until the landlord ID is verified.
+        $idCheck = $pdo->prepare('SELECT verification_status FROM verification_documents
+            WHERE landlord_id = ? AND document_type = "valid_id" AND deleted_at IS NULL
+            ORDER BY created_at DESC, id DESC LIMIT 1');
+        $idCheck->execute([(int)$listing['landlord_id']]);
+        if ($idCheck->fetchColumn() !== 'approved') {
+            $pdo->rollBack();
+            http_response_code(422);
+            echo json_encode(['success' => false,
+                'message' => 'Approve the landlord required Valid ID before publishing this property.']);
+            exit;
+        }
+    }
+
+    if ($action === 'approved') {
         $countImages = $pdo->prepare(
             'SELECT COUNT(*)
              FROM listing_images

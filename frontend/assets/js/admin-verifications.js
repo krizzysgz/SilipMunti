@@ -3,7 +3,7 @@
   const FRONTEND_ROOT = "/SilipMunti/frontend";
 
   const endpoints = {
-    getDocuments: `${API_ROOT}/admin/get-all-documents.php`,
+    getDocuments: `${API_ROOT}/admin/get-landlord-verification-overview.php`,
   };
 
   const landlordList = document.querySelector("#landlord-verification-list");
@@ -16,6 +16,7 @@
   const PAGE_SIZE = 10;
 
   let documents = [];
+  let landlords = [];
   let searchTimer = null;
   let currentPage = 1;
 
@@ -57,127 +58,78 @@
   }
 
   function getLandlordGroups() {
-    const groups = new Map();
-
-    documents.forEach((document) => {
-      const id = String(document.landlord_id);
-
-      if (!groups.has(id)) {
-        groups.set(id, {
-          landlord_id: document.landlord_id,
-          landlord_name: document.landlord_name || "Unknown landlord",
-          landlord_email: document.landlord_email || "No email",
-          documents: [],
-        });
-      }
-
-      groups.get(id).documents.push(document);
-    });
-
-    return Array.from(groups.values());
+    // The API returns all registered landlords, even those without documents.
+    return landlords.map((landlord) => ({
+      landlord_id: landlord.id,
+      landlord_name:
+        `${landlord.first_name || ""} ${landlord.last_name || ""}`.trim() ||
+        "Unknown landlord",
+      landlord_email: landlord.email || "No email",
+      documents: documents.filter(
+        (doc) => String(doc.landlord_id) === String(landlord.id),
+      ),
+    }));
   }
 
   function getGroupMeta(group) {
-    const requiredTypes = ["valid_id", "barangay_clearance", "land_title"];
-    const approved = requiredTypes.filter((type) =>
-      group.documents.some(
-        (document) =>
-          document.document_type === type &&
-          document.verification_status === "approved",
-      ),
-    ).length;
-    const pending = group.documents.filter(
-      (document) => document.verification_status === "pending",
-    ).length;
-    const rejected = group.documents.filter(
-      (document) => document.verification_status === "rejected",
-    ).length;
-    const latestDate = group.documents
-      .map((document) => document.created_at)
-      .filter(Boolean)
-      .sort()
-      .at(-1);
+    // The government-issued ID is the ONLY mandatory identity document.
+    // Evaluate the latest valid_id submission, not historical rejected files.
+    const idDocs = group.documents
+      .filter((doc) => doc.document_type === "valid_id")
+      .sort((a, b) => {
+        const dateCompare = String(b.created_at || "").localeCompare(
+          String(a.created_at || ""),
+        );
+        return dateCompare || Number(b.id || 0) - Number(a.id || 0);
+      });
+    const latest = idDocs[0];
+    const currentStatus = latest?.verification_status || "not_submitted";
 
-    if (rejected > 0) {
-      return {
-        approved,
-        pending,
-        rejected,
-        latestDate,
-        label: "Needs resubmission",
-        className: "rejected",
-      };
-    }
-
-    if (pending > 0) {
-      return {
-        approved,
-        pending,
-        rejected,
-        latestDate,
-        label: "For review",
+    const statuses = {
+      not_submitted: {
+        label: "Not Submitted",
+        className: "not-submitted",
+        code: "not_submitted",
+      },
+      pending: {
+        label: "Pending Review",
         className: "pending",
-      };
-    }
-
-    if (approved === 3) {
-      return {
-        approved,
-        pending,
-        rejected,
-        latestDate,
-        label: "Verified",
-        className: "approved",
-      };
-    }
-
+        code: "pending",
+      },
+      approved: { label: "Verified", className: "approved", code: "approved" },
+      rejected: {
+        label: "Needs Resubmission",
+        className: "rejected",
+        code: "rejected",
+      },
+    };
+    const status = statuses[currentStatus] || statuses.not_submitted;
     return {
-      approved,
-      pending,
-      rejected,
-      latestDate,
-      label: "Incomplete",
-      className: "not-submitted",
+      ...status,
+      approved: currentStatus === "approved" ? 1 : 0,
+      latestDate: latest?.created_at || null,
+      hasSubmittedId: Boolean(latest),
     };
   }
 
   function applyStatusFilter(groups) {
     const status = statusFilter.value;
     if (!status) return groups;
-
-    return groups.filter((group) => {
-      const meta = getGroupMeta(group);
-
-      if (status === "pending") return meta.pending > 0;
-      if (status === "approved")
-        return meta.approved === 3 && meta.pending === 0 && meta.rejected === 0;
-      if (status === "rejected") return meta.rejected > 0;
-      if (status === "incomplete") return meta.approved < 3;
-
-      return true;
-    });
+    return groups.filter((group) => getGroupMeta(group).code === status);
   }
 
   function updateSummary() {
     const groups = getLandlordGroups();
-    const pending = documents.filter(
-      (document) => document.verification_status === "pending",
-    ).length;
-    const approvedLandlords = groups.filter((group) => {
-      const meta = getGroupMeta(group);
-      return meta.approved === 3 && meta.pending === 0 && meta.rejected === 0;
-    }).length;
-    const needsAction = groups.filter((group) => {
-      const meta = getGroupMeta(group);
-      return meta.pending > 0 || meta.rejected > 0 || meta.approved < 3;
-    }).length;
-
+    const counts = { not_submitted: 0, pending: 0, approved: 0, rejected: 0 };
+    groups.forEach((group) => {
+      counts[getGroupMeta(group).code] += 1;
+    });
     setText("#total-landlords", groups.length);
-    setText("#pending-documents", pending);
-    setText("#approved-documents", approvedLandlords);
-    setText("#rejected-documents", needsAction);
-
-    window.SilipMuntiAdminShell?.setPendingCount(pending);
+    setText("#not-submitted-landlords", counts.not_submitted);
+    setText("#pending-documents", counts.pending);
+    setText("#approved-documents", counts.approved);
+    setText("#rejected-documents", counts.rejected);
+    window.SilipMuntiAdminShell?.setPendingCount(counts.pending);
   }
 
   function getPaginationPages(totalPages) {
@@ -302,8 +254,8 @@
             </td>
             <td>
               <div class="admin-progress-cell">
-                <strong>${meta.approved}/3</strong>
-                <span>approved documents</span>
+                <strong>${meta.approved}/1</strong>
+                <span>required ID approved</span>
               </div>
             </td>
             <td>
@@ -313,10 +265,14 @@
               <strong class="admin-date-cell">${escapeHtml(formatDate(meta.latestDate))}</strong>
             </td>
             <td>
-              <a class="admin-open-link" href="${detailUrl}">
+              ${
+                meta.hasSubmittedId
+                  ? `<a class="admin-open-link" href="${detailUrl}">
                 Review
                 <i class="fa-solid fa-arrow-right"></i>
-              </a>
+              </a>`
+                  : '<span class="admin-date-cell">Awaiting ID submission</span>'
+              }
             </td>
           </tr>
         `;
@@ -363,12 +319,18 @@
         );
       }
 
+      // Both arrays are required: registered landlords are the base list,
+      // including accounts that have not uploaded a Valid ID yet.
+      landlords = Array.isArray(result.data?.landlords)
+        ? result.data.landlords
+        : [];
       documents = Array.isArray(result.data?.documents)
         ? result.data.documents
         : [];
 
       renderLandlords();
     } catch (error) {
+      landlords = [];
       documents = [];
       pagination?.classList.add("hidden");
       updateSummary();

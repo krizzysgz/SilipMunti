@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$landlord = require_approved_landlord($pdo);
+$landlord = require_landlord_id_submission($pdo);
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -268,7 +268,7 @@ try {
             :listing_size,
             :occupancy_limit,
             :availability_status,
-            'verified',
+            'pending',
             :nearby_establishments,
             :transport_routes,
             :amenities
@@ -308,7 +308,7 @@ try {
             'city' => 'Muntinlupa',
             'barangay' => $barangay,
             'availability_status' => $availabilityStatus,
-            'verification_status' => 'verified'
+            'verification_status' => 'pending'
         ]
     ]);
 } catch (Throwable $exception) {

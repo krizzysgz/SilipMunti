@@ -28,6 +28,9 @@ Options -Indexes
     RewriteRule ^auth/make-admin\.php(?:/|$) - [F,L,NC]
     RewriteRule ^ai/(?:config|gemini-client|test-gemini)\.php(?:/|$) - [F,L,NC]
 
+    # Protect all private supporting documents.
+    RewriteRule ^private_uploads(?:/|$) - [F,L,NC]
+
     # Protect private verification documents.
     RewriteRule ^storage/verification-documents(?:/|$) - [F,L,NC]
 

@@ -36,8 +36,18 @@
       href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
     />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
-    <script src="/SilipMunti/frontend/assets/js/browse-presentation.js?v=1" defer></script>
-    <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3" />
+    <script
+      src="/SilipMunti/frontend/assets/js/browse-presentation.js?v=1"
+      defer
+    ></script>
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/property-verification-badges.css?v=1"
+    />
   </head>
 
   <body>
@@ -48,7 +58,7 @@
       <section class="properties-banner">
         <div class="properties-container">
           <div class="banner-content">
-            <span class="banner-label"> Verified rental properties </span>
+            <span class="banner-label"> Available rental listings </span>
 
             <h1>Rentals in Muntinlupa</h1>
 
@@ -124,7 +134,17 @@
               </div>
             </div>
             <details class="additional-filters" id="additional-filters" open>
-              <summary><span>Property type, bedrooms &amp; more <span class="filter-selection-note" id="filter-selection-note" aria-live="polite" hidden></span></span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary>
+              <summary>
+                <span
+                  >Property type, bedrooms &amp; more
+                  <span
+                    class="filter-selection-note"
+                    id="filter-selection-note"
+                    aria-live="polite"
+                    hidden
+                  ></span></span
+                ><i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+              </summary>
               <div class="additional-filter-fields">
                 <div class="filter-field">
                   <label for="filter-rental-type"> Property type </label>
@@ -196,7 +216,9 @@
             <div>
               <h2>Available Properties</h2>
 
-              <p id="properties-total" aria-live="polite" aria-atomic="true">Loading properties...</p>
+              <p id="properties-total" aria-live="polite" aria-atomic="true">
+                Loading properties...
+              </p>
             </div>
 
             <div class="sort-wrapper">
@@ -214,7 +236,11 @@
 
           <div class="properties-grid" id="properties-grid"></div>
 
-          <div class="properties-message hidden" id="properties-message" role="status"></div>
+          <div
+            class="properties-message hidden"
+            id="properties-message"
+            role="status"
+          ></div>
 
           <nav
             class="pagination hidden"
@@ -282,7 +308,7 @@
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/site-navbar.js?v=3"></script>
     <script src="/SilipMunti/frontend/assets/js/notifications.js?v=2"></script>
-    <script src="../../assets/js/properties.js?v=4"></script>
+    <script src="../../assets/js/properties.js?v=5"></script>
     <script src="/SilipMunti/frontend/assets/js/ai-reco.js?v=3"></script>
     <script src="/SilipMunti/frontend/assets/js/chat-bubble.js?v=2"></script>
   </body>

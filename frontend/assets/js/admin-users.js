@@ -224,8 +224,8 @@
             ? "—"
             : user.verificationLevel === "fully_verified"
               ? "Fully verified"
-              : user.landlordStatus === "approved"
-                ? `Verified · ${user.approvedDocumentCount}/3 docs`
+              : user.verificationLevel === "verified"
+                ? `Verified · ${user.approvedDocumentCount}/1 required ID`
                 : "Not verified";
         const verificationClass =
           user.verificationLevel === "fully_verified"

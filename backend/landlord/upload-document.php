@@ -24,8 +24,7 @@ $documentType = trim(
 
 $allowedDocumentTypes = [
     'barangay_clearance',
-    'valid_id',
-    'land_title'
+    'valid_id'
 ];
 
 if (

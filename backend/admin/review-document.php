@@ -120,6 +120,23 @@ try {
         $documentId
     ]);
 
+    // Only the required Valid ID determines identity verification.
+    // Optional Barangay Clearance never changes the account status.
+    if ($document['document_type'] === 'valid_id') {
+        $newLandlordStatus = $action === 'approved' ? 'approved' : 'pending';
+        $statusUpdate = $pdo->prepare('UPDATE users
+            SET landlord_status = :status, landlord_reviewed_by = :reviewer,
+                landlord_reviewed_at = CURRENT_TIMESTAMP,
+                landlord_rejection_reason = :reason, updated_at = CURRENT_TIMESTAMP
+            WHERE id = :landlord AND role = "landlord" AND landlord_status <> "suspended"');
+        $statusUpdate->execute([
+            'status' => $newLandlordStatus,
+            'reviewer' => (int)$admin['id'],
+            'reason' => $action === 'rejected' ? $rejectionReason : null,
+            'landlord' => (int)$document['landlord_id']
+        ]);
+    }
+
     $documentLabel = match ($document['document_type']) {
         'valid_id' => 'valid ID',
         'barangay_clearance' => 'barangay clearance',

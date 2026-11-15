@@ -290,6 +290,27 @@
     return item;
   }
 
+  function createPropertyVerificationBadge(listing) {
+    const verified =
+      listing.property_verified === true ||
+      listing.property_verified === 1 ||
+      listing.property_verified === "1";
+    const badge = document.createElement("span");
+    badge.className = `sm-property-verification ${verified ? "is-verified" : "is-unverified"}`;
+    const icon = document.createElement("i");
+    icon.className = verified
+      ? "fa-solid fa-shield-halved"
+      : "fa-solid fa-circle-info";
+    icon.setAttribute("aria-hidden", "true");
+    const label = document.createElement("span");
+    label.textContent = verified ? "Property Verified" : "Property Unverified";
+    badge.append(icon, label);
+    badge.title = verified
+      ? "Supporting ownership or authority-to-rent document approved by SilipMunti. This is not a guarantee of legal ownership."
+      : "No approved ownership or authority-to-rent document. The listing may still be approved for publication.";
+    return badge;
+  }
+
   function createPropertyCard(listing) {
     const article = document.createElement("article");
     article.className = "property-card";
@@ -326,6 +347,9 @@
 
       await toggleFavorite(listing.id, favoriteButton);
     });
+
+    const verificationBadge = createPropertyVerificationBadge(listing);
+    imageWrapper.appendChild(verificationBadge);
 
     const content = document.createElement("div");
     content.className = "property-card-content";

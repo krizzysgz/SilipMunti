@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Listings Monitoring | SilipMunti Admin</title>
+    <title>Property Reviews | SilipMunti Admin</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -21,19 +21,9 @@
       href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
     />
     <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
-    <link
-      rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3"
-    />
-    <link
-      rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/admin-enterprise.css?v=1"
-      media="screen"
-    />
   </head>
 
-  <body class="admin-enterprise">
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+  <body>
     <div class="admin-layout">
       <admin-sidebar active-page="listings"></admin-sidebar>
 
@@ -75,14 +65,15 @@
           </div>
         </header>
 
-        <main id="main-content" tabindex="-1" class="admin-main">
+        <main class="admin-main">
           <div class="admin-page-header">
             <div>
               <span class="admin-eyebrow">Monitoring</span>
-              <h1>Listings monitoring</h1>
+              <h1>Property reviews</h1>
               <p>
-                Review landlord listings for spam, scams, duplicates, or unsafe
-                content. Listings do not need admin approval to go live.
+                Review property details and optional supporting documents
+                together before publishing. Reviews typically take 1–3 working
+                days, excluding holidays.
               </p>
             </div>
           </div>
@@ -128,77 +119,284 @@
               </button>
             </div>
 
-            <div class="admin-filters listings-filters">
-              <label>
-                <span>Record status</span>
-                <select id="record-status-filter">
-                  <option value="active">Active only</option>
-                  <option value="deleted">Removed only</option>
-                  <option value="all">All records</option>
-                </select>
-              </label>
-
-              <label>
-                <span>Availability</span>
-                <select id="availability-filter">
-                  <option value="">All availability</option>
-                  <option value="available">Available</option>
-                  <option value="occupied">Occupied</option>
-                </select>
-              </label>
-
-              <label>
-                <span>Barangay</span>
-                <select id="barangay-filter">
-                  <option value="">All barangays</option>
-                  <option>Alabang</option>
-                  <option>Ayala Alabang</option>
-                  <option>Bayanan</option>
-                  <option>Buli</option>
-                  <option>Cupang</option>
-                  <option>New Alabang Village</option>
-                  <option>Poblacion</option>
-                  <option>Putatan</option>
-                  <option>Sucat</option>
-                  <option>Tunasan</option>
-                </select>
-              </label>
+            <div
+              class="listing-review-tabs"
+              role="tablist"
+              aria-label="Listing sections"
+            >
+              <button
+                type="button"
+                class="listing-review-tab active"
+                id="listings-tab-all"
+                role="tab"
+                aria-selected="true"
+              >
+                All Listings
+              </button>
+              <button
+                type="button"
+                class="listing-review-tab"
+                id="listings-tab-pending"
+                role="tab"
+                aria-selected="false"
+              >
+                Pending Approval
+                <span id="pending-listings-count" class="listing-review-count"
+                  >0</span
+                >
+              </button>
             </div>
 
             <div
-              class="admin-table-wrapper"
-              tabindex="0"
-              role="region"
-              aria-label="Scrollable table"
+              id="listings-view"
+              role="tabpanel"
+              aria-label="Property listings"
             >
-              <table class="admin-table admin-listings-table">
-                <thead>
-                  <tr>
-                    <th>Listing</th>
-                    <th>Landlord</th>
-                    <th>Location</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Posted</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="listings-table-body">
-                  <tr>
-                    <td colspan="7" class="admin-table-message">
-                      Loading listings...
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="admin-filters listings-filters">
+                <label>
+                  <span>Record status</span>
+                  <select id="record-status-filter">
+                    <option value="active">Active only</option>
+                    <option value="deleted">Removed only</option>
+                    <option value="all">All records</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span>Approval status</span>
+                  <select id="approval-status-filter">
+                    <option value="all">All approval statuses</option>
+                    <option value="pending">Pending review</option>
+                    <option value="verified">Verified</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Availability</span>
+                  <select id="availability-filter">
+                    <option value="">All availability</option>
+                    <option value="available">Available</option>
+                    <option value="occupied">Occupied</option>
+                  </select>
+                </label>
+
+                <label>
+                  <span>Barangay</span>
+                  <select id="barangay-filter">
+                    <option value="">All barangays</option>
+                    <option>Alabang</option>
+                    <option>Ayala Alabang</option>
+                    <option>Bayanan</option>
+                    <option>Buli</option>
+                    <option>Cupang</option>
+                    <option>New Alabang Village</option>
+                    <option>Poblacion</option>
+                    <option>Putatan</option>
+                    <option>Sucat</option>
+                    <option>Tunasan</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="admin-table-wrapper">
+                <table class="admin-table admin-listings-table">
+                  <thead>
+                    <tr>
+                      <th>Listing</th>
+                      <th>Landlord</th>
+                      <th>Location</th>
+                      <th>Price</th>
+                      <th>Availability</th>
+                      <th>Approval Status</th>
+                      <th>Posted</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="listings-table-body">
+                    <tr>
+                      <td colspan="8" class="admin-table-message">
+                        Loading listings...
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <nav
+                class="admin-pagination hidden"
+                id="listings-pagination"
+                aria-label="Listings pagination"
+              ></nav>
             </div>
-            <nav
-              class="admin-pagination hidden"
-              id="listings-pagination"
-              aria-label="Listings pagination"
-            ></nav>
+            <!-- end listings-view -->
           </section>
         </main>
+      </div>
+    </div>
+
+    <!-- Private admin-only preview: pending properties never use the public details page. -->
+    <div
+      class="admin-modal hidden listing-preview-overlay"
+      id="listing-preview-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="listing-preview-title"
+    >
+      <div class="admin-modal-dialog listing-preview-dialog">
+        <button
+          type="button"
+          class="modal-close"
+          id="listing-preview-close"
+          aria-label="Close preview"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="listing-preview-header">
+          <span class="admin-eyebrow">Admin-only property preview</span>
+          <h2 id="listing-preview-title">Property preview</h2>
+          <p id="listing-preview-subtitle"></p>
+        </div>
+        <div class="listing-preview-scroll">
+          <div class="review-step">01 · REQUIRED LISTING REVIEW</div>
+          <div
+            class="listing-preview-gallery"
+            id="listing-preview-gallery"
+          ></div>
+          <div
+            class="listing-preview-summary"
+            id="listing-preview-summary"
+          ></div>
+          <div class="listing-preview-grid" id="listing-preview-details"></div>
+          <section class="listing-preview-section">
+            <h3>Description</h3>
+            <p id="listing-preview-description"></p>
+          </section>
+          <section class="listing-preview-section">
+            <h3>Amenities</h3>
+            <div
+              id="listing-preview-amenities"
+              class="listing-preview-tags"
+            ></div>
+          </section>
+          <section class="listing-preview-section">
+            <h3>Nearby establishments</h3>
+            <div id="listing-preview-nearby" class="listing-preview-tags"></div>
+          </section>
+          <section class="listing-preview-section">
+            <h3>Transport routes</h3>
+            <div
+              id="listing-preview-transport"
+              class="listing-preview-tags"
+            ></div>
+          </section>
+          <section
+            class="review-proof-block"
+            aria-labelledby="review-proof-title"
+          >
+            <div class="review-proof-heading">
+              <div>
+                <span class="review-step">02 · OPTIONAL</span>
+                <h3 id="review-proof-title">
+                  Ownership / authority-to-rent document
+                </h3>
+                <p>
+                  Review any proof submitted for this property. This step
+                  determines the <strong>Property Verified</strong> badge; it
+                  does not control whether the listing may be published.
+                </p>
+              </div>
+              <span id="review-proof-status" class="review-proof-status"
+                >Checking…</span
+              >
+            </div>
+            <div
+              id="review-proof-content"
+              class="review-proof-content"
+              aria-live="polite"
+            >
+              Loading submitted documents…
+            </div>
+            <div id="review-proof-reason" class="review-proof-reason hidden">
+              <label for="review-proof-reason-input"
+                >Reason for rejecting this document</label
+              ><textarea
+                id="review-proof-reason-input"
+                maxlength="500"
+                rows="2"
+                placeholder="Describe what needs to be corrected"
+              ></textarea>
+              <div class="review-proof-reason-actions">
+                <button
+                  type="button"
+                  class="review-proof-outline"
+                  id="review-proof-cancel"
+                >
+                  Cancel</button
+                ><button
+                  type="button"
+                  class="review-proof-danger"
+                  id="review-proof-confirm"
+                >
+                  Confirm document rejection
+                </button>
+              </div>
+            </div>
+            <p
+              id="review-proof-feedback"
+              class="review-proof-feedback hidden"
+              role="alert"
+            ></p>
+          </section>
+          <div class="review-publish-note">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i
+            ><span
+              ><strong>Listing approval is separate.</strong> You may approve a
+              listing without an ownership document. Only approved documents
+              qualify for the Property Verified badge.</span
+            >
+          </div>
+        </div>
+        <div
+          id="listing-preview-feedback"
+          class="listing-preview-feedback hidden"
+          role="alert"
+        ></div>
+        <div
+          id="listing-preview-rejection"
+          class="listing-preview-rejection hidden"
+        >
+          <label for="listing-preview-rejection-reason"
+            >Reason for rejection <span aria-hidden="true">*</span></label
+          >
+          <textarea
+            id="listing-preview-rejection-reason"
+            rows="3"
+            maxlength="1000"
+            placeholder="Explain what the landlord needs to correct"
+          ></textarea>
+        </div>
+        <div class="listing-preview-actions">
+          <button
+            type="button"
+            class="modal-cancel-button"
+            id="listing-preview-cancel"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            class="listing-preview-reject"
+            id="listing-preview-reject"
+          >
+            Reject listing
+          </button>
+          <button
+            type="button"
+            class="admin-primary-button"
+            id="listing-preview-approve"
+          >
+            Approve &amp; publish
+          </button>
+        </div>
       </div>
     </div>
 
@@ -224,8 +422,12 @@
       </div>
     </div>
 
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/admin-listing-review.css?v=4"
+    />
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=5"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-listings.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-listings.js?v=16"></script>
   </body>
 </html>

@@ -2,12 +2,11 @@ const GET_DOCUMENTS_API = "/SilipMunti/backend/landlord/get-documents.php";
 
 const UPLOAD_DOCUMENT_API = "/SilipMunti/backend/landlord/upload-document.php";
 
-const REQUIRED_DOCUMENTS = ["valid_id", "barangay_clearance", "land_title"];
+const REQUIRED_DOCUMENTS = ["valid_id"];
 
 const DOCUMENT_NAMES = {
   valid_id: "Valid ID",
   barangay_clearance: "Barangay Clearance",
-  land_title: "Land Title",
 };
 
 const pageMessage = document.querySelector("#page-message");
@@ -143,89 +142,69 @@ function updateDocumentCard(documentType) {
 }
 
 function updateOverallStatus() {
-  const approvedDocuments = REQUIRED_DOCUMENTS.filter((documentType) => {
-    const document = getLatestDocument(documentType);
-    return document?.verification_status === "approved";
-  });
-  const pendingDocuments = REQUIRED_DOCUMENTS.filter((documentType) => {
-    const document = getLatestDocument(documentType);
-    return document?.verification_status === "pending";
-  });
-  const rejectedDocuments = REQUIRED_DOCUMENTS.filter((documentType) => {
-    const document = getLatestDocument(documentType);
-    return document?.verification_status === "rejected";
-  });
-  const approvedCount = approvedDocuments.length;
-  const progressPercentage = (approvedCount / REQUIRED_DOCUMENTS.length) * 100;
+  const validId = getLatestDocument("valid_id");
+  const idStatus = validId?.verification_status || "not_submitted";
   const accountStatus =
     currentLandlord?.account_status ||
     currentLandlord?.landlord_status ||
     "pending";
-  const canManageListings = accountStatus === "approved";
+  const approved = idStatus === "approved";
+  const canCreate =
+    ["pending", "approved"].includes(idStatus) &&
+    !["rejected", "suspended"].includes(accountStatus);
+  progressBar.style.width = approved ? "100%" : "0%";
+  progressText.textContent = approved
+    ? "Required Valid ID approved (1/1)"
+    : "Required Valid ID not yet approved (0/1)";
+  addPropertyLink?.classList.toggle("disabled", !canCreate);
+  if (canCreate) addPropertyLink?.removeAttribute("aria-disabled");
+  else addPropertyLink?.setAttribute("aria-disabled", "true");
 
-  progressBar.style.width = `${progressPercentage}%`;
-  progressText.textContent = `${approvedCount} of ${REQUIRED_DOCUMENTS.length} approved`;
-  addPropertyLink?.classList.toggle("disabled", !canManageListings);
-
-  if (canManageListings) {
-    addPropertyLink?.removeAttribute("aria-disabled");
-  } else {
-    addPropertyLink?.setAttribute("aria-disabled", "true");
-  }
-
-  if (accountStatus === "pending") {
-    overallStatus.className = "overall-status pending";
-    overallStatus.innerHTML =
-      '<i class="fa-solid fa-clock"></i><span>Pending approval</span>';
-    verificationHeading.textContent = "Your account is awaiting admin approval";
-    verificationDescription.textContent =
-      "You may submit documents while waiting. Listing creation will be available after your account is approved.";
-    return;
-  }
-
-  if (accountStatus === "rejected" || accountStatus === "suspended") {
-    overallStatus.className = "overall-status rejected";
-    overallStatus.innerHTML =
-      '<i class="fa-solid fa-circle-xmark"></i><span>Account restricted</span>';
-    verificationHeading.textContent =
-      accountStatus === "suspended"
-        ? "Your landlord account is suspended"
-        : "Your landlord account was not approved";
-    verificationDescription.textContent =
+  let label = "Not submitted",
+    heading = "Submit your Valid ID",
+    description =
+      "A Valid Government-Issued ID is required before adding properties. Barangay Clearance is optional.";
+  let css = "pending";
+  if (["rejected", "suspended"].includes(accountStatus)) {
+    label = "Account restricted";
+    css = "rejected";
+    heading = "Your landlord account is restricted";
+    description =
       currentLandlord?.landlord_rejection_reason ||
-      "Contact the administrator for assistance with your account.";
-    return;
+      "Contact the administrator for assistance.";
+  } else if (idStatus === "rejected") {
+    label = "Needs resubmission";
+    css = "rejected";
+    heading = "Your Valid ID needs resubmission";
+    description =
+      validId?.rejection_reason ||
+      "Resubmit your required Valid ID to add properties.";
+  } else if (idStatus === "pending") {
+    label = "Pending review";
+    heading = "Valid ID submitted — awaiting review";
+    description =
+      "You can submit properties while the ID review is pending. Review typically takes 1–3 working days, excluding holidays.";
+  } else if (approved && accountStatus === "approved") {
+    label = "Verified";
+    css = "approved";
+    heading = "Your identity is verified";
+    description =
+      "Your required Valid ID has been approved. Barangay Clearance remains optional.";
+  } else if (approved) {
+    label = "ID approved";
+    css = "approved";
+    heading = "Your Valid ID has been approved";
+    description =
+      "Your landlord account may still have a separate administrative status.";
   }
-
-  if (approvedCount === REQUIRED_DOCUMENTS.length) {
-    overallStatus.className = "overall-status approved";
-    overallStatus.innerHTML =
-      '<i class="fa-solid fa-shield-halved"></i><span>Fully verified</span>';
-    verificationHeading.textContent = "Your landlord account is fully verified";
-    verificationDescription.textContent =
-      "Your account is approved and all three required documents are verified.";
-    return;
-  }
-
-  overallStatus.className = "overall-status approved";
-  overallStatus.innerHTML =
-    '<i class="fa-solid fa-circle-check"></i><span>Verified</span>';
-  verificationHeading.textContent = "Your landlord account is verified";
-
-  if (rejectedDocuments.length > 0) {
-    verificationDescription.textContent =
-      "You can manage listings now. Resubmit rejected documents to become fully verified.";
-  } else if (pendingDocuments.length > 0) {
-    verificationDescription.textContent =
-      "You can manage listings now. Submitted documents are being reviewed for full verification.";
-  } else {
-    verificationDescription.textContent =
-      "You can manage listings now. Complete all three documents to become fully verified.";
-  }
+  overallStatus.className = `overall-status ${css}`;
+  overallStatus.textContent = label;
+  verificationHeading.textContent = heading;
+  verificationDescription.textContent = description;
 }
 
 function renderDocuments() {
-  REQUIRED_DOCUMENTS.forEach(updateDocumentCard);
+  ["valid_id", "barangay_clearance"].forEach(updateDocumentCard);
   updateOverallStatus();
 }
 

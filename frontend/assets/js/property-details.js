@@ -668,6 +668,24 @@ function renderListing(listing) {
   if (propertyTitle) {
     propertyTitle.textContent = listing.title;
   }
+  // Listing approval and ownership/authority document review are different.
+  const proofBadge = document.querySelector(
+    "#property-proof-verification-label",
+  );
+  if (proofBadge) {
+    const isPropertyVerified =
+      listing.property_verified === true ||
+      listing.property_verified === 1 ||
+      listing.property_verified === "1";
+    proofBadge.classList.toggle("is-property-verified", isPropertyVerified);
+    proofBadge.classList.toggle("is-property-unverified", !isPropertyVerified);
+    proofBadge.innerHTML = isPropertyVerified
+      ? '<i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Property Verified'
+      : '<i class="fa-solid fa-circle-info" aria-hidden="true"></i> Property Unverified';
+    proofBadge.title = isPropertyVerified
+      ? "An ownership or authority-to-rent document was approved by SilipMunti. This is not a guarantee of legal ownership."
+      : "No approved ownership or authority-to-rent document. Listing approval is separate from property-document verification.";
+  }
 
   if (propertyAddress) {
     propertyAddress.textContent = fullAddress || "Muntinlupa City";
@@ -720,7 +738,7 @@ function renderListing(listing) {
   if (landlordVerificationBadge) {
     landlordVerificationBadge.innerHTML =
       listing.landlord_verification_level === "fully_verified"
-        ? '<i class="fa-solid fa-shield-halved"></i> Fully verified landlord'
+        ? '<i class="fa-solid fa-shield-halved"></i> ID-verified landlord'
         : '<i class="fa-solid fa-circle-check"></i> Verified landlord';
   }
 

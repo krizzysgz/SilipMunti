@@ -90,6 +90,20 @@ try {
         exit;
     }
 
+    if ($action === 'approved') {
+        $latestId = $pdo->prepare('SELECT verification_status FROM verification_documents
+            WHERE landlord_id = ? AND document_type = "valid_id" AND deleted_at IS NULL
+            ORDER BY created_at DESC, id DESC LIMIT 1');
+        $latestId->execute([$landlordId]);
+        if ($latestId->fetchColumn() !== 'approved') {
+            $pdo->rollBack();
+            http_response_code(422);
+            echo json_encode(['success' => false,
+                'message' => 'Approve the required Valid ID before approving the landlord account.']);
+            exit;
+        }
+    }
+
     if ($landlord['landlord_status'] === $action) {
         $pdo->rollBack();
         http_response_code(409);

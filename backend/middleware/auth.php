@@ -190,3 +190,20 @@ function require_verified_landlord(PDO $pdo): array
 {
     return require_approved_landlord($pdo);
 }
+/** Listing access requires a current submitted or approved Valid ID.
+ *  Pending ID review is allowed; rejected/missing ID is not.
+ *  Suspended/rejected accounts remain blocked regardless of submission.
+ */
+function require_landlord_id_submission(PDO $pdo): array
+{
+    $landlord = require_role($pdo, ['landlord']);
+    if (empty($landlord['can_create_listing'])) {
+        authentication_error(
+            'Submit your required Valid Government-Issued ID before managing rental listings. Rejected IDs must be resubmitted.',
+            403,
+            ['valid_id_status' => $landlord['valid_id_status'] ?? 'not_submitted',
+             'account_status' => $landlord['account_status'] ?? 'pending']
+        );
+    }
+    return $landlord;
+}

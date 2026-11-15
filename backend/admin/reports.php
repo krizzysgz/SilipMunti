@@ -595,9 +595,7 @@ try {
                   AND vd.deleted_at IS NULL
                   AND vd.verification_status = "approved"
                   AND vd.document_type IN (
-                    "valid_id",
-                    "barangay_clearance",
-                    "land_title"
+"valid_id"
                   )
             ) AS approved_document_count,
             COUNT(DISTINCT l.id) AS active_listings,
@@ -689,7 +687,7 @@ try {
             : 0.0;
         $landlord['verification_level'] =
             $landlord['landlord_status'] === 'approved'
-                ? ($landlord['approved_document_count'] === 3
+                ? ($landlord['approved_document_count'] === 1
                     ? 'fully_verified'
                     : 'verified')
                 : 'unverified';

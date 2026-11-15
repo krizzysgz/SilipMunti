@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$landlord = require_approved_landlord($pdo);
+$landlord = require_landlord_id_submission($pdo);
 
 $listingId = filter_var(
     $_POST['listing_id'] ?? null,

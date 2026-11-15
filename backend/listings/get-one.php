@@ -50,6 +50,10 @@ $stmt = $pdo->prepare("
         l.amenities,
         l.created_at,
         l.updated_at,
+            (
+                SELECT COUNT(*) FROM property_supporting_documents psd
+                WHERE psd.listing_id = l.id AND psd.verification_status = 'approved'
+            ) AS approved_property_proof_count,
         CONCAT(u.first_name, ' ', u.last_name) AS landlord_name,
         (
             SELECT COUNT(DISTINCT vd.document_type)
@@ -57,11 +61,7 @@ $stmt = $pdo->prepare("
             WHERE vd.landlord_id = u.id
               AND vd.verification_status = 'approved'
               AND vd.deleted_at IS NULL
-              AND vd.document_type IN (
-                  'valid_id',
-                  'barangay_clearance',
-                  'land_title'
-              )
+              AND vd.document_type = 'valid_id'
         ) AS landlord_approved_document_count
     FROM listings l
     INNER JOIN users u
@@ -132,12 +132,14 @@ unset($image);
 
 $listing['images'] = $images;
 $listing['primary_image'] = $images[0]['image_url'] ?? null;
+$listing['property_verified'] = (int)($listing['approved_property_proof_count'] ?? 0) > 0;
+unset($listing['approved_property_proof_count']);
 $listing['landlord_approved_document_count'] =
     (int) $listing['landlord_approved_document_count'];
 $listing['landlord_verification_level'] =
-    $listing['landlord_approved_document_count'] === 3
+    $listing['landlord_approved_document_count'] === 1
         ? 'fully_verified'
-        : 'verified';
+        : 'unverified';
 
 echo json_encode([
     'success' => true,

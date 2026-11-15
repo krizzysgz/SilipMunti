@@ -1926,7 +1926,6 @@ body.sidebar-open {
   font-size: 15px;
   font-weight: 750;
   line-height: 1.4;
-  line-clamp: 2;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -3565,4 +3564,47 @@ body.sidebar-open::after {
     scroll-behavior: auto;
     transition: none;
   }
+}
+
+/* Optional ownership/authority document on Add Property */
+.proof-optional-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  vertical-align: middle;
+}
+.create-proof-field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  font-size: 14px;
+}
+.create-proof-field strong {
+  font-size: 13px;
+}
+.create-proof-field select,
+.create-proof-field input[type="file"] {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid #d4dbe7;
+  border-radius: 9px;
+  background: #fff;
+  color: #1e293b;
+}
+.create-proof-field small {
+  color: #64748b;
+  line-height: 1.5;
+}
+.create-proof-notice {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #64748b;
+  margin: 16px 0 0;
+}
+.create-proof-notice i {
+  color: #112bc1;
+  margin-right: 5px;
 }
