@@ -11,6 +11,7 @@
   const FRONTEND_BASE = "/SilipMunti/frontend";
 
   const endpoints = {
+    rankings: `${API_BASE}/home/get-rankings.php`,
     listings: `${API_BASE}/listings/get-all.php`,
     rentalTypes: `${API_BASE}/rental-types/get-all.php`,
     verifiedLandlords: `${API_BASE}/landlord/get-verified.php?limit=4`,
@@ -32,7 +33,29 @@
   const newlyPreviousButton = document.querySelector("#newly-prev");
   const newlyNextButton = document.querySelector("#newly-next");
 
+  const rankingSections = [
+    {
+      key: "top_landlords",
+      id: "top-rated-landlords",
+      messageId: "top-rated-landlords-message",
+    },
+    {
+      key: "top_listings",
+      id: "top-landlord-listings",
+      messageId: "top-landlord-listings-message",
+    },
+    {
+      key: "most_favorited",
+      id: "most-favorited-listings",
+      messageId: "most-favorited-listings-message",
+    },
+  ];
+  let homepageRankings = null;
+  let rankingsError = "";
+  let rankingsRequest = 0;
+
   const favoriteListingIds = new Set();
+  const pendingFavoriteIds = new Set();
   let currentUser = null;
   let allListings = [];
   let newlyAddedIndex = 0;
@@ -195,8 +218,10 @@
   }
 
   function updateFavoriteButton(button, listingId) {
+    button.disabled = pendingFavoriteIds.has(Number(listingId));
     const isFavorite = favoriteListingIds.has(Number(listingId));
     button.classList.toggle("active", isFavorite);
+    button.setAttribute("aria-pressed", String(isFavorite));
     button.innerHTML = isFavorite
       ? '<i class="fa-solid fa-heart"></i>'
       : '<i class="fa-regular fa-heart"></i>';
@@ -225,6 +250,15 @@
     }
 
     const normalizedListingId = Number(listingId);
+    if (pendingFavoriteIds.has(normalizedListingId)) return;
+    pendingFavoriteIds.add(normalizedListingId);
+    document
+      .querySelectorAll(
+        `.favorite-button[data-listing-id="${normalizedListingId}"]`,
+      )
+      .forEach((item) => {
+        item.disabled = true;
+      });
     const isFavorite = favoriteListingIds.has(normalizedListingId);
 
     button.disabled = true;
@@ -266,14 +300,36 @@
         favoriteListingIds.add(normalizedListingId);
       }
 
-      updateFavoriteButton(button, normalizedListingId);
+      document
+        .querySelectorAll(
+          `.favorite-button[data-listing-id="${normalizedListingId}"]`,
+        )
+        .forEach((item) => updateFavoriteButton(item, normalizedListingId));
+      const rankingSection = button.closest(".home-ranking-section");
+      const restoreFocus = document.activeElement === button;
+      await loadHomepageRankings(true);
+      if (restoreFocus && rankingSection) {
+        window.setTimeout(() => {
+          rankingSection
+            .querySelector(
+              `.favorite-button[data-listing-id="${normalizedListingId}"]`,
+            )
+            ?.focus({ preventScroll: true });
+        }, 0);
+      }
     } catch (error) {
       await window.SilipModal.error({
         title: "Favorite not updated",
         message: error.message || "Unable to update favorite.",
       });
     } finally {
+      pendingFavoriteIds.delete(normalizedListingId);
       button.disabled = false;
+      document
+        .querySelectorAll(
+          `.favorite-button[data-listing-id="${normalizedListingId}"]`,
+        )
+        .forEach((item) => updateFavoriteButton(item, normalizedListingId));
     }
   }
 
@@ -756,11 +812,14 @@
     requestAnimationFrame(() => carousel?.update());
   }
 
-  function renderVerifiedLandlords() {
-    if (!verifiedLandlords) return;
+  function renderVerifiedLandlords(
+    container = verifiedLandlords,
+    landlords = verifiedLandlordList,
+  ) {
+    if (!container) return;
 
-    if (verifiedLandlordList.length === 0) {
-      verifiedLandlords.innerHTML = `
+    if (landlords.length === 0) {
+      container.innerHTML = `
         <div class="landlord-empty-state">
           <i class="fa-solid fa-user-shield" aria-hidden="true"></i>
           <strong>No verified landlords to display yet</strong>
@@ -770,7 +829,7 @@
       return;
     }
 
-    verifiedLandlords.innerHTML = verifiedLandlordList
+    container.innerHTML = landlords
       .map((landlord) => {
         const activeCount = Number(landlord.active_listing_count) || 0;
         const rating = Number(landlord.average_rating) || 0;
@@ -859,21 +918,19 @@
       })
       .join("");
 
-    verifiedLandlords
-      .querySelectorAll(".home-landlord-photo img")
-      .forEach((image) => {
-        const useFallback = () => {
-          const fallback = `${FRONTEND_BASE}/assets/images/default-profile.svg`;
-          if (image.src.endsWith("/assets/images/default-profile.svg")) return;
-          image.src = fallback;
-        };
+    container.querySelectorAll(".home-landlord-photo img").forEach((image) => {
+      const useFallback = () => {
+        const fallback = `${FRONTEND_BASE}/assets/images/default-profile.svg`;
+        if (image.src.endsWith("/assets/images/default-profile.svg")) return;
+        image.src = fallback;
+      };
 
-        image.addEventListener("error", useFallback, { once: true });
+      image.addEventListener("error", useFallback, { once: true });
 
-        if (image.complete && image.naturalWidth === 0) {
-          useFallback();
-        }
-      });
+      if (image.complete && image.naturalWidth === 0) {
+        useFallback();
+      }
+    });
   }
 
   function renderReviewCard(review) {
@@ -1204,12 +1261,128 @@
     );
   }
 
+  function renderHomepageRankings() {
+    rankingSections.forEach(({ key, id, messageId }) => {
+      const container = document.getElementById(id);
+      const message = document.getElementById(messageId);
+      if (!container) return;
+      container.replaceChildren();
+      container.setAttribute("aria-busy", "false");
+      if (rankingsError) {
+        renderMessage(message, rankingsError, "fa-solid fa-circle-exclamation");
+        const retry = document.createElement("button");
+        retry.type = "button";
+        retry.className = "home-ranking-retry";
+        retry.textContent = "Try again";
+        retry.addEventListener("click", () => {
+          retry.disabled = true;
+          loadHomepageRankings(true);
+        });
+        message?.appendChild(retry);
+        return;
+      }
+      const rows = Array.isArray(homepageRankings?.[key])
+        ? homepageRankings[key]
+        : [];
+      if (!rows.length) {
+        const text =
+          key === "top_landlords"
+            ? "No rated landlords with available rentals yet. Published reviews will determine this ranking."
+            : key === "top_listings"
+              ? "No available properties from rated landlords yet."
+              : "No available properties have been saved by renters yet.";
+        renderMessage(message, text);
+        return;
+      }
+      clearMessage(message);
+      if (key === "top_landlords") {
+        renderVerifiedLandlords(container, rows);
+        return;
+      }
+      // Keep distinct listing IDs, even when two units share a title/address.
+      const seen = new Set();
+      rows.forEach((listing) => {
+        const id = Number(listing.id);
+        if (!Number.isSafeInteger(id) || id < 1 || seen.has(id)) return;
+        seen.add(id);
+        const card = createPropertyCard(listing);
+        container.appendChild(card);
+      });
+    });
+  }
+
+  async function loadHomepageRankings(render = false) {
+    if (!rankingSections.some(({ id }) => document.getElementById(id))) return;
+    const request = ++rankingsRequest;
+    rankingSections.forEach(({ id }) =>
+      document.getElementById(id)?.setAttribute("aria-busy", "true"),
+    );
+    try {
+      const response = await fetch(endpoints.rankings, {
+        credentials: "include",
+        cache: "no-store",
+      });
+      const result = await response.json();
+      if (
+        !response.ok ||
+        !result.success ||
+        !result.data ||
+        rankingSections.some(({ key }) => !Array.isArray(result.data[key]))
+      ) {
+        throw new Error("Unable to load rankings. Please try again.");
+      }
+      if (request !== rankingsRequest) return;
+      homepageRankings = result.data;
+      rankingsError = "";
+    } catch (error) {
+      if (request !== rankingsRequest) return;
+      homepageRankings = null;
+      rankingsError =
+        "Rankings could not be loaded. Your other homepage sections are still available.";
+    }
+    if (render) renderHomepageRankings();
+  }
+
+  function bindTopRatedLandlordCarousel() {
+    const rail = document.getElementById("top-rated-landlords");
+    const previous = document.getElementById("top-rated-prev");
+    const next = document.getElementById("top-rated-next");
+    if (!rail || !previous || !next) return;
+    const update = () => {
+      const maximum = Math.max(0, rail.scrollWidth - rail.clientWidth);
+      previous.disabled = rail.scrollLeft <= 2;
+      next.disabled = rail.scrollLeft >= maximum - 2;
+    };
+    const scroll = (direction) => {
+      const card = rail.querySelector(".home-landlord-card");
+      if (!card) return;
+      const gap = parseFloat(getComputedStyle(rail).gap) || 18;
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      rail.scrollBy({
+        left: direction * (card.getBoundingClientRect().width + gap),
+        behavior: reduceMotion ? "auto" : "smooth",
+      });
+    };
+    previous.addEventListener("click", () => scroll(-1));
+    next.addEventListener("click", () => scroll(1));
+    rail.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    new MutationObserver(update).observe(rail, { childList: true });
+    update();
+  }
+
   function bindEvents() {
+    bindTopRatedLandlordCarousel();
     [
       newlyAddedListings,
       featuredListings,
       popularLocations,
       verifiedLandlords,
+      document.getElementById("top-rated-landlords"),
+      document.getElementById("top-landlord-listings"),
+      document.getElementById("most-favorited-listings"),
     ].forEach(enableMouseDrag);
 
     propertySearchForm?.addEventListener("submit", (event) => {
@@ -1255,6 +1428,7 @@
       loadListings(),
       loadReviews(),
       loadVerifiedLandlords(),
+      loadHomepageRankings(),
     ]);
 
     if (currentUser?.role === "renter") {
@@ -1265,6 +1439,7 @@
     renderFeaturedListings();
     renderPopularLocations();
     renderVerifiedLandlords();
+    renderHomepageRankings();
     renderReviews();
   }
 

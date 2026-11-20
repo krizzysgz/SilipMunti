@@ -49,6 +49,10 @@
       rel="stylesheet"
       href="/SilipMunti/frontend/assets/css/property-verification-badges.css?v=1"
     />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/home-rankings.css?v=2"
+    />
   </head>
   <body class="home-page">
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -191,6 +195,130 @@
         </div>
       </section>
 
+      <section
+        class="home-section home-ranking-section landlord-showcase-section"
+        id="top-rated-owners"
+        aria-labelledby="top-rated-owners-title"
+      >
+        <div class="section-container">
+          <div class="section-heading">
+            <div>
+              <span class="section-eyebrow">Highly rated property owners</span>
+              <h2 id="top-rated-owners-title">
+                Top-Rated <span>Landlords</span>
+              </h2>
+              <p>
+                Discover highly rated landlords and their available rentals.
+              </p>
+            </div>
+            <a href="/SilipMunti/frontend/pages/landlord/index.html">
+              View all landlords
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div class="landlord-carousel">
+            <button
+              type="button"
+              class="landlord-arrow landlord-arrow-prev"
+              id="top-rated-prev"
+              aria-label="Previous top-rated landlords"
+              disabled
+            >
+              <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <div
+              class="landlord-grid"
+              id="top-rated-landlords"
+              aria-busy="true"
+            ></div>
+            <button
+              type="button"
+              class="landlord-arrow landlord-arrow-next"
+              id="top-rated-next"
+              aria-label="Next top-rated landlords"
+              disabled
+            >
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div
+            class="listings-message"
+            id="top-rated-landlords-message"
+            role="status"
+          >
+            Loading rankings...
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="home-section home-ranking-section"
+        id="top-owner-rentals"
+        aria-labelledby="top-owner-rentals-title"
+      >
+        <div class="section-container">
+          <div class="section-heading">
+            <div>
+              <h2 id="top-owner-rentals-title">
+                Rentals from <span>Top-Rated Landlords</span>
+              </h2>
+              <p>
+                Explore available rentals from highly rated property owners.
+              </p>
+            </div>
+            <a href="/SilipMunti/frontend/pages/properties/index.html">
+              View all properties
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div
+            class="property-grid"
+            id="top-landlord-listings"
+            aria-busy="true"
+          ></div>
+          <div
+            class="listings-message"
+            id="top-landlord-listings-message"
+            role="status"
+          >
+            Loading rankings...
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="home-section home-ranking-section"
+        id="most-saved-rentals"
+        aria-labelledby="most-saved-rentals-title"
+      >
+        <div class="section-container">
+          <div class="section-heading">
+            <div>
+              <h2 id="most-saved-rentals-title">
+                Most-Favorited <span>Properties</span>
+              </h2>
+              <p>Explore the rentals most saved by renters.</p>
+            </div>
+            <a href="/SilipMunti/frontend/pages/properties/index.html">
+              View all properties
+              <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+            </a>
+          </div>
+          <div
+            class="property-grid"
+            id="most-favorited-listings"
+            aria-busy="true"
+          ></div>
+          <div
+            class="listings-message"
+            id="most-favorited-listings-message"
+            role="status"
+          >
+            Loading rankings...
+          </div>
+        </div>
+      </section>
+
       <section class="home-section">
         <div class="section-container">
           <div class="section-heading">
@@ -320,7 +448,7 @@
     <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/site-navbar.js?v=4"></script>
     <script src="/SilipMunti/frontend/assets/js/notifications.js?v=2"></script>
-    <script src="/SilipMunti/frontend/assets/js/home.js?v=56"></script>
+    <script src="/SilipMunti/frontend/assets/js/home.js?v=58"></script>
     <script src="/SilipMunti/frontend/assets/js/home-animations.js?v=2"></script>
     <script src="/SilipMunti/frontend/assets/js/ai-reco.js?v=3"></script>
     <script src="/SilipMunti/frontend/assets/js/chat-bubble.js?v=3"></script>

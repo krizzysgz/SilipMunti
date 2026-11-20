@@ -1,0 +1,74 @@
+/* Use the same shared card layouts as Featured Rentals / Verified Landlords.
+   Do not redefine card dimensions, photos, fonts, buttons, or mobile layout. */
+.home-page .home-ranking-section .section-heading p {
+  max-width: 760px;
+}
+.home-page .home-ranking-section .listings-message {
+  margin-top: 16px;
+}
+.home-page .home-ranking-section .listings-message.hidden {
+  display: none;
+}
+.home-page .home-ranking-retry {
+  min-height: 44px;
+  margin-left: 12px;
+  padding: 8px 16px;
+  border: 1px solid #1725bb;
+  border-radius: 6px;
+  background: white;
+  color: #1725bb;
+  font: inherit;
+  cursor: pointer;
+}
+.home-page .home-ranking-retry:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.home-page .home-ranking-section :is(a, button):focus-visible {
+  outline: 3px solid #1725bb;
+  outline-offset: 3px;
+}
+/* Homepage section backgrounds */
+body.home-page main#main-content > section.home-section {
+  background: #ffffff;
+  background-image: none;
+  border-top: 1px solid #e1e7f1;
+  border-bottom: 0;
+}
+
+/* Alternating light-blue sections */
+body.home-page main#main-content > section.home-section:nth-of-type(odd) {
+  background: #eef3fc;
+}
+
+/* Top-rated landlords */
+body.home-page main#main-content > section#top-rated-owners {
+  background: #ffffff;
+}
+
+/* Most-favorited: subtle yellow accent */
+body.home-page main#main-content > section#most-saved-rentals {
+  background: #fffdf5;
+  border-top-color: #eee7cd;
+}
+
+/* Popular locations */
+body.home-page
+  main#main-content
+  > section.home-section:has(> .section-container > #popular-locations) {
+  background: #ffffff;
+}
+
+/* Verified landlords */
+body.home-page main#main-content > section#landlords {
+  background: #eef3fc;
+}
+
+/* Reviews */
+body.home-page main#main-content > section.reviews-section {
+  background: #ffffff;
+}
+
+body.home-page main#main-content > section.home-section > .section-container {
+  background: transparent;
+}
