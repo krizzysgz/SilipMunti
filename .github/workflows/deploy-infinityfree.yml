@@ -23,6 +23,8 @@ jobs:
 
       - name: Preview or upload website files
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        env:
+          NODE_OPTIONS: --tls-max-v1.2
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -53,3 +55,4 @@ jobs:
             **/*.bak
             **/check-system.php
             **/maintenance-check.php
+            
