@@ -182,6 +182,10 @@ try {
         ]);
         exit;
     }
+       // SILIPMUNTI_MAINTENANCE_LOGIN_V1
+    if (sm_state()['enabled'] && $user['role'] !== 'admin') {
+        sm_unavailable();
+    }
 
     auth_rate_limit_clear_success(
         $pdo,

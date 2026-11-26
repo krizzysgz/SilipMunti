@@ -26,6 +26,44 @@ function silip_error_is_document_request(): bool
         && !str_contains($accept, 'application/json');
 }
 
+/** Return the public maintenance message without opening a database connection. */
+function silip_error_maintenance_message(): ?string
+{
+    try {
+        require_once __DIR__ . '/../system/core.php';
+        $state = sm_state();
+        if (($state['enabled'] ?? false) !== true) {
+            return null;
+        }
+        $message = $state['message'] ?? '';
+        return is_string($message) && trim($message) !== ''
+            ? $message
+            : 'SilipMunti is under maintenance. Please try again later.';
+    } catch (Throwable $exception) {
+        error_log('Maintenance error-page context: ' . $exception->getMessage());
+        return null;
+    }
+}
+
+function silip_error_503_details(): array
+{
+    $message = silip_error_maintenance_message();
+    if ($message !== null) {
+        return [
+            'Maintenance Mode',
+            $message,
+            'Administrator sign in',
+            '/SilipMunti/frontend/pages/auth/admin-login.html'
+        ];
+    }
+    return [
+        'Temporarily unavailable',
+        'This service is currently unavailable. Please try again shortly.',
+        'Try again',
+        ''
+    ];
+}
+
 function silip_error_details(int $status): array
 {
     return match ($status) {
@@ -77,12 +115,7 @@ function silip_error_details(int $status): array
             'Try again',
             ''
         ],
-        503 => [
-            'Temporarily unavailable',
-            'This service is currently unavailable. Please try again shortly.',
-            'Try again',
-            ''
-        ],
+        503 => silip_error_503_details(),
         default => [
             'Request could not be completed',
             'Please return to the homepage or try again later.',
@@ -104,10 +137,29 @@ function silip_error_html(int $status): string
             'UTF-8'
         );
 
+    $isMaintenance = $status === 503 && $title === 'Maintenance Mode';
+    $maintenanceAttribute = $isMaintenance ? ' data-maintenance="true"' : '';
+    $backendResponse = str_contains(
+        strtolower(str_replace('\\', '/', (string) ($_SERVER['SCRIPT_FILENAME'] ?? ''))),
+        '/backend/'
+    );
+    $maintenanceScript = $isMaintenance && !$backendResponse
+        ? '<script src="/SilipMunti/frontend/assets/js/maintenance-watch.js?v=3" defer></script>'
+        : '';
+    $homeLabel = $isMaintenance ? 'Check system status' : 'Return to SilipMunti';
+    $statusText = $isMaintenance
+        ? '<p id="maintenance-status" class="error-description" role="status" aria-live="polite"></p>'
+        : '';
+
     $title = $escape($title);
-    $description = $escape($description);
+    $description = nl2br($escape($description), false);
     $button = $escape($button);
     $destination = $escape($destination);
+    $actionHtml = $isMaintenance
+    ? ''
+    : '<a class="error-action" href="' . $destination . '">'
+        . $button
+        . '</a>';
 
     return <<<HTML
 <!doctype html>
@@ -123,7 +175,7 @@ function silip_error_html(int $status): string
         href="/SilipMunti/frontend/assets/css/error-pages.css?v=1"
     >
 </head>
-<body class="system-error-page">
+<body class="system-error-page"{$maintenanceAttribute}>
     <main class="system-error" aria-labelledby="error-title">
         <a
             class="error-brand"
@@ -135,19 +187,20 @@ function silip_error_html(int $status): string
 
         <h1 id="error-title">{$title}</h1>
 
-        <p class="error-description">{$description}</p>
+        <p id="error-description" class="error-description">{$description}</p>
 
         <span class="error-divider" aria-hidden="true"></span>
 
-        <a class="error-action" href="{$destination}">
-            {$button}
-        </a>
+        {$actionHtml}
 
         <a
             class="error-home"
+            id="maintenance-check"
             href="/SilipMunti/frontend/index.html"
-        >Return to SilipMunti</a>
+        >{$homeLabel}</a>
+        {$statusText}
     </main>
+    {$maintenanceScript}
 </body>
 </html>
 HTML;

@@ -1140,6 +1140,16 @@ async function loadListing() {
     }
 
     renderListing(result.data.listing);
+
+    window.dispatchEvent(
+      new CustomEvent("silipmunti:property-loaded", {
+        detail: {
+          listing: result.data.listing,
+          favoriteIds: Array.from(favoriteListingIds),
+        },
+      }),
+    );
+
     await loadListingReviews(result.data.listing.id);
   } catch (error) {
     console.error(error);

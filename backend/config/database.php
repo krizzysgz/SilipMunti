@@ -40,3 +40,14 @@ try {
     http_response_code(500);
     exit('Database connection failed.');
 }
+
+
+// SILIPMUNTI_SYSTEM_GATE_V1
+require_once __DIR__ . '/../system/core.php';
+try {
+    sm_runtime_gate($pdo);
+} catch (Throwable $exception) {
+    error_log('System gate: ' . $exception->getMessage());
+    sm_unavailable(defined('SM_FRONTEND_GATEWAY'), 'SilipMunti is temporarily unavailable. Please try again shortly.');
+}
+

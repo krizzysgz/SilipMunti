@@ -1,0 +1,629 @@
+/* SilipMunti shared screen presentation.
+   Load last. Page-specific workflows, visibility, print exports and JS hooks stay intact. */
+:root {
+  --sm-blue: #1734c7;
+  --sm-blue-dark: #1027a8;
+  --sm-yellow: #f6d447;
+  --sm-ink: #172033;
+  --sm-muted: #59677e;
+  --sm-line: #e0e6f0;
+  --sm-surface: #f5f7fc;
+  --sm-radius: 10px;
+  --sm-control-radius: 6px;
+  --sm-shadow: 0 3px 14px rgb(23 32 51 / 5%);
+  --sm-content-width: 1440px;
+  --sm-page-gutter: clamp(16px, 3vw, 32px);
+  --sm-sidebar-width: 250px;
+  --sm-hero-background:
+    radial-gradient(circle at 13% 20%, rgb(248 212 71 / 15%), transparent 27%),
+    radial-gradient(circle at 88% 75%, rgb(255 255 255 / 9%), transparent 28%),
+    linear-gradient(135deg, #071872 0%, #0d2bb4 57%, #1745dc 100%);
+  --primary-blue: var(--sm-blue);
+  --primary-blue-dark: var(--sm-blue-dark);
+  --dark-blue: var(--sm-blue-dark);
+  --accent-yellow: var(--sm-yellow);
+  --admin-blue: var(--sm-blue);
+  --admin-yellow: var(--sm-yellow);
+  --about-blue: var(--sm-blue);
+  --about-yellow: var(--sm-yellow);
+  --notification-blue: var(--sm-blue);
+  --text-muted: var(--sm-muted);
+  --border-color: var(--sm-line);
+  --sm-ui-radius: var(--sm-radius);
+  --sm-ui-control-radius: var(--sm-control-radius);
+}
+
+@media screen {
+  /* Reserve the scrollbar lane, so short/long pages and modal opening do not shift the shell. */
+  html {
+    scrollbar-gutter: stable;
+  }
+  body.sm-app {
+    color: var(--sm-ink);
+    line-height: 1.55;
+  }
+  .sm-app :is(button, input, select, textarea) {
+    font-family: inherit;
+  }
+  .sm-app :is(button, a, input, select, textarea):focus-visible {
+    outline: 3px solid #3454dc;
+    outline-offset: 3px;
+  }
+  .sm-app :is(button, input, select, textarea):disabled {
+    cursor: not-allowed;
+  }
+  .sm-app :is(.form-message, .page-state, .listings-message, .admin-message) {
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+  }
+  .sm-app
+    :is(.property-price, .listing-card-price, .stat-value, .summary-value) {
+    font-variant-numeric: tabular-nums;
+  }
+  .sm-app
+    :is(
+      .property-card,
+      .home-landlord-card,
+      .landlord-card,
+      .landlord-listing-card,
+      .review-card,
+      .favorite-card,
+      .stat-card,
+      .listing-summary-card,
+      .admin-summary-card,
+      .dashboard-panel,
+      .admin-panel,
+      .listings-management-card,
+      .form-card,
+      .create-form-card,
+      .profile-picture-card,
+      .profile-information-card,
+      .security-card
+    ) {
+    border-radius: var(--sm-radius);
+  }
+  /* Do not move a card or its image under the pointer. */
+  .sm-app
+    :is(
+      .property-card,
+      .home-landlord-card,
+      .landlord-listing-card,
+      .stat-card,
+      .listing-summary-card,
+      .admin-summary-card,
+      .admin-action-card,
+      .review-card,
+      .favorite-card
+    ):hover {
+    transform: none;
+  }
+  .sm-app :is(.property-card:hover img, .landlord-listing-card:hover img) {
+    transform: none;
+  }
+  .sm-app
+    :is(
+      .primary-button,
+      .secondary-button,
+      .navbar-button,
+      .add-property-button,
+      .create-submit-button,
+      .admin-primary-button
+    ):hover {
+    transform: none;
+  }
+  .sm-app
+    :is(
+      .primary-button,
+      .secondary-button,
+      .search-button,
+      .filter-button,
+      .reset-button,
+      .directory-filter-button,
+      .directory-reset-button,
+      .create-submit-button,
+      .create-cancel-button,
+      .add-property-button,
+      .admin-primary-button,
+      .admin-refresh-button,
+      .admin-review-button,
+      .login-button,
+      .register-button
+    ) {
+    min-height: 44px;
+    border-radius: var(--sm-control-radius);
+    font-weight: 600;
+  }
+  .sm-app
+    :is(
+      .modal-card,
+      .modal-content,
+      .admin-modal-dialog,
+      .password-modal-card,
+      .otp-modal-dialog,
+      .sm-dialog
+    ) {
+    border-radius: 12px;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+  }
+
+  /* Public navigation uses the same geometry on Home / Properties / About / Landlords. */
+  .sm-public site-navbar .navbar {
+    width: min(calc(100% - 2 * var(--sm-page-gutter)), var(--sm-content-width));
+    margin-inline: auto;
+  }
+  .sm-public site-navbar .navbar-links a,
+  .sm-public site-navbar .navbar-links a:hover,
+  .sm-public site-navbar .navbar-links a.active {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .sm-public site-navbar .navbar-button {
+    min-height: 44px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: none;
+  }
+  .sm-public
+    :is(
+      .section-container,
+      .hero-container,
+      .properties-container,
+      .property-container,
+      .about-container,
+      .landlord-directory-container,
+      .landlord-profile-container,
+      .favorites-container,
+      .review-container,
+      .legal-container,
+      .footer-container
+    ) {
+    width: min(calc(100% - 2 * var(--sm-page-gutter)), var(--sm-content-width));
+    margin-inline: auto;
+  }
+  /* Same depth of blue as the About reference; no photo wash over the heading. */
+  .sm-public
+    :is(
+      .properties-banner,
+      .landlord-directory-banner,
+      .favorites-hero,
+      .review-hero,
+      .legal-hero,
+      .about-hero
+    ) {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--sm-hero-background);
+    color: #fff;
+  }
+  .sm-public
+    :is(
+      .properties-banner,
+      .landlord-directory-banner,
+      .favorites-hero,
+      .review-hero,
+      .legal-hero
+    )::before,
+  .sm-public
+    :is(
+      .properties-banner,
+      .landlord-directory-banner,
+      .favorites-hero,
+      .review-hero,
+      .legal-hero
+    )::after {
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    width: 480px;
+    height: 480px;
+    border: 1px solid rgb(255 255 255 / 10%);
+    border-radius: 50%;
+    background: none;
+    opacity: 1;
+  }
+  .sm-public
+    :is(
+      .properties-banner,
+      .landlord-directory-banner,
+      .favorites-hero,
+      .review-hero,
+      .legal-hero
+    )::before {
+    left: -250px;
+    top: -330px;
+  }
+  .sm-public
+    :is(
+      .properties-banner,
+      .landlord-directory-banner,
+      .favorites-hero,
+      .review-hero,
+      .legal-hero
+    )::after {
+    right: -220px;
+    bottom: -350px;
+  }
+  .sm-public :is(.properties-banner, .favorites-hero, .review-hero) {
+    padding-block: clamp(32px, 4vw, 54px);
+  }
+  .sm-public :is(.properties-banner, .favorites-hero, .review-hero) h1 {
+    color: #fff;
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+  .sm-public :is(.properties-banner, .favorites-hero, .review-hero) p {
+    color: #e8edff;
+    line-height: 1.65;
+  }
+  .sm-public :is(.banner-label, .directory-label, .review-eyebrow) {
+    color: #ffe16a;
+  }
+  .sm-public
+    :is(
+      .properties-filters,
+      .landlord-directory-filters,
+      .profile-information-card,
+      .security-card,
+      .notifications-shell
+    ) {
+    border-color: var(--sm-line);
+    box-shadow: var(--sm-shadow);
+  }
+  .sm-public
+    :is(.properties-filters, .landlord-directory-filters)
+    :is(input, select) {
+    border-radius: var(--sm-control-radius);
+    min-height: 44px;
+  }
+  .sm-public :is(.property-title, .listing-card-title) {
+    font-weight: 600;
+    line-height: 1.45;
+  }
+  .sm-public .site-footer {
+    margin-top: 0;
+  }
+
+  /* One workspace shell. Keep JS's existing 960px drawer breakpoint. */
+  body.sm-workspace {
+    background: var(--sm-surface);
+    font-family: "Inter", Arial, sans-serif;
+    font-size: 14px;
+  }
+  .sm-workspace :is(.dashboard-content, .admin-content) {
+    min-width: 0;
+  }
+  .sm-workspace :is(.dashboard-topbar, .admin-topbar) {
+    height: 76px;
+    min-height: 76px;
+    padding: 14px 32px;
+    gap: 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--sm-line);
+    backdrop-filter: none;
+  }
+  .sm-workspace :is(.topbar-left, .admin-topbar-left) {
+    flex: 1;
+    min-width: 0;
+  }
+  .sm-workspace :is(.topbar-actions, .admin-topbar-profile) {
+    flex-shrink: 0;
+  }
+  .sm-landlord .topbar-profile {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: 6px;
+  }
+  .sm-landlord .topbar-profile-info {
+    min-width: 0;
+    flex: 1;
+  }
+  .sm-landlord .topbar-profile-info strong {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .sm-landlord .topbar-profile img,
+  .sm-landlord .landlord-profile-avatar {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    flex: 0 0 42px;
+  }
+
+  .sm-workspace :is(.topbar-search, .admin-search) {
+    width: min(460px, 100%);
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 14px;
+    gap: 10px;
+    border: 1px solid var(--sm-line);
+    border-radius: 6px;
+    background: #f5f7fb;
+    box-shadow: none;
+  }
+  .sm-workspace :is(.topbar-search, .admin-search) input {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 10px 0;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+    font-size: 13px;
+  }
+  .sm-workspace :is(.topbar-search, .admin-search):focus-within {
+    border-color: var(--sm-blue);
+    box-shadow: 0 0 0 3px rgb(23 52 199 / 10%);
+  }
+  .sm-workspace :is(.topbar-search, .admin-search) input:focus-visible {
+    outline: none;
+  }
+  .sm-workspace :is(.dashboard-content, .admin-content) > main {
+    width: min(calc(100% - 64px), 1440px);
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 32px 0 56px;
+  }
+  .sm-workspace
+    :is(
+      .page-heading,
+      .listings-page-header,
+      .form-page-heading,
+      .verification-header,
+      .admin-page-header,
+      .dashboard-welcome,
+      .create-listing-header
+    ) {
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 26px;
+  }
+  .sm-workspace
+    :is(
+      .page-heading,
+      .listings-page-header,
+      .form-page-heading,
+      .verification-header,
+      .admin-page-header,
+      .dashboard-welcome,
+      .create-listing-header
+    )
+    h1 {
+    margin: 0;
+    font-size: clamp(26px, 2.5vw, 32px);
+    line-height: 1.25;
+    font-weight: 650;
+    letter-spacing: -0.025em;
+  }
+  .sm-workspace :is(.sidebar-header, .admin-sidebar-header) {
+    min-height: 96px;
+    height: 96px;
+    padding: 18px 24px;
+  }
+  .sm-workspace :is(.dashboard-logo, .admin-logo) {
+    flex-shrink: 0;
+  }
+  .sm-workspace .dashboard-logo {
+    width: 148px;
+  }
+  .sm-workspace .dashboard-logo img {
+    width: 148px;
+    height: 50px;
+    object-fit: contain;
+  }
+  .sm-workspace :is(.sidebar-navigation, .admin-navigation) {
+    padding: 20px 16px;
+    gap: 4px;
+  }
+  .sm-workspace :is(.sidebar-link, .admin-nav-link) {
+    min-height: 46px;
+    padding: 11px 14px;
+    gap: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    transform: none;
+  }
+  .sm-workspace :is(.sidebar-link, .admin-nav-link).active {
+    font-weight: 600;
+    box-shadow: inset 3px 0 var(--sm-yellow);
+  }
+  .sm-workspace :is(.sidebar-link, .admin-nav-link) > i:first-child {
+    flex: 0 0 20px;
+    width: 20px;
+    text-align: center;
+  }
+  .sm-workspace :is(.stat-card, .listing-summary-card, .admin-summary-card) {
+    padding: 20px;
+    box-shadow: var(--sm-shadow);
+    min-width: 0;
+  }
+  .sm-workspace
+    :is(.stat-card, .listing-summary-card, .admin-summary-card):hover {
+    transform: none;
+    box-shadow: var(--sm-shadow);
+  }
+  .sm-workspace
+    :is(
+      .dashboard-panel,
+      .admin-panel,
+      .listings-management-card,
+      .form-card,
+      .create-form-card
+    ) {
+    box-shadow: var(--sm-shadow);
+  }
+  .sm-workspace :is(.form-card, .create-form-card) {
+    padding: 24px;
+  }
+  .sm-workspace .panel-header h2 {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .sm-workspace
+    :is(.form-group, .create-form-group)
+    :is(input, select, textarea) {
+    border-radius: 6px;
+  }
+  .sm-workspace :is(.table-wrapper, .admin-table-wrapper) {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+  .sm-workspace :is(.dashboard-table, .admin-table) {
+    font-size: 13px;
+  }
+  .sm-workspace :is(.dashboard-table, .admin-table) th {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .sm-workspace :is(.page-heading, .form-page-heading, .admin-page-header) > * {
+    min-width: 0;
+  }
+
+  /* Account pages share the same control shape without changing challenge/OTP widgets. */
+  .sm-auth :is(.auth-shell, .register-shell) {
+    border-radius: 14px;
+  }
+  .sm-auth :is(.auth-heading h1, .register-heading h1) {
+    font-size: 30px;
+    letter-spacing: -0.025em;
+  }
+  .sm-auth
+    :is(.form-field, .form-group)
+    :is(input:not([type="checkbox"]):not([type="radio"]), select) {
+    min-height: 46px;
+    border-radius: 6px;
+  }
+  .sm-auth .auth-page {
+    background: var(--sm-hero-background);
+  }
+}
+
+@media screen and (min-width: 961px) {
+  .sm-landlord .dashboard-sidebar {
+    width: var(--sm-sidebar-width);
+  }
+  .sm-landlord .dashboard-content {
+    margin-left: var(--sm-sidebar-width);
+  }
+}
+@media screen and (max-width: 960px) {
+  html {
+    scrollbar-gutter: auto;
+  }
+  .sm-workspace :is(.dashboard-content, .admin-content) > main {
+    width: calc(100% - 40px);
+    padding-top: 26px;
+  }
+  .sm-workspace :is(.dashboard-topbar, .admin-topbar) {
+    padding-inline: 20px;
+    gap: 12px;
+  }
+}
+@media screen and (max-width: 720px) {
+  .sm-landlord .topbar-profile {
+    min-width: 42px;
+    max-width: 42px;
+    width: 42px;
+    height: 42px;
+    min-height: 42px;
+  }
+}
+@media screen and (max-width: 600px) {
+  .sm-workspace :is(.dashboard-content, .admin-content) > main {
+    width: calc(100% - 28px);
+    padding-top: 22px;
+  }
+  .sm-workspace :is(.dashboard-topbar, .admin-topbar) {
+    height: 68px;
+    min-height: 68px;
+    padding: 10px 14px;
+    gap: 10px;
+  }
+  .sm-workspace
+    :is(
+      .page-heading,
+      .listings-page-header,
+      .form-page-heading,
+      .verification-header,
+      .admin-page-header,
+      .dashboard-welcome,
+      .create-listing-header
+    ) {
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .sm-workspace :is(.form-card, .create-form-card) {
+    padding: 18px;
+  }
+  .sm-landlord :is(.statistics-grid, .listing-summary-grid),
+  .sm-admin .admin-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .sm-landlord .stat-card {
+    min-height: 164px;
+    padding: 16px;
+  }
+  .sm-landlord .stat-card-header {
+    gap: 6px;
+  }
+  .sm-landlord .stat-card-icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+  }
+  .sm-landlord .stat-card-change {
+    padding: 4px 6px;
+    font-size: 9px;
+  }
+  .sm-landlord .stat-card > p {
+    margin-top: 12px;
+  }
+  .sm-landlord .stat-description {
+    font-size: 11px;
+  }
+  .sm-landlord .summary-legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sm-landlord .recent-inquiries-list {
+    min-height: 160px;
+  }
+
+  .sm-app
+    :is(.form-group, .create-form-group, .form-field)
+    :is(
+      input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+      select,
+      textarea
+    ) {
+    font-size: 16px;
+  }
+}
+@media screen and (prefers-reduced-motion: reduce) {
+  .sm-app *,
+  .sm-app *::before,
+  .sm-app *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

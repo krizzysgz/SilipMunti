@@ -1,0 +1,122 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f4f6fb;
+  color: #192942;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+.admin-login-card {
+  width: 100%;
+  max-width: 410px;
+  background: #fff;
+  border: 1px solid #dde3ef;
+  border-radius: 12px;
+  padding: 30px;
+}
+.brand {
+  color: #1933c6;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  margin: 0 0 14px;
+}
+h1 {
+  font-size: 25px;
+  margin: 0 0 10px;
+}
+.intro {
+  color: #62718a;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 16px 0 8px;
+}
+input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd5e5;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font: inherit;
+}
+input:focus {
+  outline: 2px solid #233ad5;
+  outline-offset: 2px;
+}
+button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 6px;
+  background: #1933c6;
+  color: #fff;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.back-link {
+  display: block;
+  margin-top: 22px;
+  text-align: center;
+  color: #304c91;
+  font-size: 13px;
+}
+.field-error {
+  display: block;
+  color: #ac2637;
+  font-size: 12px;
+  margin-top: 6px;
+}
+.form-message {
+  padding: 12px;
+  background: #eef3ff;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.form-message.error {
+  background: #fff0f0;
+  color: #a32132;
+}
+.form-message.success {
+  background: #e8f7ef;
+  color: #176b43;
+}
+.hidden,
+[hidden] {
+  display: none !important;
+}
+#turnstile-section {
+  margin-top: 18px;
+  max-width: 100%;
+  overflow: hidden;
+}
+@media (max-width: 420px) {
+  body {
+    padding: 16px;
+  }
+  .admin-login-card {
+    padding: 24px 20px;
+  }
+}

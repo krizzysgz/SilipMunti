@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Maintenance Mode | SilipMunti</title>
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/maintenance-page.css?v=2"
+    />
+    <script
+      src="/SilipMunti/frontend/assets/js/maintenance-watch.js?v=2"
+      defer
+    ></script>
+  </head>
+  <body class="sm-maintenance">
+    <main class="maintenance-content">
+      <svg
+        class="maintenance-icon"
+        viewBox="0 0 100 100"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M43 9h14l3 12 8 4 12-4 9 12-8 10 1 10 9 8-6 14-13-1-8 6-3 13H45l-4-12-9-5-12 3-9-12 8-10-1-10-9-8 6-14 13 1 8-6 7-13Z"
+          stroke="currentColor"
+          stroke-width="3"
+          stroke-linejoin="round"
+        />
+        <circle cx="50" cy="51" r="19" stroke="currentColor" stroke-width="3" />
+        <path
+          d="m42 42 16 18m1-19-18 19"
+          stroke="currentColor"
+          stroke-width="4"
+          stroke-linecap="round"
+        />
+      </svg>
+      <p class="maintenance-brand">SILIPMUNTI</p>
+      <h1>Maintenance Mode</h1>
+      <p id="maintenance-message" class="maintenance-message">
+        {{SM_MAINTENANCE_MESSAGE}}
+      </p>
+      <button type="button" id="maintenance-check">
+        Check the status of the system
+      </button>
+      <p
+        id="maintenance-status"
+        class="maintenance-status"
+        role="status"
+        aria-live="polite"
+      >
+        We’ll bring you back when the system is available.
+      </p>
+    </main>
+    <footer>
+      <a href="/SilipMunti/frontend/pages/auth/admin-login.html"
+        >Administrator sign in</a
+      >
+    </footer>
+  </body>
+</html>

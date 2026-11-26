@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>System Settings | SilipMunti Admin</title>
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/vendor/fontawesome/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/admin.css?v=5"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/responsive.css?v=2"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/admin-enterprise.css?v=1"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/design-system.css?v=1"
+    />
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/system-settings.css?v=1"
+    />
+  </head>
+  <body class="admin-enterprise sm-app sm-workspace sm-admin">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="admin-layout">
+      <admin-sidebar active-page="system-settings"></admin-sidebar>
+      <div class="admin-content">
+        <header class="admin-topbar">
+          <div class="admin-topbar-left">
+            <button
+              type="button"
+              class="admin-sidebar-toggle"
+              id="admin-sidebar-toggle"
+              aria-label="Open sidebar"
+            >
+              <i class="fa-solid fa-bars" aria-hidden="true"></i></button
+            ><strong>System administration</strong>
+          </div>
+          <div class="admin-topbar-profile">
+            <span
+              class="admin-profile-avatar"
+              id="admin-profile-avatar"
+              aria-label="Admin profile picture"
+              ><img id="admin-profile-picture" alt="" hidden /><span
+                id="admin-profile-initials"
+                aria-hidden="true"
+                >A</span
+              ></span
+            >
+            <div>
+              <strong id="admin-name">Admin</strong><span>Administrator</span>
+            </div>
+          </div>
+        </header>
+        <main class="admin-main" id="main-content" tabindex="-1">
+          <div class="admin-page-header">
+            <div>
+              <span class="admin-eyebrow">Administration</span>
+              <h1>System Settings</h1>
+              <p>Manage system availability, database backups, and recovery.</p>
+            </div>
+            <button
+              type="button"
+              class="sm-button sm-secondary"
+              id="refresh-settings"
+            >
+              Refresh
+            </button>
+          </div>
+          <p
+            id="settings-message"
+            class="sm-notice"
+            role="status"
+            aria-live="polite"
+          >
+            Loading system settings…
+          </p>
+          <div class="sm-settings-layout">
+            <nav class="sm-settings-nav" aria-label="System settings sections">
+              <button
+                type="button"
+                data-section="maintenance"
+                aria-current="page"
+              >
+                <i
+                  class="fa-solid fa-screwdriver-wrench"
+                  aria-hidden="true"
+                ></i>
+                Maintenance</button
+              ><button type="button" data-section="database">
+                <i class="fa-solid fa-database" aria-hidden="true"></i>
+                Database</button
+              ><button type="button" data-section="backups">
+                <i class="fa-solid fa-box-archive" aria-hidden="true"></i>
+                Backup &amp; Restore
+              </button>
+            </nav>
+            <div class="sm-settings-panels">
+              <section id="section-maintenance" class="sm-panel">
+                <h2>System Maintenance</h2>
+                <p>Control access while you update or recover the system.</p>
+                <div class="sm-settings-inset">
+                  <span id="maintenance-status" class="sm-status"
+                    >Checking status…</span
+                  >
+                  <p>
+                    When maintenance is ON, renters, landlords, and visitors see
+                    a maintenance page. The administrator can still sign in and
+                    manage the system.
+                  </p>
+                  <label for="maintenance-message">Maintenance message</label
+                  ><textarea
+                    id="maintenance-message"
+                    rows="4"
+                    maxlength="1000"
+                    disabled
+                  ></textarea
+                  ><small>This message appears on the maintenance page.</small>
+                  <div class="sm-actions">
+                    <button
+                      type="button"
+                      class="sm-button"
+                      id="toggle-maintenance"
+                      disabled
+                    >
+                      Loading…</button
+                    ><button
+                      type="button"
+                      class="sm-button sm-secondary"
+                      id="save-maintenance"
+                      disabled
+                    >
+                      Save message
+                    </button>
+                  </div>
+                </div>
+              </section>
+              <section id="section-database" class="sm-panel" hidden>
+                <h2>Database</h2>
+                <p>
+                  Connection and storage overview. Connection credentials are
+                  kept private.
+                </p>
+                <dl class="sm-facts">
+                  <div>
+                    <dt>Connection</dt>
+                    <dd id="database-status">Checking…</dd>
+                  </div>
+                  <div>
+                    <dt>Tables</dt>
+                    <dd id="database-tables">—</dd>
+                  </div>
+                  <div>
+                    <dt>Database size</dt>
+                    <dd id="database-size">—</dd>
+                  </div>
+                </dl>
+                <p>
+                  Use Backup &amp; Restore to save or recover the database
+                  together with uploaded files.
+                </p>
+              </section>
+              <section id="section-backups" class="sm-panel" hidden>
+                <h2>Backup &amp; Restore</h2>
+                <p>
+                  Full backups contain the database, listing images, profile
+                  pictures, and private verification documents.
+                </p>
+                <div class="sm-settings-inset">
+                  <h3>Automatic backup</h3>
+                  <p>
+                    <strong>Not configured.</strong> Backups are created
+                    manually from this page. This feature is under development
+                    and will be available in a future release.
+                  </p>
+                </div>
+                <div class="sm-settings-inset">
+                  <h3>Create a full backup</h3>
+                  <p>
+                    Backups contain personal information and password hashes.
+                    Keep downloaded copies secure. Application code and
+                    environment secrets are excluded.
+                  </p>
+                  <p id="backup-readiness">Checking backup requirements…</p>
+                  <button
+                    type="button"
+                    class="sm-button"
+                    id="create-backup"
+                    disabled
+                  >
+                    Create Backup Now
+                  </button>
+                </div>
+                <h3>Backup history</h3>
+                <p>
+                  Enable maintenance before restoring. Restore replaces the
+                  database and uploaded files; a safety snapshot is created
+                  first. Maintenance remains ON afterward.
+                </p>
+                <div id="backup-history" class="sm-backup-history">
+                  Loading backups…
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+    <dialog id="system-confirm" aria-labelledby="confirm-title">
+      <form id="system-confirm-form">
+        <h2 id="confirm-title">Confirm action</h2>
+        <p id="confirm-description"></p>
+        <label for="confirm-password">Administrator password</label
+        ><input
+          id="confirm-password"
+          type="password"
+          autocomplete="current-password"
+          maxlength="255"
+          required
+        />
+        <div id="restore-confirm-row" hidden>
+          <label for="restore-confirm">Type RESTORE</label
+          ><input
+            id="restore-confirm"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <p class="sm-dialog-error" id="confirm-error" role="alert"></p>
+        <div class="sm-actions">
+          <button
+            type="button"
+            class="sm-button sm-secondary"
+            id="cancel-confirm"
+          >
+            Cancel</button
+          ><button type="submit" class="sm-button" id="submit-confirm">
+            Confirm
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=system-settings-1"></script>
+    <script src="/SilipMunti/frontend/assets/js/admin-system-settings.js?v=1"></script>
+    <script
+      src="/SilipMunti/frontend/assets/js/maintenance-watch.js?v=1"
+      defer
+    ></script>
+  </body>
+</html>

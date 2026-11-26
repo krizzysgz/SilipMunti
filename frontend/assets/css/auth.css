@@ -206,7 +206,7 @@
   color: #ffffff;
   background:
     linear-gradient(135deg, rgba(7, 29, 145, 0.92), rgba(16, 39, 181, 0.68)),
-    url("../images/hero.jpg") center / cover;
+    url("../images/hero-property.jpg") center / cover;
 }
 
 .auth-visual::before {
@@ -1294,7 +1294,7 @@
 .auth-visual {
   background:
     linear-gradient(135deg, rgba(6, 23, 117, 0.93), rgba(26, 48, 190, 0.7)),
-    url("../images/hero.jpg") center / cover;
+    url("../images/hero-property.jpg") center / cover;
 }
 
 .auth-visual::before {

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Administrator Sign In | SilipMunti</title>
+    <link
+      rel="stylesheet"
+      href="/SilipMunti/frontend/assets/css/admin-login.css?v=2"
+    />
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+      defer
+    ></script>
+    <script
+      src="/SilipMunti/frontend/assets/js/admin-login.js?v=2"
+      defer
+    ></script>
+  </head>
+  <body>
+    <main class="admin-login-card">
+      <p class="brand">SILIPMUNTI</p>
+      <h1>Administrator sign in</h1>
+      <p class="intro">Use your administrator account to manage the system.</p>
+      <div id="form-message" class="form-message hidden" role="alert"></div>
+      <form id="login-form">
+        <label for="email">Email address</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="username"
+          maxlength="254"
+          required
+        />
+        <small class="field-error" data-error-for="email"></small>
+        <label for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          maxlength="255"
+          required
+        />
+        <small class="field-error" data-error-for="password"></small>
+        <div id="turnstile-section" hidden>
+          <div id="turnstile-widget"></div>
+          <small
+            id="turnstile-error"
+            class="field-error"
+            aria-live="polite"
+          ></small>
+        </div>
+        <button type="submit" id="login-button" disabled>
+          <span>Preparing secure sign in…</span>
+        </button>
+      </form>
+      <a class="back-link" href="/SilipMunti/frontend/index.html"
+        >Back to website</a
+      >
+    </main>
+  </body>
+</html>

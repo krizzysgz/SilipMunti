@@ -75,6 +75,13 @@ class AdminSidebar extends HTMLElement {
             <i class="fa-solid fa-chart-column"></i>
             <span>Reports</span>
           </a>
+          <a
+            href="/SilipMunti/frontend/pages/admin/system-settings.html"
+            class="admin-nav-link${isActive("system-settings")}"
+          >
+            <i class="fa-solid fa-gear"></i>
+            <span>System Settings</span>
+          </a>
 
           <span class="admin-nav-label account-label">ACCOUNT</span>
 

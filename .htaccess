@@ -47,3 +47,12 @@ ErrorDocument 405 /SilipMunti/backend/error.php?status=405
 ErrorDocument 429 /SilipMunti/backend/error.php?status=429
 ErrorDocument 500 /SilipMunti/backend/error.php?status=500
 ErrorDocument 503 /SilipMunti/backend/error.php?status=503
+
+# SILIPMUNTI_SYSTEM_GATEWAY_V2
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Gate HTML pages AND directory URLs such as /frontend/.
+    RewriteCond %{REQUEST_FILENAME} -d [OR]
+    RewriteCond %{REQUEST_FILENAME} \.html$ [NC]
+    RewriteRule ^frontend(?:/.*)?$ frontend-gateway.php [L,NC]
+</IfModule>
