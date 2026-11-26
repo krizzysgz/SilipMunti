@@ -1,5 +1,5 @@
 (() => {
-  const API_ROOT = "/SilipMunti/backend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
   const endpoints = {
     getAll: `${API_ROOT}/notifications/get-all.php`,
     markRead: `${API_ROOT}/notifications/mark-read.php`,
@@ -69,24 +69,24 @@
   function getDestination(notification) {
     if (notification.target_url) {
       return notification.target_url.replace(
-        "/SilipMunti/frontend/messages.html",
-        "/SilipMunti/frontend/pages/messages/index.html",
+        `${window.SilipMuntiPaths.base}/frontend/messages.html`,
+        `${window.SilipMuntiPaths.base}/frontend/pages/messages/index.html`,
       );
     }
 
     if (notification.notification_type === "document_status") {
-      return "/SilipMunti/frontend/pages/landlord/verification.html";
+      return `${window.SilipMuntiPaths.base}/frontend/pages/landlord/verification.html`;
     }
 
     if (notification.notification_type === "listing_status") {
-      return "/SilipMunti/frontend/pages/landlord/listings.html";
+      return `${window.SilipMuntiPaths.base}/frontend/pages/landlord/listings.html`;
     }
 
     if (
       notification.notification_type === "message_alert" &&
       notification.inquiry_id
     ) {
-      return `/SilipMunti/frontend/pages/messages/index.html?inquiry_id=${Number(notification.inquiry_id)}`;
+      return `${window.SilipMuntiPaths.base}/frontend/pages/messages/index.html?inquiry_id=${Number(notification.inquiry_id)}`;
     }
 
     return "";
@@ -198,7 +198,7 @@
       const user = result.data.user;
 
       if (user.profile_picture && profilePicture) {
-        profilePicture.src = `/SilipMunti/backend/${user.profile_picture}`;
+        profilePicture.src = `${window.SilipMuntiPaths.base}/backend/${user.profile_picture}`;
       }
     } catch (error) {
       return;

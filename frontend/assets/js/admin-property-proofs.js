@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const root = "/SilipMunti/backend/admin";
+  const root = `${window.SilipMuntiPaths.base}/backend/admin`;
   const body = document.querySelector("#property-proofs-body");
   const message = document.querySelector("#property-proof-admin-message");
   const refresh = document.querySelector("#refresh-property-proofs");

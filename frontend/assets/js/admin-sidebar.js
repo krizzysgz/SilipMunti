@@ -8,9 +8,9 @@ class AdminSidebar extends HTMLElement {
     this.innerHTML = `
       <aside class="admin-sidebar" id="admin-sidebar">
         <div class="admin-sidebar-header">
-          <a href="/SilipMunti/frontend/index.html" class="admin-logo">
+          <a href="${window.SilipMuntiPaths.base}/frontend/index.html" class="admin-logo">
             <img
-              src="/SilipMunti/frontend/assets/images/SilipMunti.png"
+              src="${window.SilipMuntiPaths.base}/frontend/assets/images/SilipMunti.png"
               alt="SilipMunti logo"
             />
           </a>
@@ -28,7 +28,7 @@ class AdminSidebar extends HTMLElement {
           <span class="admin-nav-label">GENERAL</span>
 
           <a
-            href="/SilipMunti/frontend/pages/admin/dashboard.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/admin/dashboard.html"
             class="admin-nav-link${isActive("dashboard")}"
           >
             <i class="fa-solid fa-table-columns"></i>
@@ -36,7 +36,7 @@ class AdminSidebar extends HTMLElement {
           </a>
 
           <a
-            href="/SilipMunti/frontend/pages/admin/verifications.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/admin/verifications.html"
             class="admin-nav-link${isActive("verifications")}"
           >
             <i class="fa-solid fa-file-shield"></i>
@@ -45,7 +45,7 @@ class AdminSidebar extends HTMLElement {
           </a>
 
           <a
-            href="/SilipMunti/frontend/pages/admin/listings.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/admin/listings.html"
             class="admin-nav-link${isActive("listings")}"
           >
             <i class="fa-solid fa-building"></i>
@@ -53,7 +53,7 @@ class AdminSidebar extends HTMLElement {
           </a>
 
           <a
-            href="/SilipMunti/frontend/pages/admin/users.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/admin/users.html"
             class="admin-nav-link${isActive("users")}"
           >
             <i class="fa-solid fa-users"></i>
@@ -61,7 +61,7 @@ class AdminSidebar extends HTMLElement {
           </a>
 
           <a
-            href="/SilipMunti/frontend/pages/admin/rental-types.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/admin/rental-types.html"
             class="admin-nav-link${isActive("rental-types")}"
           >
             <i class="fa-solid fa-tags"></i>
@@ -69,14 +69,14 @@ class AdminSidebar extends HTMLElement {
           </a>
 
           <a
-            href="/SilipMunti/frontend/pages/admin/reports.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/admin/reports.html"
             class="admin-nav-link${isActive("reports")}"
           >
             <i class="fa-solid fa-chart-column"></i>
             <span>Reports</span>
           </a>
           <a
-            href="/SilipMunti/frontend/pages/admin/system-settings.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/admin/system-settings.html"
             class="admin-nav-link${isActive("system-settings")}"
           >
             <i class="fa-solid fa-gear"></i>
@@ -86,7 +86,7 @@ class AdminSidebar extends HTMLElement {
           <span class="admin-nav-label account-label">ACCOUNT</span>
 
           <a
-            href="/SilipMunti/frontend/pages/profile/index.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/profile/index.html"
             class="admin-nav-link${isActive("profile")}"
           >
             <i class="fa-solid fa-user"></i>
@@ -104,7 +104,7 @@ class AdminSidebar extends HTMLElement {
         </nav>
 
         <div class="admin-sidebar-footer">
-          <a href="/SilipMunti/frontend/index.html">
+          <a href="${window.SilipMuntiPaths.base}/frontend/index.html">
             <i class="fa-solid fa-arrow-left"></i>
             <span>Back to Website</span>
           </a>
@@ -129,8 +129,7 @@ if (!customElements.get("admin-sidebar")) {
 const SilipMuntiAdminShell = (() => {
   let initialized = false;
   let pendingCountRequest = null;
-  const pendingCountEndpoint =
-    "/SilipMunti/backend/admin/get-pending-verification-count.php";
+  const pendingCountEndpoint = `${window.SilipMuntiPaths.base}/backend/admin/get-pending-verification-count.php`;
 
   function getToggleButton() {
     return document.querySelector("#admin-sidebar-toggle");
@@ -313,9 +312,10 @@ const SilipMuntiAdminShell = (() => {
     }
 
     if (value.startsWith("SilipMunti/")) return `/${value}`;
-    if (value.startsWith("backend/")) return `/SilipMunti/${value}`;
+    if (value.startsWith("backend/"))
+      return `${window.SilipMuntiPaths.base}/${value}`;
 
-    return `/SilipMunti/backend/${value.replace(/^\/+/, "")}`;
+    return `${window.SilipMuntiPaths.base}/backend/${value.replace(/^\/+/, "")}`;
   }
 
   function setAdminProfile(user = {}) {

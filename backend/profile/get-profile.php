@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json');
 
 require_once '../config/database.php';
@@ -53,7 +55,7 @@ if (!$profile) {
 }
 
 $profile['profile_picture_url'] = $profile['profile_picture']
-    ? '/SilipMunti/backend/' . $profile['profile_picture']
+    ? sm_public_url('backend/') . $profile['profile_picture']
     : null;
 
 if ($profile['role'] === 'landlord') {

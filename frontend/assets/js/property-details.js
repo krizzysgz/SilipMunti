@@ -1,19 +1,18 @@
-const GET_LISTING_API = "/SilipMunti/backend/listings/get-one.php";
+const GET_LISTING_API = `${window.SilipMuntiPaths.base}/backend/listings/get-one.php`;
 
-const ADD_FAVORITE_API = "/SilipMunti/backend/renter/add-favorite.php";
+const ADD_FAVORITE_API = `${window.SilipMuntiPaths.base}/backend/renter/add-favorite.php`;
 
-const GET_FAVORITES_API = "/SilipMunti/backend/renter/get-favorites.php";
+const GET_FAVORITES_API = `${window.SilipMuntiPaths.base}/backend/renter/get-favorites.php`;
 
-const REMOVE_FAVORITE_API = "/SilipMunti/backend/renter/remove-favorite.php";
+const REMOVE_FAVORITE_API = `${window.SilipMuntiPaths.base}/backend/renter/remove-favorite.php`;
 
-const CREATE_INQUIRY_API = "/SilipMunti/backend/inquiries/create-inquiry.php";
+const CREATE_INQUIRY_API = `${window.SilipMuntiPaths.base}/backend/inquiries/create-inquiry.php`;
 
-const GET_LISTING_REVIEWS_API =
-  "/SilipMunti/backend/reviews/get-by-listing.php";
+const GET_LISTING_REVIEWS_API = `${window.SilipMuntiPaths.base}/backend/reviews/get-by-listing.php`;
 
-const MESSAGES_PAGE_URL = "/SilipMunti/frontend/pages/messages/index.html";
+const MESSAGES_PAGE_URL = `${window.SilipMuntiPaths.base}/frontend/pages/messages/index.html`;
 
-const REVIEWS_PAGE_URL = "/SilipMunti/frontend/pages/reviews/index.html";
+const REVIEWS_PAGE_URL = `${window.SilipMuntiPaths.base}/frontend/pages/reviews/index.html`;
 
 const propertyLoading = document.querySelector("#property-loading");
 
@@ -155,7 +154,7 @@ function getProfilePictureUrl(profilePicture) {
     return profilePicture;
   }
 
-  return `/SilipMunti/backend/${profilePicture}`;
+  return `${window.SilipMuntiPaths.base}/backend/${profilePicture}`;
 }
 
 function formatPrice(price) {

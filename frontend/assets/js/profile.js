@@ -1,12 +1,12 @@
-const GET_PROFILE_API = "/SilipMunti/backend/profile/get-profile.php";
+const GET_PROFILE_API = `${window.SilipMuntiPaths.base}/backend/profile/get-profile.php`;
 
-const UPDATE_PROFILE_API = "/SilipMunti/backend/profile/update-profile.php";
+const UPDATE_PROFILE_API = `${window.SilipMuntiPaths.base}/backend/profile/update-profile.php`;
 
-const CHANGE_PASSWORD_API = "/SilipMunti/backend/profile/change-password.php";
+const CHANGE_PASSWORD_API = `${window.SilipMuntiPaths.base}/backend/profile/change-password.php`;
 
-const UPLOAD_PICTURE_API = "/SilipMunti/backend/profile/upload-picture.php";
+const UPLOAD_PICTURE_API = `${window.SilipMuntiPaths.base}/backend/profile/upload-picture.php`;
 
-const REMOVE_PICTURE_API = "/SilipMunti/backend/profile/remove-picture.php";
+const REMOVE_PICTURE_API = `${window.SilipMuntiPaths.base}/backend/profile/remove-picture.php`;
 
 const DEFAULT_PROFILE_PICTURE = "../../assets/images/default-profile.svg";
 
@@ -132,7 +132,7 @@ function getProfilePictureUrl(path) {
     return path;
   }
 
-  return `/SilipMunti/backend/${path}`;
+  return `${window.SilipMuntiPaths.base}/backend/${path}`;
 }
 
 function setImageSource(image, source) {

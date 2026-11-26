@@ -20,10 +20,13 @@
     checking = true;
     try {
       if (manual) feedback("Checking system status…");
-      const response = await fetch("/SilipMunti/backend/system/status.php", {
-        credentials: "same-origin",
-        cache: "no-store",
-      });
+      const response = await fetch(
+        `${window.SilipMuntiPaths.base}/backend/system/status.php`,
+        {
+          credentials: "same-origin",
+          cache: "no-store",
+        },
+      );
       if (!response.ok) {
         if (manual)
           feedback("Unable to check right now. Please try again shortly.");
@@ -49,7 +52,9 @@
         }
         if (!result.data.enabled) {
           if (location.pathname.endsWith("/maintenance.html"))
-            location.replace("/SilipMunti/frontend/index.html");
+            location.replace(
+              `${window.SilipMuntiPaths.base}/frontend/index.html`,
+            );
           else location.reload();
         } else if (manual)
           feedback(
@@ -63,7 +68,7 @@
       )
         return;
       const responseSession = await fetch(
-        "/SilipMunti/backend/auth/status.php",
+        `${window.SilipMuntiPaths.base}/backend/auth/status.php`,
         { credentials: "same-origin", cache: "no-store" },
       );
       if (!responseSession.ok) return;

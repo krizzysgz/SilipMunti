@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
@@ -115,12 +117,12 @@ try {
             case 'message_alert':
                 if ($notification['inquiry_id'] !== null) {
                     $notification['target_url'] =
-                        '/SilipMunti/frontend/pages/messages/index.html'
+                        sm_public_url('frontend/pages/messages/index.html')
                         . '?inquiry_id='
                         . $notification['inquiry_id'];
                 } else {
                     $notification['target_url'] =
-                        '/SilipMunti/frontend/pages/messages/index.html';
+                        sm_public_url('frontend/pages/messages/index.html');
                 }
                 break;
 
@@ -128,19 +130,19 @@ try {
             case 'document_status':
             case 'account_verified':
                 $notification['target_url'] =
-                    '/SilipMunti/frontend/pages/landlord/'
+                    sm_public_url('frontend/pages/landlord/')
                     . 'verification.html';
                 break;
 
             case 'document_submission':
                 $notification['target_url'] =
-                    '/SilipMunti/frontend/pages/admin/'
+                    sm_public_url('frontend/pages/admin/')
                     . 'verifications.html';
                 break;
 
             case 'listing_status':
                 $notification['target_url'] =
-                    '/SilipMunti/frontend/pages/landlord/'
+                    sm_public_url('frontend/pages/landlord/')
                     . 'listings.html';
                 break;
 

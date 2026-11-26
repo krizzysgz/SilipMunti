@@ -1,5 +1,5 @@
 (() => {
-  const API_ROOT = "/SilipMunti/backend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
   const endpoints = {
     getAll: `${API_ROOT}/notifications/get-all.php`,
     markRead: `${API_ROOT}/notifications/mark-read.php`,

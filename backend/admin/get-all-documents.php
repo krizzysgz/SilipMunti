@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json');
 
 require_once '../config/database.php';
@@ -104,7 +106,7 @@ $documents = $stmt->fetchAll();
 
 foreach ($documents as &$document) {
     $document['view_url'] =
-        '/SilipMunti/backend/admin/view-document.php?id=' .
+        sm_public_url('backend/admin/view-document.php?id=') .
         $document['id'];
 }
 

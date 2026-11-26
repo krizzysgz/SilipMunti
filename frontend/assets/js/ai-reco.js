@@ -4,8 +4,8 @@
   if (window.SilipMuntiAiRecoInitialized) return;
   window.SilipMuntiAiRecoInitialized = true;
 
-  const API_ROOT = "/SilipMunti/backend";
-  const FRONTEND_ROOT = "/SilipMunti/frontend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND_ROOT = `${window.SilipMuntiPaths.base}/frontend`;
   const endpoints = {
     options: `${API_ROOT}/ai/options.php`,
     chat: `${API_ROOT}/ai/chat.php`,

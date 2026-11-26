@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../config/database.php';
@@ -165,7 +167,7 @@ foreach ($messages as &$message) {
 
     if ($message['profile_picture']) {
         $message['profile_picture_url'] =
-            '/SilipMunti/backend/'
+            sm_public_url('backend/')
             . $message['profile_picture'];
     } else {
         $message['profile_picture_url'] = null;
@@ -201,7 +203,7 @@ if ($user['role'] === 'renter') {
         'role' => 'landlord',
         'profile_picture' => $profilePicture,
         'profile_picture_url' => $profilePicture
-            ? '/SilipMunti/backend/' . $profilePicture
+            ? sm_public_url('backend/') . $profilePicture
             : null
     ];
 } else {
@@ -213,7 +215,7 @@ if ($user['role'] === 'renter') {
         'role' => 'renter',
         'profile_picture' => $profilePicture,
         'profile_picture_url' => $profilePicture
-            ? '/SilipMunti/backend/' . $profilePicture
+            ? sm_public_url('backend/') . $profilePicture
             : null
     ];
 }

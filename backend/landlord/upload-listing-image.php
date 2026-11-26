@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
@@ -274,7 +276,7 @@ try {
             'image_number' =>
                 $imageCount + 1,
             'image_url' =>
-                '/SilipMunti/backend/'
+                sm_public_url('backend/')
                 . $databasePath
         ]
     ]);

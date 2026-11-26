@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/public-url.php';
+
 function silip_error_is_document_request(): bool
 {
     if (PHP_SAPI === 'cli') {
@@ -53,7 +55,7 @@ function silip_error_503_details(): array
             'Maintenance Mode',
             $message,
             'Administrator sign in',
-            '/SilipMunti/frontend/pages/auth/admin-login.html'
+            sm_public_url('frontend/pages/auth/admin-login.html')
         ];
     }
     return [
@@ -71,31 +73,31 @@ function silip_error_details(int $status): array
             'Invalid request',
             'This request could not be understood.',
             'Back to home',
-            '/SilipMunti/frontend/index.html'
+            sm_public_url('frontend/index.html')
         ],
         401 => [
             'Please sign in',
             'Sign in to your account to continue.',
             'Sign in',
-            '/SilipMunti/frontend/pages/auth/login.html'
+            sm_public_url('frontend/pages/auth/login.html')
         ],
         403 => [
             'Access restricted',
             'Your account does not have permission to view this page.',
             'Back to home',
-            '/SilipMunti/frontend/index.html'
+            sm_public_url('frontend/index.html')
         ],
         404 => [
             'Page not found',
             'The page or resource you requested could not be found.',
             'Back to home',
-            '/SilipMunti/frontend/index.html'
+            sm_public_url('frontend/index.html')
         ],
         405 => [
             'Request not supported',
             'This address does not support that request method.',
             'Back to home',
-            '/SilipMunti/frontend/index.html'
+            sm_public_url('frontend/index.html')
         ],
         419 => [
             'Session verification expired',
@@ -107,7 +109,7 @@ function silip_error_details(int $status): array
             'Please wait a moment',
             'Too many requests were received. Please wait before trying again.',
             'Back to home',
-            '/SilipMunti/frontend/index.html'
+            sm_public_url('frontend/index.html')
         ],
         500 => [
             'Something went wrong',
@@ -120,7 +122,7 @@ function silip_error_details(int $status): array
             'Request could not be completed',
             'Please return to the homepage or try again later.',
             'Back to home',
-            '/SilipMunti/frontend/index.html'
+            sm_public_url('frontend/index.html')
         ]
     };
 }
@@ -143,8 +145,12 @@ function silip_error_html(int $status): string
         strtolower(str_replace('\\', '/', (string) ($_SERVER['SCRIPT_FILENAME'] ?? ''))),
         '/backend/'
     );
+    $homeUrl = $escape(sm_public_url('frontend/index.html'));
+    $errorStyles = $escape(sm_public_url('frontend/assets/css/error-pages.css?v=1'));
+    $pathScript = $escape(sm_public_url('frontend/assets/js/app-paths.js'));
+    $watchScript = $escape(sm_public_url('frontend/assets/js/maintenance-watch.js?v=4'));
     $maintenanceScript = $isMaintenance && !$backendResponse
-        ? '<script src="/SilipMunti/frontend/assets/js/maintenance-watch.js?v=3" defer></script>'
+        ? "<script src=\"{$pathScript}\" defer></script><script src=\"{$watchScript}\" defer></script>"
         : '';
     $homeLabel = $isMaintenance ? 'Check system status' : 'Return to SilipMunti';
     $statusText = $isMaintenance
@@ -172,14 +178,14 @@ function silip_error_html(int $status): string
     <title>{$status} — {$title} | SilipMunti</title>
     <link
         rel="stylesheet"
-        href="/SilipMunti/frontend/assets/css/error-pages.css?v=1"
+        href="{$errorStyles}"
     >
 </head>
 <body class="system-error-page"{$maintenanceAttribute}>
     <main class="system-error" aria-labelledby="error-title">
         <a
             class="error-brand"
-            href="/SilipMunti/frontend/index.html"
+            href="{$homeUrl}"
             aria-label="SilipMunti homepage"
         >SILIP<span>MUNTI</span></a>
 
@@ -196,7 +202,7 @@ function silip_error_html(int $status): string
         <a
             class="error-home"
             id="maintenance-check"
-            href="/SilipMunti/frontend/index.html"
+            href="{$homeUrl}"
         >{$homeLabel}</a>
         {$statusText}
     </main>

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
@@ -93,7 +95,7 @@ foreach ($favorites as &$favorite) {
             $image['image_url'] = $imagePath;
         } else {
             $image['image_url'] =
-                '/SilipMunti/backend/' . ltrim($imagePath, '/');
+                sm_public_url('backend/') . ltrim($imagePath, '/');
         }
 
         unset($image['image_path']);

@@ -1,10 +1,10 @@
 (() => {
   const API = {
-    listings: "/SilipMunti/backend/landlord/get-listings.php",
-    rentalTypes: "/SilipMunti/backend/rental-types/get-all.php",
-    update: "/SilipMunti/backend/landlord/update-listing.php",
-    uploadImage: "/SilipMunti/backend/landlord/upload-listing-image.php",
-    deleteImage: "/SilipMunti/backend/landlord/delete-listing-image.php",
+    listings: `${window.SilipMuntiPaths.base}/backend/landlord/get-listings.php`,
+    rentalTypes: `${window.SilipMuntiPaths.base}/backend/rental-types/get-all.php`,
+    update: `${window.SilipMuntiPaths.base}/backend/landlord/update-listing.php`,
+    uploadImage: `${window.SilipMuntiPaths.base}/backend/landlord/upload-listing-image.php`,
+    deleteImage: `${window.SilipMuntiPaths.base}/backend/landlord/delete-listing-image.php`,
   };
 
   const listingId = Number(
@@ -177,11 +177,11 @@
       throw new Error("A valid listing ID is required.");
     const user = await window.SilipMuntiSession?.getCurrentUser();
     if (!user) {
-      window.location.href = "/SilipMunti/frontend/pages/auth/login.html";
+      window.location.href = `${window.SilipMuntiPaths.base}/frontend/pages/auth/login.html`;
       return;
     }
     if (user.role !== "landlord") {
-      window.location.href = "/SilipMunti/frontend/index.html";
+      window.location.href = `${window.SilipMuntiPaths.base}/frontend/index.html`;
       return;
     }
     window.SilipMuntiLandlordShell?.setLandlordProfile(user);

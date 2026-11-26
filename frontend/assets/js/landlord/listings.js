@@ -1,9 +1,9 @@
 (() => {
-  const GET_LISTINGS_API = "/SilipMunti/backend/landlord/get-listings.php";
+  const GET_LISTINGS_API = `${window.SilipMuntiPaths.base}/backend/landlord/get-listings.php`;
 
-  const DELETE_LISTING_API = "/SilipMunti/backend/landlord/delete-listing.php";
+  const DELETE_LISTING_API = `${window.SilipMuntiPaths.base}/backend/landlord/delete-listing.php`;
 
-  const FRONTEND_PATH = "/SilipMunti/frontend";
+  const FRONTEND_PATH = `${window.SilipMuntiPaths.base}/frontend`;
 
   const listingsGrid = document.querySelector("#landlord-listings-grid");
 
@@ -139,7 +139,7 @@
       return image;
     }
 
-    return `/SilipMunti/backend/${image}`;
+    return `${window.SilipMuntiPaths.base}/backend/${image}`;
   }
 
   function getProfilePictureUrl(profilePicture) {
@@ -155,7 +155,7 @@
       return profilePicture;
     }
 
-    return `/SilipMunti/backend/${profilePicture}`;
+    return `${window.SilipMuntiPaths.base}/backend/${profilePicture}`;
   }
 
   function showMessage(message, type = "success") {

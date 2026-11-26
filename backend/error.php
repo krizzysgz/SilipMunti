@@ -5,7 +5,7 @@ require_once __DIR__ . '/config/error-pages.php';
 $redirectStatus = filter_var($_SERVER['REDIRECT_STATUS'] ?? null, FILTER_VALIDATE_INT);
 $value = $redirectStatus !== false && $redirectStatus >= 400 && $redirectStatus <= 599
     ? $redirectStatus
-    : ($_GET['status'] ?? 500);
+    : ($errorStatus ?? $_GET['status'] ?? 500);
 $status = filter_var($value, FILTER_VALIDATE_INT);
 if ($status === false || $status < 400 || $status > 599) {
     $status = 500;

@@ -10,9 +10,9 @@ class LandlordSidebar extends HTMLElement {
     this.innerHTML = `
       <aside class="dashboard-sidebar" id="dashboard-sidebar">
         <div class="sidebar-header">
-          <a href="/SilipMunti/frontend/index.html" class="dashboard-logo">
+          <a href="${window.SilipMuntiPaths.base}/frontend/index.html" class="dashboard-logo">
             <img
-              src="/SilipMunti/frontend/assets/images/SilipMunti.png"
+              src="${window.SilipMuntiPaths.base}/frontend/assets/images/SilipMunti.png"
               alt="SilipMunti logo"
             />
           </a>
@@ -29,14 +29,14 @@ class LandlordSidebar extends HTMLElement {
         <nav class="sidebar-navigation" aria-label="Landlord navigation">
           <span class="sidebar-label">GENERAL</span>
           <a
-            href="/SilipMunti/frontend/pages/landlord/dashboard.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/landlord/dashboard.html"
             class="sidebar-link${isActive("dashboard")}" 
           >
             <i class="fa-solid fa-table-columns"></i>
             <span>Dashboard</span>
           </a>
           <a
-            href="/SilipMunti/frontend/pages/landlord/listings.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/landlord/listings.html"
             class="sidebar-link${isActive("listings")}" 
           >
             <i class="fa-solid fa-building"></i>
@@ -44,7 +44,7 @@ class LandlordSidebar extends HTMLElement {
             
           </a>
           <a
-            href="/SilipMunti/frontend/pages/landlord/create-listing.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/landlord/create-listing.html"
             class="sidebar-link${isActive("create-listing")}" 
             id="add-property-link"
           >
@@ -52,14 +52,14 @@ class LandlordSidebar extends HTMLElement {
             <span>Add Property</span>
           </a>
           <a
-            href="/SilipMunti/frontend/pages/landlord/verification.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/landlord/verification.html"
             class="sidebar-link${isActive("verification")}" 
           >
             <i class="fa-solid fa-file-shield"></i>
             <span>Verification</span>
           </a>
           <a
-            href="/SilipMunti/frontend/pages/messages/index.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/messages/index.html"
             class="sidebar-link${isActive("messages")}" 
           >
             <i class="fa-solid fa-message"></i>
@@ -70,7 +70,7 @@ class LandlordSidebar extends HTMLElement {
 
           <span class="sidebar-label account-label">ACCOUNT</span>
           <a
-            href="/SilipMunti/frontend/pages/profile/index.html"
+            href="${window.SilipMuntiPaths.base}/frontend/pages/profile/index.html"
             class="sidebar-link${isActive("profile")}" 
           >
             <i class="fa-solid fa-user"></i>
@@ -87,7 +87,7 @@ class LandlordSidebar extends HTMLElement {
         </nav>
 
         <div class="sidebar-footer">
-          <a href="/SilipMunti/frontend/index.html">
+          <a href="${window.SilipMuntiPaths.base}/frontend/index.html">
             <i class="fa-solid fa-arrow-left"></i>
             <span>Back to Website</span>
           </a>
@@ -112,8 +112,8 @@ const SilipMuntiLandlordShell = (() => {
   const COUNT_CACHE_LIFETIME = 30000;
   const COUNT_REFRESH_INTERVAL = 30000;
   const endpoints = {
-    listings: "/SilipMunti/backend/landlord/get-listings.php",
-    inquiries: "/SilipMunti/backend/inquiries/get-inquiries.php",
+    listings: `${window.SilipMuntiPaths.base}/backend/landlord/get-listings.php`,
+    inquiries: `${window.SilipMuntiPaths.base}/backend/inquiries/get-inquiries.php`,
   };
   let initialized = false;
   let refreshPromise = null;
@@ -135,8 +135,9 @@ const SilipMuntiLandlordShell = (() => {
       return value;
     }
     if (value.startsWith("SilipMunti/")) return `/${value}`;
-    if (value.startsWith("backend/")) return `/SilipMunti/${value}`;
-    return `/SilipMunti/backend/${value.replace(/^\/+/, "")}`;
+    if (value.startsWith("backend/"))
+      return `${window.SilipMuntiPaths.base}/${value}`;
+    return `${window.SilipMuntiPaths.base}/backend/${value.replace(/^\/+/, "")}`;
   }
 
   function setAvatar(avatarSelector, pictureSelector, initialsSelector, user) {
@@ -471,8 +472,7 @@ const SilipMuntiLandlordShell = (() => {
       }
       if (target.closest("#notification-button")) {
         event.preventDefault();
-        window.location.href =
-          "/SilipMunti/frontend/pages/notifications/index.html";
+        window.location.href = `${window.SilipMuntiPaths.base}/frontend/pages/notifications/index.html`;
         return;
       }
 

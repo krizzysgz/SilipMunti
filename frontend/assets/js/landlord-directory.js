@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const API_ENDPOINT = "/SilipMunti/backend/landlord/get-verified.php";
-  const FRONTEND_ROOT = "/SilipMunti/frontend";
+  const API_ENDPOINT = `${window.SilipMuntiPaths.base}/backend/landlord/get-verified.php`;
+  const FRONTEND_ROOT = `${window.SilipMuntiPaths.base}/frontend`;
   const DEFAULT_PROFILE = `${FRONTEND_ROOT}/assets/images/default-profile.svg`;
   const PAGE_LIMIT = 12;
 
@@ -26,7 +26,7 @@
     if (/^https?:\/\//i.test(value) || String(value).startsWith("/")) {
       return value;
     }
-    return `/SilipMunti/backend/${String(value).replace(/^\/+/, "")}`;
+    return `${window.SilipMuntiPaths.base}/backend/${String(value).replace(/^\/+/, "")}`;
   }
 
   function formatMemberSince(value) {

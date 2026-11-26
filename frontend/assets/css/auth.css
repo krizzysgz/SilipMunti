@@ -477,7 +477,7 @@
 .register-visual {
   background:
     linear-gradient(135deg, rgba(7, 29, 145, 0.93), rgba(16, 39, 181, 0.67)),
-    url("../images/property.jpg") center / cover;
+    url("../images/hero-property.jpg") center / cover;
 }
 
 @media (max-width: 900px) {

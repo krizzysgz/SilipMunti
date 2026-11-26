@@ -1,4 +1,4 @@
-const API_ROOT = "/SilipMunti/backend";
+const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
 
 const endpoints = {
   user: `${API_ROOT}/auth/user.php`,
@@ -9,11 +9,9 @@ const endpoints = {
   updateStatus: `${API_ROOT}/inquiries/update-status.php`,
 };
 
-const DEFAULT_PROFILE =
-  "/SilipMunti/frontend/assets/images/default-profile.svg";
+const DEFAULT_PROFILE = `${window.SilipMuntiPaths.base}/frontend/assets/images/default-profile.svg`;
 
-const DEFAULT_PROPERTY =
-  "/SilipMunti/frontend/assets/images/property-placeholder.svg";
+const DEFAULT_PROPERTY = `${window.SilipMuntiPaths.base}/frontend/assets/images/property-placeholder.svg`;
 
 const messagesApp = document.querySelector("#messages-app");
 const conversationPanel = document.querySelector("#conversation-panel");
@@ -123,7 +121,7 @@ async function apiRequest(url, options = {}) {
   const result = await response.json();
 
   if (response.status === 401) {
-    window.location.href = "/SilipMunti/frontend/pages/auth/login.html";
+    window.location.href = `${window.SilipMuntiPaths.base}/frontend/pages/auth/login.html`;
     throw new Error("You must log in first.");
   }
 
@@ -570,7 +568,7 @@ function updateChatInformation(messageData = null) {
     activeInquiry.availability_status ||
     "available";
 
-  const detailsUrl = `/SilipMunti/frontend/pages/properties/details.html?id=${listingId}`;
+  const detailsUrl = `${window.SilipMuntiPaths.base}/frontend/pages/properties/details.html?id=${listingId}`;
 
   const userPicture = getOtherUserPicture(activeInquiry, otherUser);
 

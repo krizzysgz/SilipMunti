@@ -3,7 +3,7 @@
    (login / register / forgot password)
 
    I-link ito PINAKAHULI, pagkatapos ng auth css mo:
-   <link rel="stylesheet" href="/SilipMunti/frontend/assets/css/auth-responsive.css?v=1" />
+   <link rel="stylesheet" href="assets/css/auth-responsive.css?v=1" />
 
    Bakit kailangan: may mga rule sa dulo ng CSS mo (.register-page,
    .register-shell, .register-form-section, .field-row !important,

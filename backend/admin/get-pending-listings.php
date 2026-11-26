@@ -3,6 +3,7 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../middleware/auth.php';
+require_once __DIR__ . '/../config/public-url.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
@@ -83,17 +84,7 @@ try {
 
     $scheme = $isHttps ? 'https' : 'http';
 
-    $backendPath = str_replace(
-        '\\',
-        '/',
-        dirname(dirname($_SERVER['SCRIPT_NAME']))
-    );
-
-    $backendUrl =
-        $scheme .
-        '://' .
-        $_SERVER['HTTP_HOST'] .
-        rtrim($backendPath, '/');
+    $backendUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . sm_public_url('backend');
 
     foreach ($images as $image) {
         $listingId = (int) $image['listing_id'];

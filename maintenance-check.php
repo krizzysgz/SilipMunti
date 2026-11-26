@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/backend/system/core.php';
+require_once __DIR__ . '/backend/config/public-url.php';
 
 $message = 'Maintenance display test.';
 
@@ -17,8 +18,9 @@ if (!is_readable($template)) {
     exit('Maintenance template is missing or unreadable.');
 }
 
-echo str_replace(
-    '{{SM_MAINTENANCE_MESSAGE}}',
-    $message,
-    file_get_contents($template)
-);
+$html = file_get_contents($template);
+$frontendBase = htmlspecialchars(sm_public_url('frontend/'), ENT_QUOTES, 'UTF-8');
+echo strtr($html, [
+    '<head>' => '<head><base href="' . $frontendBase . '">',
+    '{{SM_MAINTENANCE_MESSAGE}}' => htmlspecialchars($message, ENT_QUOTES, 'UTF-8'),
+]);

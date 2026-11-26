@@ -23,7 +23,7 @@
 
   async function send(payload) {
     const response = await window.SilipMuntiSession.secureFetch(
-      "/SilipMunti/backend/profile/email-change.php",
+      `${window.SilipMuntiPaths.base}/backend/profile/email-change.php`,
       {
         method: "POST",
         credentials: "include",

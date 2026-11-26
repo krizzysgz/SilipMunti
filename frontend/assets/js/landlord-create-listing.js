@@ -1,7 +1,7 @@
 (function () {
-  const API_ROOT = "/SilipMunti/backend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
 
-  const FRONTEND_ROOT = "/SilipMunti/frontend";
+  const FRONTEND_ROOT = `${window.SilipMuntiPaths.base}/frontend`;
 
   const endpoints = {
     createListing: `${API_ROOT}/landlord/create-listing.php`,

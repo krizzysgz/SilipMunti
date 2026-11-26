@@ -116,7 +116,7 @@
       // Filters intentionally do NOT determine the monthly snapshot; all admins see one shared cycle.
       // POST uses SilipMunti secureFetch to retain CSRF validation.
       const response = await window.SilipMuntiSession.secureFetch(
-        "/SilipMunti/backend/admin/ai-recommendations.php",
+        `${window.SilipMuntiPaths.base}/backend/admin/ai-recommendations.php`,
         {
           method: "POST",
           credentials: "same-origin",

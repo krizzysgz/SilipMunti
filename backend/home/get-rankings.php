@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
@@ -18,7 +20,7 @@ function homeRankingImageUrl(?string $path): ?string
     $path = trim((string) $path);
     if ($path === '') return null;
     if (preg_match('~^https?://~i', $path) || str_starts_with($path, '/')) return $path;
-    return '/SilipMunti/backend/' . ltrim($path, '/');
+    return sm_public_url('backend/') . ltrim($path, '/');
 }
 
 // Same review eligibility and one-decimal average as get-verified.php.

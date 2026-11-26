@@ -4,8 +4,8 @@
   if (window.SilipMuntiAdminReportsInitialized) return;
   window.SilipMuntiAdminReportsInitialized = true;
 
-  const API_ROOT = "/SilipMunti/backend";
-  const FRONTEND_ROOT = "/SilipMunti/frontend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND_ROOT = `${window.SilipMuntiPaths.base}/frontend`;
   const REPORT_ENDPOINT = `${API_ROOT}/admin/reports.php`;
   const DEFAULT_DOCUMENT_TITLE = document.title;
   const DEFAULT_PRINT_TITLE = "SilipMunti Performance Report";

@@ -79,4 +79,10 @@ Options -Indexes
     # Block executable files inside storage
     RewriteRule ^storage/.*\.(?:php[0-9]*|phtml|phar|cgi|pl|py|sh|exe|bat|cmd|ps1)(?:/|$) - [F,L,NC]
 
+    # This directory has its own rewrite rules, so apply the root HTTPS policy here too.
+    RewriteCond %{HTTP_HOST} !^localhost(?::[0-9]+)?$ [NC]
+    RewriteCond %{HTTP_HOST} !^127\.0\.0\.1(?::[0-9]+)?$ [NC]
+    RewriteCond %{HTTP_HOST} !^\[::1\](?::[0-9]+)?$ [NC]
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>

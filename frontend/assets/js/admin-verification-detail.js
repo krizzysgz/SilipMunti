@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const API_ROOT = "/SilipMunti/backend";
-  const FRONTEND_ROOT = "/SilipMunti/frontend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND_ROOT = `${window.SilipMuntiPaths.base}/frontend`;
 
   const REQUIRED_TYPES = ["valid_id"];
   const OPTIONAL_TYPES = ["barangay_clearance"];

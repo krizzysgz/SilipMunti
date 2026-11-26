@@ -1,12 +1,12 @@
-const LISTINGS_API = "/SilipMunti/backend/listings/get-all.php";
+const LISTINGS_API = `${window.SilipMuntiPaths.base}/backend/listings/get-all.php`;
 
-const RENTAL_TYPES_API = "/SilipMunti/backend/rental-types/get-all.php";
+const RENTAL_TYPES_API = `${window.SilipMuntiPaths.base}/backend/rental-types/get-all.php`;
 
-const ADD_FAVORITE_API = "/SilipMunti/backend/renter/add-favorite.php";
+const ADD_FAVORITE_API = `${window.SilipMuntiPaths.base}/backend/renter/add-favorite.php`;
 
-const GET_FAVORITES_API = "/SilipMunti/backend/renter/get-favorites.php";
+const GET_FAVORITES_API = `${window.SilipMuntiPaths.base}/backend/renter/get-favorites.php`;
 
-const REMOVE_FAVORITE_API = "/SilipMunti/backend/renter/remove-favorite.php";
+const REMOVE_FAVORITE_API = `${window.SilipMuntiPaths.base}/backend/renter/remove-favorite.php`;
 
 const filterForm = document.querySelector("#properties-filter-form");
 

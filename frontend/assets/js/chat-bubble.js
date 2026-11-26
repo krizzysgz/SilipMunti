@@ -1,13 +1,11 @@
 (() => {
-  const API_ROOT = "/SilipMunti/backend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
 
-  const MESSAGES_PAGE = "/SilipMunti/frontend/pages/messages/index.html";
+  const MESSAGES_PAGE = `${window.SilipMuntiPaths.base}/frontend/pages/messages/index.html`;
 
-  const DEFAULT_PROFILE =
-    "/SilipMunti/frontend/assets/images/default-profile.svg";
+  const DEFAULT_PROFILE = `${window.SilipMuntiPaths.base}/frontend/assets/images/default-profile.svg`;
 
-  const DEFAULT_PROPERTY =
-    "/SilipMunti/frontend/assets/images/property-placeholder.svg";
+  const DEFAULT_PROPERTY = `${window.SilipMuntiPaths.base}/frontend/assets/images/property-placeholder.svg`;
 
   const currentPath = window.location.pathname.toLowerCase();
 
@@ -710,7 +708,7 @@
 
     const isClosed = inquiry.status === "closed";
 
-    const propertyUrl = `/SilipMunti/frontend/pages/properties/details.html?id=${inquiry.listing_id}`;
+    const propertyUrl = `${window.SilipMuntiPaths.base}/frontend/pages/properties/details.html?id=${inquiry.listing_id}`;
 
     const fullConversationUrl = `${MESSAGES_PAGE}?inquiry_id=${inquiry.id}`;
 

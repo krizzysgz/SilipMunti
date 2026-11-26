@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
@@ -373,7 +375,7 @@ try {
                     $profilePicture;
             } else {
                 $listing['landlord_profile_picture_url'] =
-                    '/SilipMunti/backend/'
+                    sm_public_url('backend/')
                     . ltrim($profilePicture, '/');
             }
         } else {
@@ -399,7 +401,7 @@ try {
                 $image['image_url'] = $imagePath;
             } else {
                 $image['image_url'] =
-                    '/SilipMunti/backend/'
+                    sm_public_url('backend/')
                     . ltrim($imagePath, '/');
             }
 

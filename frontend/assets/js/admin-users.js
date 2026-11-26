@@ -1,6 +1,6 @@
 (function () {
-  const API_ROOT = "/SilipMunti/backend";
-  const FRONTEND_ROOT = "/SilipMunti/frontend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND_ROOT = `${window.SilipMuntiPaths.base}/frontend`;
 
   const endpoints = {
     getUsers: `${API_ROOT}/admin/get-users.php`,

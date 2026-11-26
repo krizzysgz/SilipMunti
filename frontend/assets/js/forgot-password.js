@@ -1,4 +1,4 @@
-const BASE_URL = "/SilipMunti";
+const BASE_URL = window.SilipMuntiPaths.base;
 
 const TURNSTILE_CONFIG_ENDPOINT = `${BASE_URL}/backend/security/turnstile-config.php`;
 const SEND_RESET_CODE_ENDPOINT = `${BASE_URL}/backend/auth/send-password-reset-otp.php`;

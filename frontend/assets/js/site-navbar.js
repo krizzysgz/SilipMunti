@@ -9,9 +9,9 @@ class SiteNavbar extends HTMLElement {
     this.innerHTML = `
       <header class="site-header">
         <nav class="navbar">
-          <a href="/SilipMunti/frontend/index.html" class="navbar-logo">
+          <a href="${window.SilipMuntiPaths.base}/frontend/index.html" class="navbar-logo">
             <img
-              src="/SilipMunti/frontend/assets/images/SilipMunti.png"
+              src="${window.SilipMuntiPaths.base}/frontend/assets/images/SilipMunti.png"
               alt="SilipMunti logo"
             />
           </a>
@@ -38,24 +38,24 @@ class SiteNavbar extends HTMLElement {
             </div>
             <ul class="navbar-links">
               <li>
-                <a href="/SilipMunti/frontend/index.html"${isActive("home")}>
+                <a href="${window.SilipMuntiPaths.base}/frontend/index.html"${isActive("home")}>
                   Home
                 </a>
               </li>
               <li>
                 <a
-                  href="/SilipMunti/frontend/pages/properties/index.html"${isActive("properties")}
+                  href="${window.SilipMuntiPaths.base}/frontend/pages/properties/index.html"${isActive("properties")}
                 >
                   Properties
                 </a>
               </li>
               <li>
-                <a href="/SilipMunti/frontend/pages/about/index.html"${isActive("about")}>
+                <a href="${window.SilipMuntiPaths.base}/frontend/pages/about/index.html"${isActive("about")}>
                   About
                 </a>
               </li>
               <li>
-                <a href="/SilipMunti/frontend/pages/landlord/index.html"${isActive("landlords")}>
+                <a href="${window.SilipMuntiPaths.base}/frontend/pages/landlord/index.html"${isActive("landlords")}>
                   Landlord
                 </a>
               </li>
@@ -63,13 +63,13 @@ class SiteNavbar extends HTMLElement {
 
             <div class="guest-actions" id="guest-actions">
               <a
-                href="/SilipMunti/frontend/pages/auth/login.html"
+                href="${window.SilipMuntiPaths.base}/frontend/pages/auth/login.html"
                 class="navbar-button sign-in-button"
               >
                 Sign In
               </a>
               <a
-                href="/SilipMunti/frontend/pages/auth/register.html"
+                href="${window.SilipMuntiPaths.base}/frontend/pages/auth/register.html"
                 class="navbar-button sign-up-button"
               >
                 Sign Up
@@ -101,7 +101,7 @@ class SiteNavbar extends HTMLElement {
                 >
                   <img
                     id="navbar-profile-picture"
-                    src="/SilipMunti/frontend/assets/images/default-profile.svg"
+                    src="${window.SilipMuntiPaths.base}/frontend/assets/images/default-profile.svg"
                     alt="Profile picture"
                   />
                   <span class="mobile-profile-label">Profile</span>
@@ -111,7 +111,7 @@ class SiteNavbar extends HTMLElement {
                   <div class="profile-summary">
                     <img
                       id="dropdown-profile-picture"
-                      src="/SilipMunti/frontend/assets/images/default-profile.svg"
+                      src="${window.SilipMuntiPaths.base}/frontend/assets/images/default-profile.svg"
                       alt="Profile"
                     />
                     <div>
@@ -121,7 +121,7 @@ class SiteNavbar extends HTMLElement {
                   </div>
 
                   <a
-                    href="/SilipMunti/frontend/pages/profile/index.html"
+                    href="${window.SilipMuntiPaths.base}/frontend/pages/profile/index.html"
                     class="dropdown-link"
                   >
                     <i class="fa-solid fa-user"></i>
@@ -129,7 +129,7 @@ class SiteNavbar extends HTMLElement {
                   </a>
 
                   <a
-                    href="/SilipMunti/frontend/pages/messages/index.html"
+                    href="${window.SilipMuntiPaths.base}/frontend/pages/messages/index.html"
                     class="dropdown-link${activePage === "messages" ? " active" : ""}"
                   >
                     <i class="fa-solid fa-comments"></i>
@@ -138,14 +138,14 @@ class SiteNavbar extends HTMLElement {
 
                   <div class="renter-menu hidden" id="renter-menu">
                     <a
-                      href="/SilipMunti/frontend/pages/renter/favorites.html"
+                      href="${window.SilipMuntiPaths.base}/frontend/pages/renter/favorites.html"
                       class="dropdown-link${activePage === "favorites" ? " active" : ""}"
                     >
                       <i class="fa-solid fa-heart"></i>
                       My Favorites
                     </a>
                     <a
-                      href="/SilipMunti/frontend/pages/reviews/index.html?type=platform"
+                      href="${window.SilipMuntiPaths.base}/frontend/pages/reviews/index.html?type=platform"
                       class="dropdown-link${activePage === "reviews" ? " active" : ""}"
                     >
                       <i class="fa-solid fa-pen-to-square"></i>
@@ -155,28 +155,28 @@ class SiteNavbar extends HTMLElement {
 
                   <div class="landlord-menu hidden" id="landlord-menu">
                     <a
-                      href="/SilipMunti/frontend/pages/landlord/dashboard.html"
+                      href="${window.SilipMuntiPaths.base}/frontend/pages/landlord/dashboard.html"
                       class="dropdown-link"
                     >
                       <i class="fa-solid fa-chart-line"></i>
                       Landlord Dashboard
                     </a>
                     <a
-                      href="/SilipMunti/frontend/pages/landlord/listings.html"
+                      href="${window.SilipMuntiPaths.base}/frontend/pages/landlord/listings.html"
                       class="dropdown-link"
                     >
                       <i class="fa-solid fa-building"></i>
                       My Listings
                     </a>
                     <a
-                      href="/SilipMunti/frontend/pages/landlord/create-listing.html"
+                      href="${window.SilipMuntiPaths.base}/frontend/pages/landlord/create-listing.html"
                       class="dropdown-link"
                     >
                       <i class="fa-solid fa-circle-plus"></i>
                       Add Property
                     </a>
                     <a
-                      href="/SilipMunti/frontend/pages/landlord/verification.html"
+                      href="${window.SilipMuntiPaths.base}/frontend/pages/landlord/verification.html"
                       class="dropdown-link"
                     >
                       <i class="fa-solid fa-file-shield"></i>
@@ -186,7 +186,7 @@ class SiteNavbar extends HTMLElement {
 
                   <div class="admin-menu hidden" id="admin-menu">
                     <a
-                      href="/SilipMunti/frontend/pages/admin/dashboard.html"
+                      href="${window.SilipMuntiPaths.base}/frontend/pages/admin/dashboard.html"
                       class="dropdown-link"
                     >
                       <i class="fa-solid fa-gauge-high"></i>
@@ -232,8 +232,8 @@ const SilipMuntiSiteNavbar = (() => {
   let initialized = false;
   let currentUser = null;
 
-  const API_ROOT = "/SilipMunti/backend";
-  const FRONTEND_ROOT = "/SilipMunti/frontend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND_ROOT = `${window.SilipMuntiPaths.base}/frontend`;
   const endpoints = {
     notifications: `${API_ROOT}/notifications/get-all.php?status=unread`,
   };

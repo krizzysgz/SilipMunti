@@ -1,12 +1,11 @@
-const LANDLORD_FRONTEND_BASE = "/SilipMunti/frontend";
-const LANDLORD_LISTINGS_API = "/SilipMunti/backend/landlord/get-listings.php";
+const LANDLORD_FRONTEND_BASE = `${window.SilipMuntiPaths.base}/frontend`;
+const LANDLORD_LISTINGS_API = `${window.SilipMuntiPaths.base}/backend/landlord/get-listings.php`;
 
-const LANDLORD_DOCUMENTS_API = "/SilipMunti/backend/landlord/get-documents.php";
+const LANDLORD_DOCUMENTS_API = `${window.SilipMuntiPaths.base}/backend/landlord/get-documents.php`;
 
-const LANDLORD_INQUIRIES_API =
-  "/SilipMunti/backend/inquiries/get-inquiries.php";
+const LANDLORD_INQUIRIES_API = `${window.SilipMuntiPaths.base}/backend/inquiries/get-inquiries.php`;
 
-const NOTIFICATIONS_API = "/SilipMunti/backend/notifications/get-all.php";
+const NOTIFICATIONS_API = `${window.SilipMuntiPaths.base}/backend/notifications/get-all.php`;
 
 const dropdownLandlordName = document.querySelector("#dropdown-landlord-name");
 const dashboardSearch = document.querySelector("#dashboard-search");

@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const API_ROOT = "/SilipMunti/backend";
-  const FRONTEND_ROOT = "/SilipMunti/frontend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND_ROOT = `${window.SilipMuntiPaths.base}/frontend`;
   const DEFAULT_PROFILE = `${FRONTEND_ROOT}/assets/images/default-profile.svg`;
   const PROPERTY_PLACEHOLDER = `${FRONTEND_ROOT}/assets/images/property-placeholder.svg`;
 

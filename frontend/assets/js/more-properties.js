@@ -3,8 +3,8 @@
   if (window.SilipMuntiMorePropertiesInitialized) return;
   window.SilipMuntiMorePropertiesInitialized = true;
 
-  const API = "/SilipMunti/backend";
-  const FRONTEND = "/SilipMunti/frontend";
+  const API = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND = `${window.SilipMuntiPaths.base}/frontend`;
   const placeholder = `${FRONTEND}/assets/images/property-placeholder.svg`;
   let section, rail, status, browse, previous, next;
   let requestVersion = 0;

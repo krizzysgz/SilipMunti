@@ -1,8 +1,8 @@
 (() => {
   "use strict";
   const $ = (id) => document.getElementById(id);
-  const settingsAPI = "/SilipMunti/backend/admin/system-settings.php";
-  const backupsAPI = "/SilipMunti/backend/admin/system-backups.php";
+  const settingsAPI = `${window.SilipMuntiPaths.base}/backend/admin/system-settings.php`;
+  const backupsAPI = `${window.SilipMuntiPaths.base}/backend/admin/system-backups.php`;
   let state = null,
     pending = null,
     working = false,
@@ -229,7 +229,9 @@
     try {
       const user = await window.SilipMuntiSession.getCurrentUser();
       if (!user) {
-        location.replace("/SilipMunti/frontend/pages/auth/login.html");
+        location.replace(
+          `${window.SilipMuntiPaths.base}/frontend/pages/auth/login.html`,
+        );
         return;
       }
       if (user.role !== "admin") {

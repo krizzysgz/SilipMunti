@@ -1,6 +1,6 @@
 (() => {
-  const API_BASE = "/SilipMunti/backend";
-  const FRONTEND_BASE = "/SilipMunti/frontend";
+  const API_BASE = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND_BASE = `${window.SilipMuntiPaths.base}/frontend`;
   const CREATE_REVIEW_ENDPOINT = `${API_BASE}/reviews/create.php`;
   const GET_LISTING_ENDPOINT = `${API_BASE}/listings/get-one.php`;
 

@@ -4,8 +4,8 @@
   if (window.SilipMuntiAdminDashboardInitialized) return;
   window.SilipMuntiAdminDashboardInitialized = true;
 
-  const API_ROOT = "/SilipMunti/backend";
-  const FRONTEND_ROOT = "/SilipMunti/frontend";
+  const API_ROOT = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND_ROOT = `${window.SilipMuntiPaths.base}/frontend`;
 
   const endpoints = {
     documents: `${API_ROOT}/admin/get-all-documents.php`,
@@ -85,7 +85,8 @@
     }
 
     if (value.startsWith("SilipMunti/")) return `/${value}`;
-    if (value.startsWith("backend/")) return `/SilipMunti/${value}`;
+    if (value.startsWith("backend/"))
+      return `${window.SilipMuntiPaths.base}/${value}`;
 
     return `${API_ROOT}/${value.replace(/^\/+/, "")}`;
   }

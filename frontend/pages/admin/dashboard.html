@@ -4,41 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard | SilipMunti</title>
+    <script src="../../assets/js/app-paths.js"></script>
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/vendor/fontawesome/css/all.min.css"
+      href="../../assets/vendor/fontawesome/css/all.min.css"
     />
+    <link rel="stylesheet" href="../../assets/css/admin.css?v=4" />
+    <link rel="stylesheet" href="../../assets/css/responsive.css?v=2" />
+    <link rel="stylesheet" href="../../assets/css/system-modal.css?v=1" />
+    <script src="../../assets/js/system-modal.js?v=1"></script>
+    <link rel="stylesheet" href="../../assets/css/ui-refinements.css?v=3" />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/admin.css?v=4"
-    />
-    <link
-      rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/responsive.css?v=2"
-    />
-    <link
-      rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/system-modal.css?v=1"
-    />
-    <script src="/SilipMunti/frontend/assets/js/system-modal.js?v=1"></script>
-    <link
-      rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/ui-refinements.css?v=3"
-    />
-    <link
-      rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/admin-enterprise.css?v=3"
+      href="../../assets/css/admin-enterprise.css?v=3"
       media="screen"
     />
     <link
       rel="stylesheet"
-      href="/SilipMunti/frontend/assets/css/design-system.css?v=1"
+      href="../../assets/css/design-system.css?v=1"
       media="screen"
     />
     <link
       rel="icon"
       type="image/png"
-      href="/SilipMunti/frontend/assets/images/SilipMunti.png"
+      href="../../assets/images/SilipMunti.png"
     />
   </head>
 
@@ -47,9 +36,9 @@
     <div class="admin-layout">
       <aside class="admin-sidebar" id="admin-sidebar">
         <div class="admin-sidebar-header">
-          <a href="/SilipMunti/frontend/index.html" class="admin-logo">
+          <a href="../../index.html" class="admin-logo">
             <img
-              src="/SilipMunti/frontend/assets/images/SilipMunti.png"
+              src="../../assets/images/SilipMunti.png"
               alt="SilipMunti logo"
             />
           </a>
@@ -66,50 +55,35 @@
         <nav class="admin-navigation">
           <span class="admin-nav-label">GENERAL</span>
           <a
-            href="/SilipMunti/frontend/pages/admin/dashboard.html"
+            href="../../pages/admin/dashboard.html"
             class="admin-nav-link active"
           >
             <i class="fa-solid fa-table-columns"></i>
             <span>Dashboard</span>
           </a>
-          <a
-            href="/SilipMunti/frontend/pages/admin/verifications.html"
-            class="admin-nav-link"
-          >
+          <a href="../../pages/admin/verifications.html" class="admin-nav-link">
             <i class="fa-solid fa-file-shield"></i>
             <span>Verifications</span>
             <span class="admin-count hidden" id="pending-count">0</span>
           </a>
-          <a
-            href="/SilipMunti/frontend/pages/admin/listings.html"
-            class="admin-nav-link"
-          >
+          <a href="../../pages/admin/listings.html" class="admin-nav-link">
             <i class="fa-solid fa-building"></i>
             <span>Listings</span>
           </a>
-          <a
-            href="/SilipMunti/frontend/pages/admin/users.html"
-            class="admin-nav-link"
-          >
+          <a href="../../pages/admin/users.html" class="admin-nav-link">
             <i class="fa-solid fa-users"></i>
             <span>Users</span>
           </a>
-          <a
-            href="/SilipMunti/frontend/pages/admin/rental-types.html"
-            class="admin-nav-link"
-          >
+          <a href="../../pages/admin/rental-types.html" class="admin-nav-link">
             <i class="fa-solid fa-tags"></i>
             <span>Rental Types</span>
           </a>
-          <a
-            href="/SilipMunti/frontend/pages/admin/reports.html"
-            class="admin-nav-link"
-          >
+          <a href="../../pages/admin/reports.html" class="admin-nav-link">
             <i class="fa-solid fa-chart-column"></i>
             <span>Reports</span>
           </a>
           <a
-            href="/SilipMunti/frontend/pages/admin/system-settings.html"
+            href="../../pages/admin/system-settings.html"
             class="admin-nav-link"
           >
             <i class="fa-solid fa-gear"></i>
@@ -117,10 +91,7 @@
           </a>
 
           <span class="admin-nav-label account-label">ACCOUNT</span>
-          <a
-            href="/SilipMunti/frontend/pages/profile/index.html"
-            class="admin-nav-link"
-          >
+          <a href="../../pages/profile/index.html" class="admin-nav-link">
             <i class="fa-solid fa-user"></i>
             <span>Profile</span>
           </a>
@@ -135,7 +106,7 @@
         </nav>
 
         <div class="admin-sidebar-footer">
-          <a href="/SilipMunti/frontend/index.html">
+          <a href="../../index.html">
             <i class="fa-solid fa-arrow-left"></i>
             <span>Back to Website</span>
           </a>
@@ -300,7 +271,7 @@
 
               <div class="admin-action-grid" id="admin-action-grid">
                 <a
-                  href="/SilipMunti/frontend/pages/admin/verifications.html"
+                  href="../../pages/admin/verifications.html"
                   class="admin-action-card"
                   data-search-text="verification documents landlord approval reject"
                 >
@@ -315,7 +286,7 @@
                 </a>
 
                 <a
-                  href="/SilipMunti/frontend/pages/admin/listings.html"
+                  href="../../pages/admin/listings.html"
                   class="admin-action-card"
                   data-search-text="listings properties rental approval"
                 >
@@ -330,7 +301,7 @@
                 </a>
 
                 <a
-                  href="/SilipMunti/frontend/pages/admin/users.html"
+                  href="../../pages/admin/users.html"
                   class="admin-action-card"
                   data-search-text="users renters landlords accounts"
                 >
@@ -345,7 +316,7 @@
                 </a>
 
                 <a
-                  href="/SilipMunti/frontend/pages/admin/rental-types.html"
+                  href="../../pages/admin/rental-types.html"
                   class="admin-action-card"
                   data-search-text="rental types category apartment condo bedspace"
                 >
@@ -360,7 +331,7 @@
                 </a>
 
                 <a
-                  href="/SilipMunti/frontend/pages/admin/reports.html"
+                  href="../../pages/admin/reports.html"
                   class="admin-action-card"
                   data-search-text="reports analytics insights performance print pdf csv"
                 >
@@ -388,7 +359,7 @@
                   <p>Latest landlord document submissions.</p>
                 </div>
                 <a
-                  href="/SilipMunti/frontend/pages/admin/verifications.html"
+                  href="../../pages/admin/verifications.html"
                   class="admin-panel-link"
                 >
                   View all
@@ -430,8 +401,8 @@
       </div>
     </div>
 
-    <script src="/SilipMunti/frontend/assets/js/session.js?v=4"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-sidebar.js?v=5"></script>
-    <script src="/SilipMunti/frontend/assets/js/admin-dashboard.js?v=5"></script>
+    <script src="../../assets/js/session.js?v=5"></script>
+    <script src="../../assets/js/admin-sidebar.js?v=6"></script>
+    <script src="../../assets/js/admin-dashboard.js?v=6"></script>
   </body>
 </html>

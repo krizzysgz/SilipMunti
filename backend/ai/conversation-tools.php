@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 function smAiRows(PDO $pdo, string $sql, array $params = []): array
 {
     $stmt = $pdo->prepare($sql);
@@ -138,7 +140,7 @@ function smAiPublicTool(PDO $pdo, string $name, array $args): array
                 $row['occupancy_limit'] = $row['occupancy_limit'] !== null ? (int) $row['occupancy_limit'] : null;
                 $path = trim((string) $row['primary_image_path']);
                 if ($path !== '' && !str_starts_with($path, '/') && !preg_match('~^https?://~i', $path)) {
-                    $path = '/SilipMunti/backend/' . ltrim($path, '/');
+                    $path = sm_public_url('backend/') . ltrim($path, '/');
                 }
                 // Only same-site paths and HTTP(S) images; never executable URL schemes.
                 $row['primary_image'] = ($path !== '' && (str_starts_with($path, '/') || preg_match('~^https?://~i', $path))) ? $path : null;

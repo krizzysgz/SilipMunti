@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
@@ -63,7 +65,7 @@ function recommendationImageUrl(?string $path): ?string
         return $path;
     }
 
-    return '/SilipMunti/backend/' . ltrim($path, '/');
+    return sm_public_url('backend/') . ltrim($path, '/');
 }
 
 function normalizeRecommendationText(string $value): string

@@ -1,6 +1,6 @@
-const GET_FAVORITES_API = "/SilipMunti/backend/renter/get-favorites.php";
+const GET_FAVORITES_API = `${window.SilipMuntiPaths.base}/backend/renter/get-favorites.php`;
 
-const REMOVE_FAVORITE_API = "/SilipMunti/backend/renter/remove-favorite.php";
+const REMOVE_FAVORITE_API = `${window.SilipMuntiPaths.base}/backend/renter/remove-favorite.php`;
 
 const DEFAULT_PROPERTY_IMAGE = "../../assets/images/property-placeholder.svg";
 
@@ -94,7 +94,7 @@ async function requireRenterUser() {
   if (currentUser.role !== "renter") {
     window.location.href =
       window.SilipMuntiSession?.getDashboardUrl(currentUser.role) ||
-      "/SilipMunti/frontend/index.html";
+      `${window.SilipMuntiPaths.base}/frontend/index.html`;
     return false;
   }
 

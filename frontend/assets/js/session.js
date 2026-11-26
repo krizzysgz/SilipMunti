@@ -1,9 +1,9 @@
-const SESSION_STATUS_API = "/SilipMunti/backend/auth/status.php";
-const LOGOUT_API = "/SilipMunti/backend/auth/logout.php";
-const CSRF_TOKEN_API = "/SilipMunti/backend/auth/csrf-token.php";
+const SESSION_STATUS_API = `${window.SilipMuntiPaths.base}/backend/auth/status.php`;
+const LOGOUT_API = `${window.SilipMuntiPaths.base}/backend/auth/logout.php`;
+const CSRF_TOKEN_API = `${window.SilipMuntiPaths.base}/backend/auth/csrf-token.php`;
 
-const FRONTEND_BASE = "/SilipMunti/frontend";
-const BACKEND_BASE = "/SilipMunti/backend";
+const FRONTEND_BASE = `${window.SilipMuntiPaths.base}/frontend`;
+const BACKEND_BASE = `${window.SilipMuntiPaths.base}/backend`;
 
 const LOGIN_RETURN_KEY = "silip_munti_redirect";
 

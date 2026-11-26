@@ -1,6 +1,6 @@
-const GET_DOCUMENTS_API = "/SilipMunti/backend/landlord/get-documents.php";
+const GET_DOCUMENTS_API = `${window.SilipMuntiPaths.base}/backend/landlord/get-documents.php`;
 
-const UPLOAD_DOCUMENT_API = "/SilipMunti/backend/landlord/upload-document.php";
+const UPLOAD_DOCUMENT_API = `${window.SilipMuntiPaths.base}/backend/landlord/upload-document.php`;
 
 const REQUIRED_DOCUMENTS = ["valid_id"];
 
@@ -21,8 +21,7 @@ const refreshButton = document.querySelector("#refresh-button");
 const addPropertyLink = document.querySelector("#add-property-link");
 const notificationCount = document.querySelector("#notification-count");
 
-const NOTIFICATIONS_API =
-  "/SilipMunti/backend/notifications/get-all.php?status=unread";
+const NOTIFICATIONS_API = `${window.SilipMuntiPaths.base}/backend/notifications/get-all.php?status=unread`;
 
 let currentDocuments = [];
 let currentLandlord = null;
@@ -216,12 +215,12 @@ async function loadCurrentUser() {
   const user = await window.SilipMuntiSession?.getCurrentUser();
 
   if (!user) {
-    window.location.href = "/SilipMunti/frontend/pages/auth/login.html";
+    window.location.href = `${window.SilipMuntiPaths.base}/frontend/pages/auth/login.html`;
     return null;
   }
 
   if (user.role !== "landlord") {
-    window.location.href = "/SilipMunti/frontend/index.html";
+    window.location.href = `${window.SilipMuntiPaths.base}/frontend/index.html`;
     return null;
   }
 

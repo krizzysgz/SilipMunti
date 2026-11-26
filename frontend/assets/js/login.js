@@ -1,4 +1,4 @@
-const BASE_URL = "/SilipMunti";
+const BASE_URL = window.SilipMuntiPaths.base;
 
 const loginForm = document.querySelector("#login-form");
 const loginButton = document.querySelector("#login-button");

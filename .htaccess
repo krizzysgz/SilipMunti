@@ -21,11 +21,7 @@ Options -Indexes
     RewriteCond %{HTTP_HOST} !^127\.0\.0\.1(?::[0-9]+)?$ [NC]
     RewriteCond %{HTTP_HOST} !^\[::1\](?::[0-9]+)?$ [NC]
     RewriteCond %{HTTPS} !=on
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L,NE]
-
-    # Enable HSTS only when Apache receives HTTPS directly.
-    RewriteCond %{HTTPS} =on
-    RewriteRule ^ - [E=SILIPMUNTI_HTTPS:1]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </IfModule>
 
 <IfModule mod_headers.c>
@@ -35,22 +31,31 @@ Options -Indexes
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
     Header always unset X-Powered-By
 
-    Header always set Strict-Transport-Security "max-age=31536000" env=SILIPMUNTI_HTTPS
+    Header always set Strict-Transport-Security "max-age=31536000" "expr=%{HTTPS} == 'on'"
 </IfModule>
 
-# Shared error pages for Apache-generated errors.
-ErrorDocument 400 /SilipMunti/backend/error.php?status=400
-ErrorDocument 401 /SilipMunti/backend/error.php?status=401
-ErrorDocument 403 /SilipMunti/backend/error.php?status=403
-ErrorDocument 404 /SilipMunti/backend/error.php?status=404
-ErrorDocument 405 /SilipMunti/backend/error.php?status=405
-ErrorDocument 429 /SilipMunti/backend/error.php?status=429
-ErrorDocument 500 /SilipMunti/backend/error.php?status=500
-ErrorDocument 503 /SilipMunti/backend/error.php?status=503
+# For XAMPP, recognize a one-segment mount containing the error handler.
+# At the document root the unset variable expands to an empty string.
+<IfModule mod_setenvif.c>
+    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/([a-zA-Z0-9._~ -]+)(?:/|$)# && -f '%{DOCUMENT_ROOT}/$1/backend/error.php'" SM_ERROR_PREFIX=$1/
+</IfModule>
+ErrorDocument 400 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
+ErrorDocument 401 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
+ErrorDocument 403 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
+ErrorDocument 404 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
+ErrorDocument 405 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
+ErrorDocument 429 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
+ErrorDocument 500 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
+ErrorDocument 503 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
 
 # SILIPMUNTI_SYSTEM_GATEWAY_V2
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    # Keep the browser at a URL that gives relative links the right base.
+    RewriteRule ^$ %{REQUEST_URI}frontend/index.html [R=302,L]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^frontend(?:/.*[^/])?$ %{REQUEST_URI}/ [R=302,L,NC]
+
     # Gate HTML pages AND directory URLs such as /frontend/.
     RewriteCond %{REQUEST_FILENAME} -d [OR]
     RewriteCond %{REQUEST_FILENAME} \.html$ [NC]

@@ -5,7 +5,7 @@
 
   const scriptSource =
     document.currentScript?.src ||
-    "/SilipMunti/frontend/assets/js/back-to-top.js";
+    `${window.SilipMuntiPaths.base}/frontend/assets/js/back-to-top.js`;
   const stylesheetUrl = new URL("../css/back-to-top.css", scriptSource).href;
 
   class SilipBackToTop extends HTMLElement {

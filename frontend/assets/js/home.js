@@ -7,8 +7,8 @@
 
   window.SilipMuntiHomeInitialized = true;
 
-  const API_BASE = "/SilipMunti/backend";
-  const FRONTEND_BASE = "/SilipMunti/frontend";
+  const API_BASE = `${window.SilipMuntiPaths.base}/backend`;
+  const FRONTEND_BASE = `${window.SilipMuntiPaths.base}/frontend`;
 
   const endpoints = {
     rankings: `${API_BASE}/home/get-rankings.php`,

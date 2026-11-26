@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/public-url.php';
+
 header('Content-Type: application/json');
 
 require_once '../config/database.php';
@@ -102,7 +104,7 @@ $profilePictureUrl = static function ($path) {
     if (preg_match('~^https?://~i', $path) || strpos($path, '/') === 0) {
         return $path;
     }
-    return '/SilipMunti/backend/' . $path;
+    return sm_public_url('backend/') . $path;
 };
 
 foreach ($inquiries as &$inquiry) {
@@ -113,7 +115,7 @@ foreach ($inquiries as &$inquiry) {
     $image = $imageStmt->fetch();
 
     $inquiry['primary_image'] = $image
-        ? '/SilipMunti/backend/' . $image['image_path']
+        ? sm_public_url('backend/') . $image['image_path']
         : null;
 
     if ($user['role'] === 'renter') {
