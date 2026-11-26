@@ -32,7 +32,7 @@ jobs:
           security: strict
           local-dir: ./
           server-dir: /htdocs/SilipMunti/
-          dry-run: true
+          dry-run: false
           dangerous-clean-slate: false
           exclude: |
             **/.git*
