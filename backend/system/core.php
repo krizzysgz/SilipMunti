@@ -6,15 +6,18 @@ function sm_root(): string { return dirname(__DIR__, 2); }
 function sm_private(): string {
     static $path;
     if ($path !== null) return $path;
-    $candidate = env_value('SYSTEM_STORAGE_PATH', dirname(sm_root(), 2) . '/silipmunti-private');
+    $candidate = env_value('SYSTEM_STORAGE_PATH', sm_root() . '/silipmunti-private');
     if (!is_string($candidate) || $candidate === '') throw new RuntimeException('Private storage is not configured.');
     if (!is_dir($candidate) && !mkdir($candidate, 0700, true) && !is_dir($candidate)) throw new RuntimeException('Cannot create private storage.');
     $resolved = realpath($candidate);
-    $documentRoot = realpath((string) ($_SERVER['DOCUMENT_ROOT'] ?? dirname(sm_root())));
-    foreach (array_filter([$documentRoot, realpath(sm_root())]) as $public) {
-        $a = strtolower(str_replace('\\', '/', $resolved)) . '/';
-        $b = strtolower(str_replace('\\', '/', $public)) . '/';
-        if (str_starts_with($a, $b)) throw new RuntimeException('SYSTEM_STORAGE_PATH must be outside the web root.');
+    $allowWebRoot = filter_var(env_value('SYSTEM_STORAGE_ALLOW_WEBROOT', 'false'), FILTER_VALIDATE_BOOLEAN);
+    if (!$allowWebRoot) {
+        $documentRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: null;
+        foreach (array_filter([$documentRoot, realpath(sm_root())]) as $public) {
+            $a = strtolower(str_replace('\\', '/', $resolved)) . '/';
+            $b = strtolower(str_replace('\\', '/', $public)) . '/';
+            if (str_starts_with($a, $b)) throw new RuntimeException('SYSTEM_STORAGE_PATH must be outside the web root.');
+        }
     }
     $path = $resolved;
     return $path;

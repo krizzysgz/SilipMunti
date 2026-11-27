@@ -536,6 +536,41 @@ function showNextImage() {
   updateLightboxImage();
 }
 
+// Transportation icons: only trusted, local SVG constants enter the DOM.
+const TRANSPORT_SVG = Object.freeze({
+  multicab: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M2 6h13v4h4l4 5v4h-3a3 3 0 0 0-6 0h-5a3 3 0 0 0-6 0H1V9a3 3 0 0 1 1-3Zm2 3v5h4V9Zm6 0v5h3V9Zm7 3v3h4l-2.5-3Z"/><circle cx="6" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>`,
+  minibus: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M4 5h13a5 5 0 0 1 5 5v9h-3a3 3 0 0 0-6 0H9a3 3 0 0 0-6 0H1V8a3 3 0 0 1 3-3Zm0 3v6h4V8Zm6 0v6h4V8Zm6 0v6h4v-4a2 2 0 0 0-2-2Z"/><circle cx="6" cy="19" r="2"/><circle cx="16" cy="19" r="2"/></svg>`,
+  tricycle: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M1 6h10l3 5v7H1Zm2 2v5h8l-2-5Z"/><circle cx="5" cy="18" r="3"/><circle cx="20" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 17h3l3-7 2 8M19 10l-1-4h3M13 12h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  jeepney: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="M1 5h15v5h4l3 4v5h-3a3 3 0 0 0-6 0H9a3 3 0 0 0-6 0H1Zm2 3v5h3V8Zm5 0v5h3V8Zm5 0v5h2V8Zm4 4v3h4l-2-3Z"/><path d="M1 3h16v1H1z"/><circle cx="6" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>`,
+});
+
+const TRANSPORT_TYPES = new Map([
+  ["multicab", { label: "Multicab", svg: TRANSPORT_SVG.multicab }],
+  ["minibus", { label: "Mini Bus", svg: TRANSPORT_SVG.minibus }],
+  ["tricycle", { label: "Tricycle", svg: TRANSPORT_SVG.tricycle }],
+  ["tricyle", { label: "Tricycle", svg: TRANSPORT_SVG.tricycle }],
+  ["trycycle", { label: "Tricycle", svg: TRANSPORT_SVG.tricycle }],
+  ["jeepney", { label: "Jeepney", svg: TRANSPORT_SVG.jeepney }],
+  ["jeep", { label: "Jeepney", svg: TRANSPORT_SVG.jeepney }],
+  ["bus", { label: "Bus", iconClass: "fa-solid fa-bus" }],
+]);
+
+function getTransportPresentation(value) {
+  const original = String(value ?? "");
+  const normalized = original
+    .trim()
+    .toLowerCase()
+    .replace(/[-_]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return (
+    TRANSPORT_TYPES.get(normalized.replace(/ /g, "")) ?? {
+      label: original,
+      iconClass: "fa-solid fa-route",
+    }
+  );
+}
+
 function renderDetailItems(
   container,
   items,
@@ -564,15 +599,25 @@ function renderDetailItems(
   items.forEach((item) => {
     const element = document.createElement("span");
 
-    const icon = document.createElement("i");
-
+    const presentation =
+      typeof iconClass === "function"
+        ? iconClass(item)
+        : { label: item, iconClass };
     const text = document.createElement("span");
-
     element.className = itemClass;
 
-    icon.className = iconClass;
+    let icon;
+    if (presentation.svg) {
+      const template = document.createElement("template");
+      template.innerHTML = presentation.svg; // Trusted constant only.
+      icon = template.content.firstElementChild;
+    } else {
+      icon = document.createElement("i");
+      icon.className = presentation.iconClass;
+      icon.setAttribute("aria-hidden", "true");
+    }
 
-    text.textContent = item;
+    text.textContent = presentation.label;
 
     element.append(icon, text);
 
@@ -784,7 +829,7 @@ function renderListing(listing) {
   renderDetailItems(
     transportRoutes,
     parseListData(listing.transport_routes),
-    "fa-solid fa-bus",
+    getTransportPresentation,
     "detail-list-item",
     "No transportation routes have been listed.",
   );

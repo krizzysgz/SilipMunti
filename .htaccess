@@ -1,28 +1,68 @@
+
+# ==========================================
+# SILIPMUNTI ROOT CONFIGURATION
+# ==========================================
+
 Options -Indexes
 
-# Block direct access to hidden files and sensitive artifacts.
-<FilesMatch "(?i)(^\.|^composer\.(json|lock)$|\.(sql|sqlite|sqlite3|db|bak|old|orig|save|swp|log|zip|tar|tgz|gz|7z)$)">
+# ==========================================
+# 1. PROTECT SENSITIVE FILES
+# ==========================================
+
+<FilesMatch "(?i)(^\.|^composer\.(json|lock)$|\.(sql|sqlite|sqlite3|db|bak|old|orig|save|swp|log|zip|tar|tgz|gz|7z|env|ini|off)$)">
     Require all denied
 </FilesMatch>
+
+# ==========================================
+# 2. SECURITY AND ROUTING
+# ==========================================
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # Block hidden directories/files, including .git, .env and .agents.
-    # Keep .well-known available for certificate/domain verification.
+    # Block hidden directories and files
+    # Allow .well-known for domain verification
     RewriteRule "(^|/)\.(?!well-known(?:/|$))" - [F,L,NC]
 
-    # Block database dumps, backup files, logs and archives.
-    RewriteRule "\.(sql|sqlite|sqlite3|db|bak|old|orig|save|swp|log|zip|tar|tgz|gz|7z)$" - [F,L,NC]
+    # Block sensitive files and archives
+    RewriteRule "\.(sql|sqlite|sqlite3|db|bak|old|orig|save|swp|log|zip|tar|tgz|gz|7z|env|ini|off)$" - [F,L,NC]
 
-    # Allow HTTP for local XAMPP development.
-    # Require HTTPS for non-local hosts.
+    # ======================================
+    # 3. HTTPS REDIRECTION
+    # ======================================
+
     RewriteCond %{HTTP_HOST} !^localhost(?::[0-9]+)?$ [NC]
     RewriteCond %{HTTP_HOST} !^127\.0\.0\.1(?::[0-9]+)?$ [NC]
     RewriteCond %{HTTP_HOST} !^\[::1\](?::[0-9]+)?$ [NC]
     RewriteCond %{HTTPS} !=on
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=302,L]
+
+    # ======================================
+    # 4. FRONTEND HOMEPAGE
+    # ======================================
+
+    RewriteRule ^$ frontend/index.html [R=302,L]
+
+    # ======================================
+    # 5. FRONTEND DIRECTORY HANDLING
+    # ======================================
+
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^frontend(?:/.*[^/])?$ %{REQUEST_URI}/ [R=302,L,NC]
+
+    # ======================================
+    # 6. FRONTEND GATEWAY
+    # ======================================
+
+    RewriteCond %{REQUEST_FILENAME} -d [OR]
+    RewriteCond %{REQUEST_FILENAME} \.html$ [NC]
+    RewriteRule ^frontend(?:/.*)?$ frontend-gateway.php [L,NC]
+
 </IfModule>
+
+# ==========================================
+# 7. SECURITY HEADERS
+# ==========================================
 
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
@@ -30,34 +70,17 @@ Options -Indexes
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"
     Header always unset X-Powered-By
-
-    Header always set Strict-Transport-Security "max-age=31536000" "expr=%{HTTPS} == 'on'"
 </IfModule>
 
-# For XAMPP, recognize a one-segment mount containing the error handler.
-# At the document root the unset variable expands to an empty string.
-<IfModule mod_setenvif.c>
-    SetEnvIfExpr "%{REQUEST_URI} =~ m#^/([a-zA-Z0-9._~ -]+)(?:/|$)# && -f '%{DOCUMENT_ROOT}/$1/backend/error.php'" SM_ERROR_PREFIX=$1/
-</IfModule>
-ErrorDocument 400 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
-ErrorDocument 401 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
-ErrorDocument 403 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
-ErrorDocument 404 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
-ErrorDocument 405 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
-ErrorDocument 429 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
-ErrorDocument 500 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
-ErrorDocument 503 "/%{reqenv:SM_ERROR_PREFIX}backend/error.php"
+# ==========================================
+# 8. CUSTOM ERROR PAGES - PRODUCTION
+# ==========================================
 
-# SILIPMUNTI_SYSTEM_GATEWAY_V2
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    # Keep the browser at a URL that gives relative links the right base.
-    RewriteRule ^$ %{REQUEST_URI}frontend/index.html [R=302,L]
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^frontend(?:/.*[^/])?$ %{REQUEST_URI}/ [R=302,L,NC]
-
-    # Gate HTML pages AND directory URLs such as /frontend/.
-    RewriteCond %{REQUEST_FILENAME} -d [OR]
-    RewriteCond %{REQUEST_FILENAME} \.html$ [NC]
-    RewriteRule ^frontend(?:/.*)?$ frontend-gateway.php [L,NC]
-</IfModule>
+ErrorDocument 400 /backend/error.php
+ErrorDocument 401 /backend/error.php
+ErrorDocument 403 /backend/error.php
+ErrorDocument 404 /backend/error.php
+ErrorDocument 405 /backend/error.php
+ErrorDocument 429 /backend/error.php
+ErrorDocument 500 /backend/error.php
+ErrorDocument 503 /backend/error.php

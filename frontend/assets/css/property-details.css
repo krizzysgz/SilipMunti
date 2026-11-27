@@ -3066,3 +3066,12 @@ body {
     font-size: 21px;
   }
 }
+
+/* Transport icons only: match the existing 1em Font Awesome icon size. */
+#transport-routes .detail-list-item > svg {
+  width: 1em;
+  height: 1em;
+  flex: 0 0 auto;
+  color: var(--blue);
+  display: block;
+}
